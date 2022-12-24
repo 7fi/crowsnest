@@ -11,7 +11,7 @@ export default function Navbar() {
         <nav className="navbar">
             <ul>
                 <li>
-                    <Link to="/" className="siteTitle">
+                    <Link to="/crowsnest/" className="siteTitle">
                         CrowsNest
                     </Link>
                 </li>
@@ -21,7 +21,7 @@ export default function Navbar() {
                     </li>
                     {!user && (
                         <li>
-                            <Link to="/enter">
+                            <Link to="/crowsnest/enter">
                                 <button>Sign In</button>
                             </Link>
                         </li>
@@ -29,7 +29,7 @@ export default function Navbar() {
                     {username && (
                         <>
                             <li>
-                                <NavLink to="/createteam">
+                                <NavLink to="/crowsnest/createteam">
                                     <button>Create Team</button>
                                 </NavLink>
                             </li>
@@ -37,7 +37,7 @@ export default function Navbar() {
                                 <SignOutButton />
                             </li>
                             <li>
-                                <NavLink to={`/profile/${username}`}>
+                                <NavLink to={`/crowsnest/profile/${username}`}>
                                     <img src={user?.photoURL} alt={username} referrerPolicy="no-referrer" className="btn" />
                                 </NavLink>
                             </li>
