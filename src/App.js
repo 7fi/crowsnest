@@ -7,6 +7,7 @@ import Enter from './pages/Enter'
 import Profile from './pages/Profile'
 import Team from './pages/Team'
 import CreateTeam from './pages/CreateTeam'
+import NotFound from './pages/CreateTeam'
 import { useUserData } from './lib/hooks'
 import { UserContext } from './lib/context'
 import { Toaster } from 'react-hot-toast'
@@ -26,6 +27,7 @@ export default function App() {
                     <Route path="/crowsnest/profile/:username" element={<Profile />} />
                     <Route path="/crowsnest/team/:teamName" element={<Team />} />
                     <Route path="/crowsnest/createteam" element={<CreateTeam />} />
+                    <Route path="/crowsnest/:text" element={<NotFound />} />
                 </Routes>
                 <Toaster />
             </UserContext.Provider>

@@ -8,7 +8,7 @@ export default function SignInButton() {
     }
     return (
         <button className="btn-google" onClick={signInWithGoogle}>
-            <img src={'/google.png'} alt="google logo" className="btn-logo" /> Sign in with Google
+            <img src={'./google.png'} alt="google logo" className="btn-logo" /> Sign in with Google
         </button>
     )
 }

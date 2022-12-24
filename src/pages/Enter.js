@@ -74,7 +74,7 @@ function UsernameForm() {
 
         const batch = writeBatch(db)
 
-        batch.set(userDoc, { username: usernameValue, photoURL: user.photoURL, displayName: displaynameValue })
+        batch.set(userDoc, { username: usernameValue, photoURL: user.photoURL, displayName: displaynameValue, teams: [] })
         batch.set(usernameDoc, { uid: user.uid })
 
         await batch.commit()

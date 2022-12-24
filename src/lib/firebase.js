@@ -26,7 +26,7 @@ const getUserWithUsername = async (username) => {
 const getTeamWithName = async (teamName) => {
     const q = query(collection(db, 'teams'), where('teamName', '==', teamName))
     let doc = (await getDocs(q)).docs[0]
-    return doc.data()
+    return { data: doc.data(), id: doc.id }
 }
 
 export { app, getUserWithUsername, getTeamWithName }

@@ -11,7 +11,7 @@ export default function Navbar() {
         <nav className="navbar">
             <ul>
                 <li>
-                    <Link to="/crowsnest/" className="siteTitle">
+                    <Link to="/crowsnest/" className="text-title">
                         CrowsNest
                     </Link>
                 </li>

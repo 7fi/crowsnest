@@ -21,7 +21,7 @@
         "start": "react-scripts start",
         "predeploy": "npm run build",
         "deploy": "gh-pages -d build",
-        "build": "react-scripts build",
+        "build": "react-scripts build && shx cp build/index.html build/404.html",
         "test": "react-scripts test",
         "eject": "react-scripts eject"
     },
@@ -44,6 +44,7 @@
         ]
     },
     "devDependencies": {
-        "gh-pages": "^4.0.0"
+        "gh-pages": "^4.0.0",
+        "shx": "^0.3.4"
     }
 }

@@ -76,6 +76,14 @@ button:disabled {
     color: var(--component);
 }
 
+.contentBox {
+    border: var(--border) 0.2rem solid;
+    border-radius: var(--radius);
+    background-color: var(--component-bg);
+    padding: 1rem;
+    margin: 0.5rem;
+}
+
 /* Navbar */
 
 .navbar {
@@ -85,6 +93,7 @@ button:disabled {
     width: 100%;
     height: 75px;
     background-color: var(--component-bg);
+    border-bottom: 0.2rem solid var(--border);
 }
 
 .navbar ul {
@@ -106,11 +115,6 @@ button:disabled {
 
 .navRight li {
     margin: 0.2rem;
-}
-
-.siteTitle {
-    font-size: 2rem;
-    font-weight: 700;
 }
 
 /* Loader */
@@ -140,10 +144,41 @@ button:disabled {
 .text-sucess {
     color: var(--sucess);
 }
+.text-title {
+    font-size: 2rem;
+    font-weight: 700;
+}
+.text-subtitle {
+    font-size: 1.2rem;
+    /* font-weight: ; */
+    color: var(--highlight1);
+}
+.text-titlecase {
+    text-transform: capitalize;
+}
 
 /* Sign in */
 
 .btn-logo {
     height: 1.5rem;
     aspect-ratio: 1/1;
+}
+
+/* Team */
+.teamTitle {
+}
+
+/* Profile */
+
+.profileBox {
+    display: flex;
+    align-items: flex-end;
+    gap: 0.4rem;
+}
+.teamsBox {
+    list-style-type: none;
+}
+
+.profileUsername {
+    padding: 0.3rem 0;
 }
