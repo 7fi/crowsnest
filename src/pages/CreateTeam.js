@@ -81,7 +81,7 @@ function TeamNameForm() {
         batch.set(teamnameDoc, { id: teamDoc.id })
 
         await batch.commit()
-        navigate(`/team/${teamnameValue}`)
+        navigate(`/crowsnest/team/${teamnameValue}`)
     }
 
     return (
@@ -96,14 +96,14 @@ function TeamNameForm() {
                         Choose
                     </button>
 
-                    <h3>Debug State</h3>
+                    {/* <h3>Debug State</h3>
                     <div>
                         Teamname: {teamnameValue}
                         <br />
                         Loading: {loading.toString()}
                         <br />
                         Valid Name: {isValid.toString()}
-                    </div>
+                    </div> */}
                 </form>
             </section>
         </>
@@ -115,7 +115,7 @@ function UsernameMessage({ teamname, isValid, loading }) {
         return <p>Checking...</p>
     } else if (isValid) {
         return <p className="text-success">{teamname} is available!</p>
-    } else if (teamname.length < 3) {
+    } else if (teamname.length < 3 && teamname.length > 0) {
         return <p className="text-danger">That teamname is too short!</p>
     } else if (teamname && !isValid) {
         return <p className="text-danger">That teamname is taken!</p>

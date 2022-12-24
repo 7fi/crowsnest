@@ -9,21 +9,25 @@ import Team from './pages/Team'
 import CreateTeam from './pages/CreateTeam'
 import { useUserData } from './lib/hooks'
 import { UserContext } from './lib/context'
+import { Toaster } from 'react-hot-toast'
+import { checkTheme } from './lib/hooks'
 
 export default function App() {
     const userData = useUserData()
+    checkTheme()
 
     return (
         <>
             <UserContext.Provider value={userData}>
                 <Navbar />
                 <Routes>
-                    <Route path="/" element={<Home />} />
-                    <Route path="/enter" element={<Enter />} />
-                    <Route path="/profile/:username" element={<Profile />} />
-                    <Route path="/team/:teamName" element={<Team />} />
-                    <Route path="/createteam" element={<CreateTeam />} />
+                    <Route path="/crowsnest/" element={<Home />} />
+                    <Route path="/crowsnest/enter" element={<Enter />} />
+                    <Route path="/crowsnest/profile/:username" element={<Profile />} />
+                    <Route path="/crowsnest/team/:teamName" element={<Team />} />
+                    <Route path="/crowsnest/createteam" element={<CreateTeam />} />
                 </Routes>
+                <Toaster />
             </UserContext.Provider>
         </>
     )

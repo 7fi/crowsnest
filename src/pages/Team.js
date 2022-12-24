@@ -18,14 +18,20 @@ export default function Team() {
         <main>
             <AuthCheck>
                 {/* <img src={team?.photoURL} alt="Profile Image" referrerPolicy="no-referrer" /> */}
-                <h1>{team?.teamName}</h1>
-                <h3>Members:</h3>
-                <ul>
-                    {team?.memberNames?.map((name) => (
-                        <li key={team?.members[team?.memberNames.indexOf(name)]}>{name}</li>
-                    ))}
-                </ul>
-                {team?.owner == user?.uid && <TeamControls />}
+                {Object.keys(team).length > 0 ? (
+                    <>
+                        <span className="teamTitle">{team?.teamName}</span>
+                        <h3>Members:</h3>
+                        <ul>
+                            {team?.memberNames?.map((name) => (
+                                <li key={team?.members[team?.memberNames.indexOf(name)]}>{name}</li>
+                            ))}
+                        </ul>
+                        {team?.owner == user?.uid && <TeamControls />}
+                    </>
+                ) : (
+                    <h1>Team not found!</h1>
+                )}
             </AuthCheck>
         </main>
     )

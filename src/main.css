@@ -1,15 +1,42 @@
 :root {
-    --headerCol: #333;
+    --highlight: #000;
+    --bg: #fff;
+    --component-bg: #eaeaea;
+    --component: #cfcfcf;
+    --border: #d1d1d1;
+    --highlight1: #12a5b1;
+    --highlight2: #203960;
+    --text: #000;
+    --danger: #f00;
+    --sucess: #0f0;
+
+    --radius: 7px;
+    --font: 'Roboto';
+}
+/* Dark mode */
+[data-theme='dark'] {
+    --highlight: #eaeaea;
+    --bg: #444;
+    --component-bg: #333;
+    --component: #555;
+    --border: #666;
+    --highlight1: #222;
+    --highlight2: #222;
+    --text: #eee;
+    --danger: #f00;
+    --sucess: #0f0;
 }
 
 body {
     margin: 0;
     padding: 0;
     margin-top: 75px;
+    font-family: var(--font), sans-serif;
+    background-color: var(--bg);
+    color: var(--text);
 }
-
 main {
-    padding: 1rem 10vw;
+    padding: 1rem;
 }
 
 a {
@@ -22,6 +49,31 @@ a {
     box-sizing: border-box;
 }
 img {
+    max-width: 100%;
+}
+
+button,
+input {
+    border: var(--border) 0.2rem solid;
+    border-radius: var(--radius);
+    background-color: transparent;
+    padding: 0.2rem;
+    color: inherit;
+}
+
+button {
+    cursor: pointer;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+button:hover {
+    background-color: var(--border);
+}
+button:disabled {
+    color: var(--component);
 }
 
 /* Navbar */
@@ -29,9 +81,10 @@ img {
 .navbar {
     position: fixed;
     top: 0;
+    padding: 1rem;
     width: 100%;
     height: 75px;
-    background-color: var(--headerCol);
+    background-color: var(--component-bg);
 }
 
 .navbar ul {
@@ -49,6 +102,15 @@ img {
     width: 50px;
     height: 50px;
     cursor: pointer;
+}
+
+.navRight li {
+    margin: 0.2rem;
+}
+
+.siteTitle {
+    font-size: 2rem;
+    font-weight: 700;
 }
 
 /* Loader */
@@ -69,4 +131,19 @@ img {
     100% {
         transform: rotate(360deg);
     }
+}
+
+/* Text */
+.text-danger {
+    color: var(--danger);
+}
+.text-sucess {
+    color: var(--sucess);
+}
+
+/* Sign in */
+
+.btn-logo {
+    height: 1.5rem;
+    aspect-ratio: 1/1;
 }

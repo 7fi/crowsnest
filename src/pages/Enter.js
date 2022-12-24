@@ -1,8 +1,8 @@
-import { GoogleAuthProvider, signInWithPopup, getAuth, signOut } from 'firebase/auth'
 import { useContext, useState, useCallback, useEffect } from 'react'
 import { UserContext } from '../lib/context'
 import { getDoc, getFirestore, doc, writeBatch } from 'firebase/firestore'
 import debounce from 'lodash.debounce'
+import SignInButton from '../components/SignInButton'
 import SignOutButton from '../components/SignOutButton'
 
 export default function Enter() {
@@ -10,19 +10,6 @@ export default function Enter() {
     console.log(user, username)
 
     return <main>{user ? !username ? <UsernameForm /> : <SignOutButton /> : <SignInButton />}</main>
-}
-
-function SignInButton() {
-    const signInWithGoogle = async () => {
-        const provider = new GoogleAuthProvider()
-        const auth = getAuth()
-        await signInWithPopup(auth, provider)
-    }
-    return (
-        <button className="btn-google" onClick={signInWithGoogle}>
-            <img src={'/google.png'} alt="google logo" /> Sign in with Google
-        </button>
-    )
 }
 
 function UsernameForm() {
