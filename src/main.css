@@ -1,216 +1,228 @@
 :root {
-    --highlight: #000;
-    --bg: #fff;
-    --component-bg: #eaeaea;
-    --component: #cfcfcf;
-    --border: #d1d1d1;
-    --highlight1: #12a5b1;
-    --highlight2: #203960;
-    --text: #000;
-    --danger: #f00;
-    --sucess: #0f0;
+  --highlight: #000;
+  --bg: #fff;
+  --component-bg: #eaeaea;
+  --border: #d1d1d1;
+  --highlight1: #12a5b1;
+  --highlight2: #203960;
+  --text: #000;
+  --danger: #f00;
+  --sucess: rgb(62, 225, 62);
 
-    --radius: 7px;
-    --font: 'Roboto';
+  --radius: 7px;
+  --font: 'Roboto';
 }
 /* Dark mode */
 [data-theme='dark'] {
-    --highlight: #eaeaea;
-    --bg: #171717;
-    --component-bg: #202020;
-    --component: #353535;
-    --border: #363636;
-    --highlight1: #222;
-    --highlight2: #222;
-    --text: #eee;
-    --danger: #f00;
-    --sucess: #0f0;
+  --highlight: #eaeaea;
+  --bg: #171717;
+  --component-bg: #202020;
+  --border: #363636;
+  --highlight1: #222;
+  --highlight2: #222;
+  --text: #eee;
+}
+[data-theme='red'] {
+  --highlight: #eaeaea;
+  --bg: #801010;
+  --component-bg: #ba1717;
+  --border: #ff3a3a;
+  --highlight1: #222;
+  --highlight2: #222;
+  --text: #000;
 }
 
 body {
-    margin: 0;
-    padding: 0;
-    margin-top: 75px;
-    font-family: var(--font), sans-serif;
-    background-color: var(--bg);
-    color: var(--text);
+  margin: 0;
+  padding: 0;
+  margin-top: 75px;
+  font-family: var(--font), sans-serif;
+  background-color: var(--bg);
+  color: var(--text);
 }
 main {
-    padding: 1rem;
+  padding: 1rem;
 }
 
 a {
-    color: inherit;
-    text-decoration: none;
-    cursor: pointer;
+  color: inherit;
+  text-decoration: none;
+  cursor: pointer;
 }
 
 * {
-    box-sizing: border-box;
+  box-sizing: border-box;
 }
 img {
-    max-width: 100%;
+  max-width: 100%;
 }
 
 button,
 input {
-    border: var(--border) 0.2rem solid;
-    border-radius: var(--radius);
-    background-color: transparent;
-    padding: 0.2rem;
-    color: inherit;
+  border: var(--border) 0.2rem solid;
+  border-radius: var(--radius);
+  background-color: transparent;
+  padding: 0.2rem;
+  color: inherit;
 }
 
 button {
-    cursor: pointer;
-    text-align: center;
-    display: flex;
-    align-items: center;
-    gap: 0.3rem;
+  cursor: pointer;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
 }
 
 button:hover {
-    background-color: var(--border);
+  background-color: var(--border);
 }
 button:disabled {
-    color: var(--component);
+  color: var(--component);
 }
 
 .contentBox {
-    border: var(--border) 0.2rem solid;
-    border-radius: var(--radius);
-    background-color: var(--component-bg);
-    padding: 1rem;
-    margin: 0.5rem;
+  border: var(--border) 0.2rem solid;
+  border-radius: var(--radius);
+  background-color: var(--component-bg);
+  padding: 1rem;
+  margin: 0.5rem;
+}
+.flexRowContainer {
+  display: flex;
+  flex-direction: row;
+  gap: 0.3rem;
 }
 
 /* Navbar */
 
 .navbar {
-    position: fixed;
-    top: 0;
-    padding: 1rem;
-    width: 100%;
-    height: 75px;
-    background-color: var(--component-bg);
-    border-bottom: 0.2rem solid var(--border);
+  position: fixed;
+  top: 0;
+  padding: 1rem;
+  width: 100%;
+  height: 75px;
+  background-color: var(--component-bg);
+  border-bottom: 0.2rem solid var(--border);
 }
 
 .navbar ul {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    height: 100%;
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
 }
 
 .navbar img {
-    border-radius: 50%;
-    width: 50px;
-    height: 50px;
-    cursor: pointer;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  cursor: pointer;
 }
 
 .navRight li {
-    margin: 0.2rem;
+  margin: 0.2rem;
 }
 
 /* Loader */
 
 .loader {
-    border: 10px solid var(--color-bg);
-    border-top: 10px solid var(--color-blue);
-    border-radius: 50%;
-    width: 50px;
-    height: 50px;
-    animation: spin 2s linear infinite;
+  border: 10px solid var(--color-bg);
+  border-top: 10px solid var(--color-blue);
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 2s linear infinite;
 }
 
 @keyframes spin {
-    0% {
-        transform: rotate(0deg);
-    }
-    100% {
-        transform: rotate(360deg);
-    }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 /* Text */
 .text-danger {
-    color: var(--danger);
+  color: var(--danger);
+  font-weight: 700;
 }
 .text-sucess {
-    color: var(--sucess);
+  color: var(--sucess);
+  font-weight: 700;
 }
 .text-title {
-    font-size: 2rem;
-    font-weight: 700;
+  font-size: 2rem;
+  font-weight: 700;
 }
 .text-subtitle {
-    font-size: 1.2rem;
-    /* font-weight: ; */
-    color: var(--highlight1);
+  font-size: 1.2rem;
+  /* font-weight: ; */
+  color: var(--highlight1);
 }
 .text-titlecase {
-    text-transform: capitalize;
+  text-transform: capitalize;
 }
 
 /* Sign in */
 
 .btn-logo {
-    height: 1.5rem;
-    aspect-ratio: 1/1;
+  height: 1.5rem;
+  aspect-ratio: 1/1;
 }
 .emailForm {
-    display: flex;
-    flex-direction: row;
-    gap: 0.3rem;
+  display: flex;
+  flex-direction: row;
+  gap: 0.3rem;
 }
 
 /* Team */
 
 .teamMember {
-    display: flex;
-    gap: 0.3rem;
-    align-items: center;
-    padding: 0.3rem;
+  display: flex;
+  gap: 0.3rem;
+  align-items: center;
+  padding: 0.3rem;
 }
 .memberList {
-    margin: 0;
-    padding: 0;
-    list-style: none;
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
 .requestsList {
-    margin: 0;
-    padding: 0;
-    list-style: none;
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
 .request {
-    display: flex;
-    align-items: center;
-    gap: 0.3rem;
-    padding: 0.3rem;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.3rem;
 }
 
 .teamsList {
-    list-style: none;
-    padding: 0;
-    margin: 0;
+  list-style: none;
+  padding: 0;
+  margin: 0.5rem;
 }
 
 /* Profile */
 
 .profileBox {
-    display: flex;
-    align-items: flex-end;
-    gap: 0.4rem;
+  display: flex;
+  align-items: flex-end;
+  gap: 0.4rem;
 }
 .teamsBox {
-    list-style-type: none;
+  list-style-type: none;
 }
 
 .profileUsername {
-    padding: 0.3rem 0;
+  padding: 0.3rem 0;
 }

@@ -15,25 +15,25 @@ import NotFound from './pages/NotFound'
 import Teams from './pages/Teams'
 
 export default function App() {
-    const userData = useUserData()
-    checkTheme()
+  const userData = useUserData()
+  checkTheme()
 
-    return (
-        <>
-            <UserContext.Provider value={userData}>
-                <Navbar />
-                <Routes>
-                    <Route path="/crowsnest/" element={<Home />} />
-                    <Route path="/crowsnest/enter" element={<Enter />} />
-                    <Route path="/crowsnest/profile/:profileName" element={<Profile />} />
-                    {/* <Route path="/crowsnest/profile" element={<Navigate to={`/crowsnest/profile/${userData.username}`} />} /> */}
-                    <Route path="/crowsnest/team/:teamName" element={<Team />} />
-                    <Route path="/crowsnest/teams" element={<Teams />} />
-                    <Route path="/crowsnest/createteam" element={<CreateTeam />} />
-                    <Route path="/crowsnest/:text" element={<NotFound />} />
-                </Routes>
-                <Toaster position="bottom-right" reverseOrder={false} />
-            </UserContext.Provider>
-        </>
-    )
+  return (
+    <>
+      <UserContext.Provider value={userData}>
+        <Navbar />
+        <Routes>
+          <Route path='/crowsnest/' element={<Home />} />
+          <Route path='/crowsnest/enter' element={<Enter />} />
+          <Route path='/crowsnest/profile/:profileName' element={<Profile />} />
+          {/* <Route path="/crowsnest/profile" element={<Navigate to={`/crowsnest/profile/${userData.username}`} />} /> */}
+          <Route path='/crowsnest/team/:teamName' element={<Team />} />
+          <Route path='/crowsnest/teams' element={<Teams />} />
+          <Route path='/crowsnest/createteam' element={<CreateTeam />} />
+          <Route path='/crowsnest/:text' element={<NotFound />} />
+        </Routes>
+        <Toaster position='top-center' reverseOrder={false} />
+      </UserContext.Provider>
+    </>
+  )
 }
