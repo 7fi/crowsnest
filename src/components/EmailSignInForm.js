@@ -12,31 +12,27 @@ export default function EmailSignInForm() {
 
   const onChangePswd = (e) => {
     const password = e.target.value
-    //8 characters, 1 capital, 1 lowercase, 1 number
-    // var passwordRegExp = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/
-    // if (passwordRegExp.test(password)) {
-    //   setPasswordValue(password)
-    //   setIsValidPassword(true)
-    // } else if (password.length < 25) {
-    //   setPasswordValue(password)
-    //   setIsValidPassword(false)
-    // } else {
-    //     setIsValidPassword(false)
-    // }
-    setPasswordValue(password)
-    setIsValidPassword(true)
+    // 8 characters, 1 capital, 1 lowercase, 1 number
+    var passwordRegExp = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/
+    if (passwordRegExp.test(password)) {
+      setPasswordValue(password)
+      setIsValidPassword(true)
+    } else if (password.length < 25) {
+      setPasswordValue(password)
+      setIsValidPassword(false)
+    } else {
+      setIsValidPassword(false)
+    }
   }
   const onChangeEmail = (e) => {
     const email = e.target.value.toLowerCase()
-    // if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)) {
-    //   setEmailValue(email)
-    //   setIsValidEmail(true)
-    // } else {
-    //   setEmailValue(email)
-    //   setIsValidEmail(false)
-    // }
-    setEmailValue(email)
-    setIsValidEmail(true)
+    if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)) {
+      setEmailValue(email)
+      setIsValidEmail(true)
+    } else {
+      setEmailValue(email)
+      setIsValidEmail(false)
+    }
   }
 
   const onCreate = async () => {
