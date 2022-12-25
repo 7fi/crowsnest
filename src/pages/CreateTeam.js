@@ -9,7 +9,9 @@ export default function Enter() {
     return (
         <main>
             <AuthCheck>
-                <TeamNameForm />
+                <div className="contentBox">
+                    <TeamNameForm />
+                </div>
             </AuthCheck>
         </main>
     )
@@ -92,7 +94,7 @@ function TeamNameForm() {
                     <input name="Team Name" placeholder="Unique Team Name" value={teamnameValue} onChange={onChangeTeamname}></input>
                     <input name="Team Home" placeholder="Team Home City" value={teamHomeValue} onChange={onChangeTeamHome}></input>
                     <UsernameMessage teamname={teamnameValue} isValid={isValid} loading={loading} />
-                    <button type="submit" className="btn-green" disabled={!isValid}>
+                    <button type="submit" className="btn-green" disabled={!isValid || teamHomeValue.length < 3}>
                         Choose
                     </button>
 

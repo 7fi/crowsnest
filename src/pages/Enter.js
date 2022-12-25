@@ -2,14 +2,30 @@ import { useContext, useState, useCallback, useEffect } from 'react'
 import { UserContext } from '../lib/context'
 import { getDoc, getFirestore, doc, writeBatch } from 'firebase/firestore'
 import debounce from 'lodash.debounce'
-import SignInButton from '../components/SignInButton'
+import GoogleSignInButton from '../components/GoogleSignInButton'
 import SignOutButton from '../components/SignOutButton'
+import EmailSignInForm from '../components/EmailSignInForm'
 
 export default function Enter() {
     const { user, username } = useContext(UserContext)
     console.log(user, username)
 
-    return <main>{user ? !username ? <UsernameForm /> : <SignOutButton /> : <SignInButton />}</main>
+    return (
+        <main>
+            {user ? (
+                !username ? (
+                    <UsernameForm />
+                ) : (
+                    <SignOutButton />
+                )
+            ) : (
+                <>
+                    <EmailSignInForm />
+                    <GoogleSignInButton />
+                </>
+            )}
+        </main>
+    )
 }
 
 function UsernameForm() {

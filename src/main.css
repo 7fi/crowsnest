@@ -16,10 +16,10 @@
 /* Dark mode */
 [data-theme='dark'] {
     --highlight: #eaeaea;
-    --bg: #444;
-    --component-bg: #333;
-    --component: #555;
-    --border: #666;
+    --bg: #171717;
+    --component-bg: #202020;
+    --component: #353535;
+    --border: #363636;
     --highlight1: #222;
     --highlight2: #222;
     --text: #eee;
@@ -163,9 +163,41 @@ button:disabled {
     height: 1.5rem;
     aspect-ratio: 1/1;
 }
+.emailForm {
+    display: flex;
+    flex-direction: row;
+    gap: 0.3rem;
+}
 
 /* Team */
-.teamTitle {
+
+.teamMember {
+    display: flex;
+    gap: 0.3rem;
+    align-items: center;
+    padding: 0.3rem;
+}
+.memberList {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+.requestsList {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+.request {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.3rem;
+}
+
+.teamsList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
 }
 
 /* Profile */

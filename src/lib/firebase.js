@@ -21,7 +21,7 @@ const db = getFirestore()
 const getUserWithUsername = async (username) => {
     const q = query(collection(db, 'users'), where('username', '==', username))
     let doc = (await getDocs(q)).docs[0]
-    return doc.data()
+    return { tempuser: doc.data(), uid: doc.id }
 }
 const getTeamWithName = async (teamName) => {
     const q = query(collection(db, 'teams'), where('teamName', '==', teamName))

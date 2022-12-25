@@ -29,17 +29,17 @@ export default function Navbar() {
                     {username && (
                         <>
                             <li>
-                                <NavLink to="/crowsnest/createteam">
-                                    <button>Create Team</button>
-                                </NavLink>
+                                <Link to="/crowsnest/teams">
+                                    <button>Teams</button>
+                                </Link>
                             </li>
                             <li>
                                 <SignOutButton />
                             </li>
                             <li>
-                                <NavLink to={`/crowsnest/profile/${username}`}>
+                                <Link to={`/crowsnest/profile/${username}`}>
                                     <img src={user?.photoURL} alt={username} referrerPolicy="no-referrer" className="btn" />
-                                </NavLink>
+                                </Link>
                             </li>
                         </>
                     )}
