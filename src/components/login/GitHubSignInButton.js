@@ -6,7 +6,7 @@ export default function GitHubSignInButton() {
     const provider = new GithubAuthProvider()
     const auth = getAuth()
     await signInWithPopup(auth, provider).catch((error) => {
-      toast.error(error.toString().split('..at')[0].split('Error')[2])
+      toast.error(error.toString())
     })
   }
   return (

@@ -7,7 +7,7 @@
   --highlight2: #203960;
   --text: #000;
   --danger: #f00;
-  --sucess: rgb(62, 225, 62);
+  --sucess: #3ee13e;
 
   --radius: 7px;
   --font: 'Roboto';
@@ -77,8 +77,10 @@ button {
 button:hover {
   background-color: var(--border);
 }
+
 button:disabled {
-  color: var(--component);
+  color: var(--text);
+  /* border-color: var(--border); */
 }
 
 .contentBox {
@@ -92,6 +94,7 @@ button:disabled {
   display: flex;
   flex-direction: row;
   gap: 0.3rem;
+  align-items: center;
 }
 
 /* Navbar */
@@ -104,6 +107,7 @@ button:disabled {
   height: 75px;
   background-color: var(--component-bg);
   border-bottom: 0.2rem solid var(--border);
+  z-index: 10;
 }
 
 .navbar ul {
@@ -168,6 +172,10 @@ button:disabled {
 .text-titlecase {
   text-transform: capitalize;
 }
+.text-bg {
+  position: absolute;
+  display: inline;
+}
 
 /* Sign in */
 
@@ -225,4 +233,117 @@ button:disabled {
 
 .profileUsername {
   padding: 0.3rem 0;
+}
+
+/* Pairs */
+
+.pairing {
+  margin: 0 0.3rem 0.3rem 0;
+}
+
+.nameSlot {
+  border: 0.2rem solid var(--border);
+  border-radius: var(--radius);
+  /* padding: 0.3rem; */
+  width: 100%;
+  height: 2.8rem;
+  display: flex;
+}
+
+.pairSlots {
+  position: absolute;
+  width: calc(50% - 1rem);
+  /* overflow-y: scroll; */
+  /* height: 58.5rem; */
+  /* grid-area: left; */
+  margin: 1rem 0 1rem 1rem;
+  padding-bottom: 0.7rem;
+}
+.nameList {
+  border: 0.2rem solid var(--border);
+  border-radius: var(--radius);
+  /* max-height: calc(100% - 80px - 2rem); */
+  position: fixed;
+  width: calc(50% - 1rem);
+  right: 0;
+  margin: 1rem 1rem 1rem 0;
+  height: calc(100% - 75px - 2rem);
+  padding: 0.3rem;
+}
+.nameList .name {
+  margin: 0.2rem;
+  width: calc(33% - 0.4rem);
+  color: var(--highlight);
+}
+.nameSlot .name {
+  z-index: 1;
+  margin: 0.2rem;
+  align-self: flex-start;
+  flex-grow: 1;
+}
+
+.pairWindow {
+  display: grid;
+  width: 100%;
+  /* justify-content: stretch; */
+  grid-template-columns: 1fr 1fr;
+}
+.name {
+  cursor: grab;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  position: relative;
+  /* background-color: var(--med); */
+  border: var(--border) 0.2rem solid;
+  text-align: center;
+  font-family: inherit;
+  /* font-weight: 700; */
+  font-style: normal;
+  font-size: 1.2em;
+  height: 2rem;
+  padding: 5px;
+  border-radius: var(--radius);
+  overflow-y: hidden;
+  white-space: nowrap;
+}
+.name:hover {
+  background-color: inherit;
+}
+
+.pairing[boatDisplay='false'] > :nth-child(2) .slotName {
+  /* content: 'Skipper'; */
+  color: var(--highlight2);
+  border-color: var(--highlight2);
+}
+.pairing > :nth-child(2) .name {
+  color: var(--highlight2);
+  border-color: var(--highlight) 2;
+}
+.pairing > :nth-child(3) .slotName {
+  /* content: 'Crew'; */
+  color: var(--highlight1);
+  border-color: var(--highlight1);
+}
+.pairing > :nth-child(3) .name {
+  color: var(--highlight1);
+  border-color: var(--highlight1);
+  background-color: var(--medDark);
+}
+.pairing > :nth-child(4) .slotName {
+  /* content: 'Rotating'; */
+  color: var(--highlight2);
+  border-color: var(--highlight2);
+}
+.pairing > :nth-child(4) .name {
+  color: var(--highlight2);
+  border-color: var(--highlight2);
+  background-color: var(--medDark);
+}
+
+.slotName {
+  padding: 0.5rem;
+  padding: 0.7rem;
+  font-size: 0.8rem;
 }

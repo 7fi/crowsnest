@@ -6,7 +6,7 @@ import { UserContext } from '../lib/context'
 import { useContext } from 'react'
 import { toast } from 'react-hot-toast'
 
-import { Firestore, updateDoc, doc, getFirestore, getDoc, arrayUnion, arrayRemove } from 'firebase/firestore'
+import { updateDoc, doc, getFirestore, arrayUnion, arrayRemove, getDoc } from 'firebase/firestore'
 import { FaTrash } from 'react-icons/fa'
 
 export default function Team() {
@@ -25,6 +25,8 @@ export default function Team() {
   }, [memberNames])
 
   // console.log(teamID)
+  console.log(team?.members)
+  if (team?.members) console.log(team?.members.find((u) => user?.uid == u.uid))
 
   return (
     <main>
@@ -32,8 +34,11 @@ export default function Team() {
         {/* <img src={team?.photoURL} alt="Profile Image" referrerPolicy="no-referrer" /> */}
         {Object.keys(team).length > 0 ? (
           <>
-            <div className='contentBox'>
+            <div className='contentBox flexRowContainer'>
               <span className='text-title text-titlecase'>{team?.teamName}</span>
+              <Link to={`/crowsnest/team/${team?.teamName}/pairs`}>
+                <button>Pairs</button>
+              </Link>
             </div>
             <div className='contentBox'>
               <h3>Members:</h3>
@@ -81,16 +86,16 @@ export default function Team() {
                 ))}
               </ul>
             </div>
-            {team?.members.includes(user?.uid) && (
+            {team?.members.find((u) => user?.uid == u.uid) != undefined && (
               <div className='contentBox'>
-                <button className='text-danger' onClick={() => deleteMember(teamID, user?.uid, userVals.displayName, setMemeberNames)}>
+                <button className='text-danger' onClick={() => deleteMember(teamID, user?.uid, team?.members, setMemeberNames)}>
                   Leave Team
                 </button>
               </div>
             )}
 
             {team?.owner == user?.uid && <TeamControls team={team} teamID={teamID} teamName={teamName} setMemeberNames={setMemeberNames} />}
-            {!(team?.owner == user?.uid) && !team?.members.includes(user?.uid) && (
+            {!(team?.owner == user?.uid) && !team?.members.some((u) => user?.uid == u.uid) && (
               <div className='contentBox'>
                 <button
                   onClick={() => {
@@ -125,32 +130,8 @@ function TeamControls({ team, teamID, teamName, setMemeberNames }) {
               <button
                 className='text-sucess'
                 onClick={() => {
-                  toast(
-                    (t) => (
-                      <div>
-                        Accept request?
-                        <div className='flexRowContainer'>
-                          <button
-                            onClick={() => {
-                              toast.dismiss(t.id)
-                              toast.error('Cancelled')
-                            }}>
-                            Cancel
-                          </button>
-                          <button
-                            onClick={() => {
-                              acceptRequest(request, teamID, teamName, setMemeberNames)
-                              toast.dismiss(t.id)
-                              toast.success('Request accepted!')
-                            }}
-                            className='text-sucess'>
-                            Accept!
-                          </button>
-                        </div>
-                      </div>
-                    )
-                    // { position: 'top-center' }
-                  )
+                  acceptRequest(request, teamID, teamName, setMemeberNames)
+                  toast.success('Request accepted!')
                 }}>
                 Accept
               </button>
@@ -216,11 +197,13 @@ async function denyRequest(request, teamID, setMemeberNames) {
 async function requestTeam(teamID, uid, username, displayName) {
   const db = getFirestore()
   let d = doc(db, `teams/${teamID}`)
-  console.log(uid, username, displayName)
-  await updateDoc(d, { requests: arrayUnion({ userId: uid, username: username, displayName: displayName }) })
+  let docSnap = (await getDoc(d)).data()
+  // console.log(uid, username, displayName)
+  if (docSnap.members.find((m) => uid == m.uid) == undefined) await updateDoc(d, { requests: arrayUnion({ userId: uid, username: username, displayName: displayName }) })
 }
 
 async function deleteMember(teamID, uid, members, setMemeberNames) {
+  console.log(members)
   const db = getFirestore()
   let d = doc(db, `teams/${teamID}`)
   await updateDoc(d, { members: arrayRemove(members.find((item) => item.uid == uid)) })

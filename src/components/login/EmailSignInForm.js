@@ -1,6 +1,7 @@
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { toast } from 'react-hot-toast'
 
 export default function EmailSignInForm() {
   const [emailValue, setEmailValue] = useState('')
@@ -44,9 +45,8 @@ export default function EmailSignInForm() {
       .catch((error) => {
         // const errorCode = error.code
         // const errorMessage = error.message
-        console.error(error)
+        toast.error(error.message)
       })
-    navigate('/crowsnest/')
   }
 
   const onSignin = async () => {
@@ -58,7 +58,7 @@ export default function EmailSignInForm() {
       .catch((error) => {
         // const errorCode = error.code
         // const errorMessage = error.message
-        console.error(error)
+        toast.error(error.message)
       })
     navigate('/crowsnest/')
   }

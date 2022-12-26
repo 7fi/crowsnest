@@ -1,5 +1,5 @@
 import AuthCheck from '../components/AuthCheck'
-import SignOutButton from '../components/SignOutButton'
+import SignOutButton from '../components/login/SignOutButton'
 import { Link, useParams } from 'react-router-dom'
 import { getUserWithUsername } from '../lib/firebase'
 import { useEffect, useState, useContext } from 'react'
