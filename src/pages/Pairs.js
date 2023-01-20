@@ -14,20 +14,22 @@ export default function Page() {
     })
   }, [])
 
-  console.log(team?.members)
+  // console.log(team?.members?.length)
 
   return (
     <>
-      <div className='pairSlots'>
-        {[...Array(Math.ceil(team?.members?.length / 2) || 1)].map((e, i) => (
+      <div className='pairSlots'>{team?.members && [...Array(Math.ceil(team?.members?.length / 2) || 1)].map((e, i) => <Pairing />)}</div>
+      <div className='nameList'>{team?.members && [...Array(team?.members?.length || 1)].map((e, i) => <Name name={team?.members[i]?.displayName} />)}</div>
+      {/* <div className='pairSlots'>
+        {[...Array(15)].map((e, i) => (
           <Pairing />
         ))}
       </div>
       <div className='nameList'>
-        {[...Array(team?.members?.length)].map((e, i) => (
-          <Name name={team?.members[i]?.displayName} />
+        {[...Array(25)].map((e, i) => (
+          <Name name={'TEst'} />
         ))}
-      </div>
+      </div> */}
     </>
   )
 }

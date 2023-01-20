@@ -14,6 +14,7 @@ import CreateTeam from './pages/CreateTeam'
 import NotFound from './pages/NotFound'
 import Teams from './pages/Teams'
 import Pairs from './pages/Pairs'
+import Scores from './pages/Scores'
 
 export default function App() {
   const userData = useUserData()
@@ -32,6 +33,7 @@ export default function App() {
           <Route path='/crowsnest/teams' element={<Teams />} />
           <Route path='/crowsnest/createteam' element={<CreateTeam />} />
           <Route path='/crowsnest/team/:teamName/pairs' element={<Pairs />} />
+          <Route path='/crowsnest/scores' element={<Scores />} />
           <Route path='/crowsnest/:text' element={<NotFound />} />
         </Routes>
         <Toaster position='top-center' reverseOrder={false} />

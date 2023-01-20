@@ -1,6 +1,7 @@
 import { initializeApp } from 'firebase/app'
 import { getAnalytics } from 'firebase/analytics'
 import { getFirestore, collection, where, query, limit, getDocs } from 'firebase/firestore'
+import { getFunctions, httpsCallable } from 'firebase/functions'
 
 const firebaseConfig = {
   apiKey: 'AIzaSyDbkwUsSlVAYxbLycxj9MRge1W0bkz8Bew',
@@ -18,6 +19,9 @@ const app = initializeApp(firebaseConfig)
 const analytics = getAnalytics(app)
 const db = getFirestore()
 
+const functions = getFunctions()
+const getSchools = httpsCallable(functions, 'getSchools')
+
 const getUserWithUsername = async (username) => {
   const q = query(collection(db, 'users'), where('username', '==', username))
   let doc = (await getDocs(q)).docs[0]
@@ -29,4 +33,15 @@ const getTeamWithName = async (teamName) => {
   return { data: doc.data(), id: doc.id }
 }
 
-export { app, getUserWithUsername, getTeamWithName }
+const getTeamList = async (district) => {
+  const docSnaps = await getDocs(db, 'techscoreTeamlist')
+  console.log(docSnaps)
+}
+
+const scrapeTeamList = async (district) => {
+  let schools = await getSchools({ district: 'NWISA' })
+  console.log(schools.data)
+  return { data: schools.data }
+}
+
+export { app, getUserWithUsername, getTeamWithName, getTeamList, scrapeTeamList }

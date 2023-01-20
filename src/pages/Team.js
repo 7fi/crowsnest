@@ -1,12 +1,12 @@
 import AuthCheck from '../components/AuthCheck'
 import { getTeamWithName } from '../lib/firebase'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useParams, useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import { UserContext } from '../lib/context'
 import { useContext } from 'react'
 import { toast } from 'react-hot-toast'
 
-import { updateDoc, doc, getFirestore, arrayUnion, arrayRemove, getDoc } from 'firebase/firestore'
+import { updateDoc, doc, getFirestore, arrayUnion, arrayRemove, getDoc, deleteDoc } from 'firebase/firestore'
 import { FaTrash } from 'react-icons/fa'
 
 export default function Team() {
@@ -117,6 +117,8 @@ export default function Team() {
 
 function TeamControls({ team, teamID, teamName, setMemeberNames }) {
   console.log(teamID)
+  const navigate = useNavigate()
+
   return (
     <div className='contentBox'>
       <h3>Admin Controls:</h3>
@@ -172,7 +174,36 @@ function TeamControls({ team, teamID, teamName, setMemeberNames }) {
         })}
       </ul>
       {/* <button>Add member</button> */}
-      <button className='text-danger'>Delete team</button>
+      <button
+        className='text-danger'
+        onClick={() => {
+          toast((t) => (
+            <div>
+              Delete team?
+              <div className='flexRowContainer'>
+                <button
+                  onClick={() => {
+                    toast.dismiss(t.id)
+                    toast.error('Cancelled')
+                  }}>
+                  Cancel
+                </button>
+                <button
+                  onClick={async () => {
+                    await deleteTeam(teamID)
+                    toast.dismiss(t.id)
+                    toast.success('Team deleted!')
+                    navigate('/crowsnest/teams')
+                  }}
+                  className='text-danger'>
+                  Delete!
+                </button>
+              </div>
+            </div>
+          ))
+        }}>
+        Delete team
+      </button>
     </div>
   )
 }
@@ -208,4 +239,12 @@ async function deleteMember(teamID, uid, members, setMemeberNames) {
   let d = doc(db, `teams/${teamID}`)
   await updateDoc(d, { members: arrayRemove(members.find((item) => item.uid == uid)) })
   setMemeberNames([])
+}
+async function deleteTeam(teamID) {
+  const db = getFirestore()
+  let d = doc(db, `teams/${teamID}`)
+  let docSnap = (await getDoc(d)).data()
+  await deleteDoc(d)
+  d = doc(db, `teamnames/${docSnap.teamName}`)
+  await deleteDoc(d)
 }
