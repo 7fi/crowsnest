@@ -4,6 +4,8 @@ const axios = require('axios')
 const admin = require('firebase-admin')
 admin.initializeApp()
 
+const db = admin.firestore()
+
 class person {
   constructor(name, team, home, races) {
     this.name = name
@@ -212,4 +214,19 @@ exports.getRegattaData = functions.https.onCall(async (data, ctx) => {
     }
   }
   return people
+})
+
+exports.scrapeToDB = functions.https.onCall(async (data, ctx) => {
+  console.log('Hi')
+  const colRef = db.collection('techscoreTeams')
+  const docs = docRef.get().then((doc) => {
+    if (!doc.exists) {
+      console.log('No such document!')
+      return res.send('Not Found')
+    }
+    console.log(doc.data())
+    return res.send(doc.data())
+  })
+  console.log(docSnaps)
+  return docSnaps?.data
 })
