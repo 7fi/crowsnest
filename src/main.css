@@ -83,6 +83,12 @@ button:disabled {
   /* border-color: var(--border); */
 }
 
+select {
+  border-radius: var(--radius);
+  background-color: transparent;
+  border: var(--border) 0.2rem solid;
+}
+
 .contentBox {
   border: var(--border) 0.2rem solid;
   border-radius: var(--radius);

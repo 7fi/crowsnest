@@ -1,6 +1,6 @@
 import { initializeApp } from 'firebase/app'
 import { getAnalytics } from 'firebase/analytics'
-import { getFirestore, collection, where, query, limit, getDocs } from 'firebase/firestore'
+import { getFirestore, collection, where, query, doc, getDocs, setDoc, getCountFromServer, documentId } from 'firebase/firestore'
 import { getFunctions, httpsCallable } from 'firebase/functions'
 
 const firebaseConfig = {
@@ -21,6 +21,7 @@ const db = getFirestore()
 
 const functions = getFunctions()
 const getSchools = httpsCallable(functions, 'getSchools')
+const getRegattas = httpsCallable(functions, 'getRegattas')
 
 const getUserWithUsername = async (username) => {
   const q = query(collection(db, 'users'), where('username', '==', username))
@@ -34,14 +35,34 @@ const getTeamWithName = async (teamName) => {
 }
 
 const getTeamList = async (district) => {
-  const docSnaps = await getDocs(db, 'techscoreTeamlist')
+  const docSnaps = await getDocs(collection(db, 'techscoreTeams'))
   console.log(docSnaps)
+  return docSnaps
 }
 
-const scrapeTeamList = async (district) => {
+async function docExists(id, col) {
+  const snap = await getCountFromServer(query(collection(db, col), where(documentId(), '==', id)))
+  return !!snap.data().count
+}
+
+const scrapeTeamListToDb = async (district, seasons) => {
   let schools = await getSchools({ district: 'NWISA' })
+  // console.log(await getRegattas({ schoolLink: schools.data['Bainbridge High School'], season: seasons[0] }))
   console.log(schools.data)
+  Object.keys(schools.data).forEach(async (school) => {
+    // if (!(await docExists(school, 'techscoreTeams'))) {
+    let regattas = {}
+    // console.log(`https://scores.hssailing.org${schools.data[school]}${season}`)
+    regattas[seasons[0]] = await (await getRegattas({ schoolLink: schools.data[school], season: seasons[0] })).data
+    console.log(regattas)
+    await setDoc(doc(db, 'techscoreTeams', school), {
+      regattas: regattas,
+    })
+    // } else {
+    //   console.log('doc exists')
+    // }
+  })
   return { data: schools.data }
 }
 
-export { app, getUserWithUsername, getTeamWithName, getTeamList, scrapeTeamList }
+export { app, getUserWithUsername, getTeamWithName, getTeamList, scrapeTeamListToDb }

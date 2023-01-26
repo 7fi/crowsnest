@@ -1,8 +1,9 @@
 import { Chart as ChartJS, LinearScale, PointElement, LineElement, Tooltip, Legend } from 'chart.js'
 import { Scatter } from 'react-chartjs-2'
 import RegattaData from '../components/scores/RegattaData'
-import { scrapeTeamList } from '../lib/firebase'
-import { useEffect } from 'react'
+import { scrapeTeamListToDb, getTeamList } from '../lib/firebase'
+import { useEffect, useState } from 'react'
+import { collection, getDocs, getFirestore } from 'firebase/firestore'
 
 // async function updateGraph() {
 //   let prev = 0
@@ -151,7 +152,11 @@ import { useEffect } from 'react'
 // }
 
 export default function Scores() {
+  const db = getFirestore()
+  const seasons = ['f22']
+
   ChartJS.register(LinearScale, PointElement, LineElement, Tooltip, Legend)
+  const [teams, setTeams] = useState([])
 
   const options = {
     scales: {
@@ -176,14 +181,34 @@ export default function Scores() {
   }
 
   useEffect(() => {
-    scrapeTeamList().then(({ data }) => {
-      console.log(data)
+    // scrapeTeamListToDb('NWISA', seasons).then(({ data }) => {
+    //   console.log(data)
+    // })
+  }, [])
+
+  useEffect(() => {
+    getTeamList().then((docs) => {
+      // docs.forEach((doc) => console.log(doc.data()))
+      let tempDocs = []
+      docs.forEach((doc) => {
+        tempDocs.push(doc.id)
+      })
+      setTeams(tempDocs)
+      console.log(teams)
     })
+    // getDocs(collection(db, 'techscoreTeamlist')).then((docs) => {
+    //   // docs.forEach((doc) => console.log(doc.data()))
+    //   let tempDocs = []
+    //   docs.forEach((doc) => {
+    //     tempDocs.push(doc.id)
+    //   })
+    //   setTeams(tempDocs)
+    // })
   }, [])
 
   return (
     <main>
-      <RegattaData seasons={['f22', 's23']} teams={[]} regattas={[]} />
+      <RegattaData seasons={seasons} teams={teams} regattas={[]} />
       {/* <RegattaData /> */}
       <Scatter options={options} data={data} />
     </main>

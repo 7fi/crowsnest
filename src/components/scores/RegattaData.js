@@ -1,12 +1,33 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { getFirestore, collection, doc, getDoc } from 'firebase/firestore'
+
 export default function RegattaData({ seasons, teams, regattas }) {
-  const [season, setSeason] = useState('f22')
-  const [team, setTeam] = useState('')
+  const [season, setSeason] = useState(seasons[0])
+  const [team, setTeam] = useState(teams[0])
+  // setTeam(teams[0])
+  // console.log(team)
   const [regatta, setRegatta] = useState('')
+  const [regattas2, setRegattas] = useState([])
+  const db = getFirestore()
+
+  useEffect(() => {
+    const fetchData = async () => {
+      console.log('TEAM', team)
+      let docRef = doc(db, 'techscoreTeams', team)
+      // console.log((await getDoc(docRef)).data().regattas)
+      setRegattas((await getDoc(docRef)).data().regattas)
+      // console.log(regattas2)
+    }
+    fetchData().catch(console.error)
+  }, [team])
+
+  useEffect(() => {
+    console.log(regattas2)
+  }, [regattas2])
 
   return (
     <>
-      <div className='contentBox'>
+      <div className="contentBox">
         <select onChange={(e) => setSeason(e.target.value)}>
           {[...Array(seasons.length)].map((e, i) => (
             <option value={seasons[i]}>{seasons[i]}</option>
@@ -18,8 +39,8 @@ export default function RegattaData({ seasons, teams, regattas }) {
           ))}
         </select>
         <select onChange={(e) => setRegatta(e.target.value)}>
-          {[...Array(regattas.length)].map((e, i) => (
-            <option value={regattas[i]}>{regattas[i]}</option>
+          {[...Array(regattas2.length)].map((e, i) => (
+            <option value={regattas2[i]}>{regattas2[i]}</option>
           ))}
         </select>
       </div>

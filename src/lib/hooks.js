@@ -33,6 +33,11 @@ export function useUserData() {
   return { user, userVals }
 }
 
+export function useScoreSelections() {
+  const [teams, setTeams] = useState([])
+  const [regattas, setRegattas] = useState([])
+}
+
 export function setTheme(theme) {
   document.documentElement.setAttribute('data-theme', theme)
   localStorage.setItem('theme', theme)
