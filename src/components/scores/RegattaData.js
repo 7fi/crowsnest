@@ -5,9 +5,9 @@ export default function RegattaData({ seasons, teams, regattas }) {
   const [season, setSeason] = useState(seasons[0])
   const [team, setTeam] = useState(teams[0])
   // setTeam(teams[0])
-  // console.log(team)
+  // console.log(season)
   const [regatta, setRegatta] = useState('')
-  const [regattas2, setRegattas] = useState([])
+  const [regattas2, setRegattas] = useState(['Hi'])
   const db = getFirestore()
 
   useEffect(() => {
@@ -15,13 +15,14 @@ export default function RegattaData({ seasons, teams, regattas }) {
       console.log('TEAM', team)
       let docRef = doc(db, 'techscoreTeams', team)
       // console.log((await getDoc(docRef)).data().regattas)
-      setRegattas((await getDoc(docRef)).data().regattas)
+      setRegattas(Object.keys((await getDoc(docRef)).data().regattas[season]))
       // console.log(regattas2)
     }
     fetchData().catch(console.error)
   }, [team])
 
   useEffect(() => {
+    console.log('SEAON', season)
     console.log(regattas2)
   }, [regattas2])
 
