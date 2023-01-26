@@ -1,6 +1,6 @@
 import { initializeApp } from 'firebase/app'
 import { getAnalytics } from 'firebase/analytics'
-import { getFirestore, collection, where, query, doc, getDocs, setDoc, getCountFromServer, documentId } from 'firebase/firestore'
+import { getFirestore, collection, where, query, doc, getDoc, getDocs, setDoc, getCountFromServer, documentId, serverTimestamp } from 'firebase/firestore'
 import { getFunctions, httpsCallable } from 'firebase/functions'
 
 const firebaseConfig = {
@@ -34,9 +34,9 @@ const getTeamWithName = async (teamName) => {
   return { data: doc.data(), id: doc.id }
 }
 
-const getTeamList = async (district) => {
+const getTeamList = async () => {
   const docSnaps = await getDocs(collection(db, 'techscoreTeams'))
-  console.log(docSnaps)
+  // console.log(docSnaps)
   return docSnaps
 }
 
@@ -46,23 +46,31 @@ async function docExists(id, col) {
 }
 
 const scrapeTeamListToDb = async (district, seasons) => {
-  let schools = await getSchools({ district: 'NWISA' })
-  // console.log(await getRegattas({ schoolLink: schools.data['Bainbridge High School'], season: seasons[0] }))
-  console.log(schools.data)
-  Object.keys(schools.data).forEach(async (school) => {
-    // if (!(await docExists(school, 'techscoreTeams'))) {
-    let regattas = {}
-    // console.log(`https://scores.hssailing.org${schools.data[school]}${season}`)
-    regattas[seasons[0]] = await (await getRegattas({ schoolLink: schools.data[school], season: seasons[0] })).data
-    console.log(regattas)
-    await setDoc(doc(db, 'techscoreTeams', school), {
-      regattas: regattas,
-    })
-    // } else {
-    //   console.log('doc exists')
-    // }
+  getDoc(doc(db, 'vars', 'lastTeamScrape')).then(async (document) => {
+    // console.log(Date.now())
+    console.log('Been 30 minutes since last scrape?', Date.now() / 1000 - document.data().timestamp.seconds > 30 * 60)
+    if (Date.now() / 1000 - document.data().timestamp.seconds > 30 * 60) {
+      // console.log()
+      let schools = await getSchools({ district: 'NWISA' })
+      // console.log(await getRegattas({ schoolLink: schools.data['Bainbridge High School'], season: seasons[0] }))
+      console.log(schools.data)
+      Object.keys(schools.data).forEach(async (school) => {
+        // if (!(await docExists(school, 'techscoreTeams'))) {
+        let regattas = {}
+        // console.log(`https://scores.hssailing.org${schools.data[school]}${season}`)
+        regattas[seasons[0]] = await (await getRegattas({ schoolLink: schools.data[school], season: seasons[0] })).data
+        console.log(regattas)
+        await setDoc(doc(db, 'techscoreTeams', school), {
+          regattas: regattas,
+        })
+        // } else {
+        //   console.log('doc exists')
+        // }
+      })
+      setDoc(doc(db, 'vars', 'lastTeamScrape'), { timestamp: serverTimestamp() })
+      // return { data: schools.data }
+    }
   })
-  return { data: schools.data }
 }
 
 export { app, getUserWithUsername, getTeamWithName, getTeamList, scrapeTeamListToDb }

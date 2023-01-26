@@ -157,11 +157,13 @@ export default function Scores() {
 
   ChartJS.register(LinearScale, PointElement, LineElement, Tooltip, Legend)
   const [teams, setTeams] = useState([])
+  const [regattas, setRegattas] = useState([{ seasons: seasons, teams: teams, regatta: '' }])
 
   const options = {
     scales: {
       y: {
         beginAtZero: true,
+        max: 20,
       },
     },
   }
@@ -169,7 +171,7 @@ export default function Scores() {
   const data = {
     datasets: [
       {
-        label: 'A dataset',
+        label: 'Fake Scores',
         data: [
           { x: 1, y: 5 },
           { x: 2, y: 10 },
@@ -181,12 +183,8 @@ export default function Scores() {
   }
 
   useEffect(() => {
-    // scrapeTeamListToDb('NWISA', seasons).then(({ data }) => {
-    //   console.log(data)
-    // })
-  }, [])
+    // scrapeTeamListToDb('NWISA', seasons)
 
-  useEffect(() => {
     getTeamList().then((docs) => {
       // docs.forEach((doc) => console.log(doc.data()))
       let tempDocs = []
@@ -196,19 +194,35 @@ export default function Scores() {
       setTeams(tempDocs)
       console.log(teams)
     })
-    // getDocs(collection(db, 'techscoreTeamlist')).then((docs) => {
-    //   // docs.forEach((doc) => console.log(doc.data()))
-    //   let tempDocs = []
-    //   docs.forEach((doc) => {
-    //     tempDocs.push(doc.id)
-    //   })
-    //   setTeams(tempDocs)
-    // })
   }, [])
+
+  function removeRegatta(regatta) {
+    console.log(regatta)
+  }
+
+  function updateRegatta(regatta) {
+    console.log(regatta)
+  }
+
+  regattas.map((e, i) => {
+    console.log('hi', e.teams)
+  })
 
   return (
     <main>
-      <RegattaData seasons={seasons} teams={teams} regattas={[]} />
+      <div className="regattasHolder">
+        {regattas.map((e, i) => (
+          <RegattaData key={i} seasons={e.seasons} teams={teams} removeRegatta={removeRegatta} updateRegatta={updateRegatta} />
+        ))}
+        <button
+          onClick={() => {
+            // console.log(regattas)
+            setRegattas((cur) => [...cur, { seasons: seasons, teams: teams, regatta: '' }])
+            // console.log(regattas)
+          }}>
+          +
+        </button>
+      </div>
       {/* <RegattaData /> */}
       <Scatter options={options} data={data} />
     </main>
