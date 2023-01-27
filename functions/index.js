@@ -217,11 +217,30 @@ exports.getRegattaData = functions.https.onCall(async (data, ctx) => {
   return people
 })
 
-// exports.scrapeToDB = functions.https.onCall(async (data, ctx) => {
-//   let schools = await this.getSchools({ district: 'NWISA' })
-//   Object.keys(schools).forEach((school) => {
-//     let doc = { teamName: school }
-//     addDoc(collection(db, 'techscoreTeams'), doc)
-//   })
-//   return schools
-// })
+exports.scrapeToDB = functions.https.onCall(async (data, ctx) => {
+  lgetDoc(doc(db, 'vars', 'lastTeamScrape')).then(async (document) => {
+    // console.log(Date.now())
+    console.log('Been 30 minutes since last scrape?', Date.now() / 1000 - document.data().timestamp.seconds > 30 * 60)
+    if (Date.now() / 1000 - document.data().timestamp.seconds > 30 * 60) {
+      // console.log()
+      let schools = await this.getSchools({ district: 'NWISA' })
+      // console.log(await getRegattas({ schoolLink: schools.data['Bainbridge High School'], season: seasons[0] }))
+      console.log(schools.data)
+      Object.keys(schools.data).forEach(async (school) => {
+        // if (!(await docExists(school, 'techscoreTeams'))) {
+        let regattas = {}
+        // console.log(`https://scores.hssailing.org${schools.data[school]}${season}`)
+        regattas[data.seasons[0]] = await (await this.getRegattas({ schoolLink: schools.data[school], season: data.seasons[0] })).data
+        console.log(regattas)
+        await setDoc(doc(db, 'techscoreTeams', school), {
+          regattas: regattas,
+        })
+        // } else {
+        //   console.log('doc exists')
+        // }
+      })
+      setDoc(doc(db, 'vars', 'lastTeamScrape'), { timestamp: serverTimestamp() })
+      // return { data: schools.data }
+    }
+  })
+})

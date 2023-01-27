@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { getFirestore, collection, doc, getDoc } from 'firebase/firestore'
 import { FaTrash } from 'react-icons/fa'
 
-export default function RegattaData({ seasons, teams, updateRegatta, removeRegatta }) {
+export default function RegattaData({ index, seasons, teams, updateRegatta, removeRegatta }) {
   const [season, setSeason] = useState(seasons[0])
   const [team, setTeam] = useState(teams[0])
   const [regatta, setRegatta] = useState('')
@@ -46,7 +46,7 @@ export default function RegattaData({ seasons, teams, updateRegatta, removeRegat
 
   useEffect(() => {
     console.log('Regatta Changed:', regatta)
-    updateRegatta(regatta)
+    updateRegatta(index, regatta)
   }, [regatta])
 
   return (
@@ -66,14 +66,14 @@ export default function RegattaData({ seasons, teams, updateRegatta, removeRegat
             </option>
           ))}
         </select>
-        <select onChange={(e) => setRegatta(e.target.value)}>
+        <select onChange={(e) => setRegatta(e.target.value)} defaultValue={0}>
           {Object.keys(regattas).map((e, i) => (
-            <option key={i} value={regattas[e].link} defaultValue={0}>
+            <option key={i} value={regattas[e].link}>
               {e}
             </option>
           ))}
         </select>
-        <button onClick={() => removeRegatta(regatta)}>
+        <button onClick={() => removeRegatta(index, regatta)}>
           <FaTrash />
         </button>
         {regatta}

@@ -183,7 +183,7 @@ export default function Scores() {
   }
 
   useEffect(() => {
-    // scrapeTeamListToDb('NWISA', seasons)
+    scrapeTeamListToDb('NWISA', seasons)
 
     getTeamList().then((docs) => {
       // docs.forEach((doc) => console.log(doc.data()))
@@ -196,23 +196,39 @@ export default function Scores() {
     })
   }, [])
 
-  function removeRegatta(regatta) {
-    console.log(regatta)
+  function removeRegatta(index, regatta) {
+    console.log(index, regatta)
+    let tempRegattas = regattas
+    tempRegattas.splice(index, 1)
+    console.log('TEMP', tempRegattas)
+    setRegattas([...tempRegattas])
+    // console.log(regattas)
   }
 
-  function updateRegatta(regatta) {
-    console.log(regatta)
+  function updateRegatta(index, regatta) {
+    console.log(index, regatta)
+    if (regatta != '') {
+      let tempRegattas = regattas
+      tempRegattas[index] = { seasons: seasons, teams: teams, regatta: regatta }
+      setRegattas([...tempRegattas])
+      // console.log(regattas)
+    }
   }
 
-  regattas.map((e, i) => {
-    console.log('hi', e.teams)
-  })
+  useEffect(() => {
+    console.log('CUR REGATTAS: ', regattas)
+  }, [regattas])
+
+  console.log(regattas.length, regattas)
 
   return (
     <main>
+      {regattas.map((rgta, i) => (
+        <span>{rgta.regatta}</span>
+      ))}
       <div className="regattasHolder">
         {regattas.map((e, i) => (
-          <RegattaData key={i} seasons={e.seasons} teams={teams} removeRegatta={removeRegatta} updateRegatta={updateRegatta} />
+          <RegattaData key={i} index={i} seasons={seasons} teams={teams} removeRegatta={removeRegatta} updateRegatta={updateRegatta} />
         ))}
         <button
           onClick={() => {
