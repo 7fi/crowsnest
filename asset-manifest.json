@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/crowsnest/static/css/main.2d6ecc57.css",
-    "main.js": "/crowsnest/static/js/main.525bd925.js",
+    "main.js": "/crowsnest/static/js/main.0f4f9f5d.js",
     "static/js/787.df788c46.chunk.js": "/crowsnest/static/js/787.df788c46.chunk.js",
     "index.html": "/crowsnest/index.html",
     "main.2d6ecc57.css.map": "/crowsnest/static/css/main.2d6ecc57.css.map",
-    "main.525bd925.js.map": "/crowsnest/static/js/main.525bd925.js.map",
+    "main.0f4f9f5d.js.map": "/crowsnest/static/js/main.0f4f9f5d.js.map",
     "787.df788c46.chunk.js.map": "/crowsnest/static/js/787.df788c46.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.2d6ecc57.css",
-    "static/js/main.525bd925.js"
+    "static/js/main.0f4f9f5d.js"
   ]
 }
