@@ -318,7 +318,7 @@ select {
   grid-template-columns: 1fr 1fr;
 }
 .name {
-  cursor: grab;
+  /* cursor: grab; */
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -375,4 +375,25 @@ select {
   padding: 0.5rem;
   padding: 0.7rem;
   font-size: 0.8rem;
+}
+
+/* Events */
+.eventTitleBox {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  justify-content: space-between;
+}
+
+.eventHeaderFlex {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  justify-content: space-between;
+  text-transform: capitalize;
+}
+
+.descriptionTitle {
+  font-size: 1.5rem;
+  margin: 0.25rem 0;
 }

@@ -15,6 +15,8 @@ import NotFound from './pages/NotFound'
 import Teams from './pages/Teams'
 import Pairs from './pages/Pairs'
 import Scores from './pages/Scores'
+import Event from './pages/Event'
+import CreateEvent from './pages/CreateEvent'
 
 export default function App() {
   const userData = useUserData()
@@ -31,6 +33,8 @@ export default function App() {
           {/* <Route path="/crowsnest/profile" element={<Navigate to={`/crowsnest/profile/${userData.username}`} />} /> */}
           <Route path='/crowsnest/team/:teamName' element={<Team />} />
           <Route path='/crowsnest/teams' element={<Teams />} />
+          <Route path='/crowsnest/event/create' element={<CreateEvent />} />
+          <Route path='/crowsnest/event/:eventID' element={<Event />} />
           <Route path='/crowsnest/createteam' element={<CreateTeam />} />
           <Route path='/crowsnest/team/:teamName/pairs' element={<Pairs />} />
           <Route path='/crowsnest/scores' element={<Scores />} />

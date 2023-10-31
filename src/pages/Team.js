@@ -8,19 +8,23 @@ import { toast } from 'react-hot-toast'
 
 import { updateDoc, doc, getFirestore, arrayUnion, arrayRemove, getDoc, deleteDoc } from 'firebase/firestore'
 import { FaTrash } from 'react-icons/fa'
+import { update } from 'lodash'
 
 export default function Team() {
   const { user, userVals } = useContext(UserContext)
   const [team, setTeam] = useState({})
   const [memberNames, setMemeberNames] = useState([])
   const [teamID, setTeamID] = useState('')
+  const [curTeamname, setTeamName] = useState('')
   const { teamName } = useParams()
 
   useEffect(() => {
     getTeamWithName(teamName).then((tempTeam) => {
+      // console.log(tempTeam)
       setTeam(tempTeam.data)
       // setMemeberNames(tempTeam.data?.members)
       setTeamID(tempTeam.id)
+      setTeamName(tempTeam.name)
     })
   }, [memberNames])
 
@@ -34,17 +38,17 @@ export default function Team() {
         {/* <img src={team?.photoURL} alt="Profile Image" referrerPolicy="no-referrer" /> */}
         {Object.keys(team).length > 0 ? (
           <>
-            <div className="contentBox flexRowContainer">
-              <span className="text-title text-titlecase">{team?.teamName}</span>
+            <div className='contentBox flexRowContainer'>
+              <span className='text-title text-titlecase'>{team?.teamName}</span>
               <Link to={`/crowsnest/team/${team?.teamName}/pairs`}>
                 <button>Pairs</button>
               </Link>
             </div>
-            <div className="contentBox">
+            <div className='contentBox'>
               <h3>Members:</h3>
-              <ul className="memberList">
+              <ul className='memberList'>
                 {team?.members?.map((member) => (
-                  <li key={team?.members.find((item) => item.displayName == member.displayName).uid} className="teamMember contentBox">
+                  <li key={team?.members.find((item) => item.displayName == member.displayName).uid} className='teamMember contentBox'>
                     <Link to={`/crowsnest/profile/${member.username}`}>
                       <strong>{member.displayName}</strong>
                     </Link>
@@ -56,7 +60,7 @@ export default function Team() {
                             (t) => (
                               <div>
                                 Delete Member?
-                                <div className="flexRowContainer">
+                                <div className='flexRowContainer'>
                                   <button
                                     onClick={() => {
                                       toast.dismiss(t.id)
@@ -66,11 +70,11 @@ export default function Team() {
                                   </button>
                                   <button
                                     onClick={() => {
-                                      deleteMember(teamID, team?.members.find((item) => item.displayName == member.displayName).uid, team?.members, setMemeberNames)
+                                      deleteMember(teamName, teamID, team?.members.find((item) => item.displayName == member.displayName).uid, team?.members, setMemeberNames)
                                       toast.dismiss(t.id)
                                       toast.success('Deleted!')
                                     }}
-                                    className="text-danger">
+                                    className='text-danger'>
                                     Delete!
                                   </button>
                                 </div>
@@ -87,8 +91,8 @@ export default function Team() {
               </ul>
             </div>
             {team?.members.find((u) => user?.uid == u.uid) != undefined && (
-              <div className="contentBox">
-                <button className="text-danger" onClick={() => deleteMember(teamID, user?.uid, team?.members, setMemeberNames)}>
+              <div className='contentBox'>
+                <button className='text-danger' onClick={() => deleteMember(teamID, user?.uid, team?.members, setMemeberNames)}>
                   Leave Team
                 </button>
               </div>
@@ -96,7 +100,7 @@ export default function Team() {
 
             {team?.owner == user?.uid && <TeamControls team={team} teamID={teamID} teamName={teamName} setMemeberNames={setMemeberNames} />}
             {!(team?.owner == user?.uid) && !team?.members.some((u) => user?.uid == u.uid) && (
-              <div className="contentBox">
+              <div className='contentBox'>
                 <button
                   onClick={() => {
                     requestTeam(teamID, user.uid, userVals.username, userVals.displayName)
@@ -120,17 +124,17 @@ function TeamControls({ team, teamID, teamName, setMemeberNames }) {
   const navigate = useNavigate()
 
   return (
-    <div className="contentBox">
+    <div className='contentBox'>
       <h3>Admin Controls:</h3>
       {team?.requests.length > 0 && <>Requests:</>}
-      <ul className="requestsList">
+      <ul className='requestsList'>
         {team?.requests?.map((request) => {
           console.log(request)
           return (
-            <li className="request contentBox" key={0}>
+            <li className='request contentBox' key={0}>
               {request.displayName}
               <button
-                className="text-sucess"
+                className='text-sucess'
                 onClick={() => {
                   acceptRequest(request, teamID, teamName, setMemeberNames)
                   toast.success('Request accepted!')
@@ -138,13 +142,13 @@ function TeamControls({ team, teamID, teamName, setMemeberNames }) {
                 Accept
               </button>
               <button
-                className="text-danger"
+                className='text-danger'
                 onClick={() => {
                   toast(
                     (t) => (
                       <div>
                         Deny request?
-                        <div className="flexRowContainer">
+                        <div className='flexRowContainer'>
                           <button
                             onClick={() => {
                               toast.dismiss(t.id)
@@ -158,7 +162,7 @@ function TeamControls({ team, teamID, teamName, setMemeberNames }) {
                               toast.dismiss(t.id)
                               toast.success('Request denied!')
                             }}
-                            className="text-danger">
+                            className='text-danger'>
                             Deny!
                           </button>
                         </div>
@@ -175,12 +179,12 @@ function TeamControls({ team, teamID, teamName, setMemeberNames }) {
       </ul>
       {/* <button>Add member</button> */}
       <button
-        className="text-danger"
+        className='text-danger'
         onClick={() => {
           toast((t) => (
             <div>
               Delete team?
-              <div className="flexRowContainer">
+              <div className='flexRowContainer'>
                 <button
                   onClick={() => {
                     toast.dismiss(t.id)
@@ -195,7 +199,7 @@ function TeamControls({ team, teamID, teamName, setMemeberNames }) {
                     toast.success('Team deleted!')
                     navigate('/crowsnest/teams')
                   }}
-                  className="text-danger">
+                  className='text-danger'>
                   Delete!
                 </button>
               </div>
@@ -233,11 +237,13 @@ async function requestTeam(teamID, uid, username, displayName) {
   if (docSnap.members.find((m) => uid == m.uid) == undefined) await updateDoc(d, { requests: arrayUnion({ userId: uid, username: username, displayName: displayName }) })
 }
 
-async function deleteMember(teamID, uid, members, setMemeberNames) {
+async function deleteMember(teamName, teamID, uid, members, setMemeberNames) {
   console.log(members)
   const db = getFirestore()
   let d = doc(db, `teams/${teamID}`)
   await updateDoc(d, { members: arrayRemove(members.find((item) => item.uid == uid)) })
+  d = doc(db, `users/${uid}`)
+  await updateDoc(d, { teams: arrayRemove(teamName) })
   setMemeberNames([])
 }
 async function deleteTeam(teamID) {
