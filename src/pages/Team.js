@@ -28,8 +28,8 @@ export default function Team() {
       setTeamName(tempTeam.name)
     })
     getEventsForTeam(teamName).then((tempEvents) => {
-      // console.log(tempEvents[0].data())
-      console.log(tempEvents[0].data().endDate > Date.now())
+      console.log(tempEvents[1].data().endDate.toDate() - Date.now())
+      console.log(tempEvents[1].data().endDate.toDate() > Date.now())
       console.log(tempEvents?.map((d) => ({ data: d.data(), id: d.id })))
       setEvents(tempEvents?.map((d) => ({ data: d.data(), id: d.id })))
     })
@@ -54,11 +54,16 @@ export default function Team() {
             <div className='contentBox'>
               <div className='flexRowContainer'>
                 <h3>Events:</h3>
-                <Link to='/crowsnest/event/create'>Create</Link>
+                <button>
+                  <Link to='/crowsnest/event/create'>Create</Link>
+                </button>
               </div>
               <ul className='noStyleList'>
                 {events
-                  ?.filter((event) => event.endDate < Date.now())
+                  ?.filter((event) => event?.data?.endDate?.toDate() >= Date.now())
+                  .sort((a, b) => {
+                    return a?.data?.endDate?.toDate() - b?.data?.endDate?.toDate()
+                  })
                   .map((event) => (
                     <Link to={`/crowsnest/event/${event.id}`}>
                       <li key={event.id} className='contentBox eventBox'>
