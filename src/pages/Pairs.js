@@ -16,8 +16,8 @@ export default function Page() {
     })
   }, [])
 
-  const memberList = ['Blake', 'Colin', 'Lucas', 'George', 'Devon', 'Irene', 'Hunter', 'Carter']
-
+  // const memberList = ['Blake', 'Colin', 'Lucas', 'George', 'Devon', 'Irene', 'Hunter', 'Carter']
+  const memberList = ['Blake', 'Colin', 'Lucas', 'George', 'Devon', 'Irene', 'Hunter', 'Annika', 'Asha', 'Caden', 'Carter', 'Christopher', 'Connor F', 'Conor K', 'Crawford', 'Dante', 'David', 'Elle', 'Jonas', 'Jonathan', 'Kat', 'Kiera', 'Maggie', 'Max L', 'Max S', 'Megan', 'Nathan', 'Neil', 'Niko', 'Summer']
   // console.log(team?.members?.length)
 
   return (

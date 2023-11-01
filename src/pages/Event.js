@@ -65,7 +65,6 @@ export default function Home() {
         </div>
         <div className='contentBox'>
           <div className='flexRowContainer'>
-            <h3>Attendees:</h3>
             <button
               onClick={(e) => {
                 toast(
@@ -115,27 +114,33 @@ export default function Home() {
             </button>
           </div>
           <h4>Going:</h4>
-          <ul>
+          <ul className='noStyleList'>
             {going.map((member) => (
-              <li key={member.userId} className={member.needsRide ? 'text-sucess' : ''}>
-                <Link to={`/crowsnest/profile/${member.username}`}>{member.displayName}</Link>
-              </li>
+              <Link to={`/crowsnest/profile/${member.username}`}>
+                <li key={member.userId} className={(member.needsRide ? 'text-sucess' : '') + ' eventBox contentBox'}>
+                  {member.displayName}
+                </li>
+              </Link>
             ))}
           </ul>
           <h4>Maybe:</h4>
-          <ul>
+          <ul className='noStyleList'>
             {maybe.map((member) => (
-              <li key={member.userId}>
-                <Link to={`/crowsnest/profile/${member.username}`}>{member.displayName}</Link>
-              </li>
+              <Link to={`/crowsnest/profile/${member.username}`}>
+                <li key={member.userId} className='eventBox contentBox'>
+                  {member.displayName}
+                </li>
+              </Link>
             ))}
           </ul>
           <h4>Not Going:</h4>
-          <ul>
+          <ul className='noStyleList'>
             {ngoing.map((member) => (
-              <li key={member.userId}>
-                <Link to={`/crowsnest/profile/${member.username}`}>{member.displayName}</Link>
-              </li>
+              <Link to={`/crowsnest/profile/${member.username}`}>
+                <li key={member.userId} className='eventBox contentBox'>
+                  {member.displayName}
+                </li>
+              </Link>
             ))}
           </ul>
         </div>

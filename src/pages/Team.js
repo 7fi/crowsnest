@@ -28,6 +28,8 @@ export default function Team() {
       setTeamName(tempTeam.name)
     })
     getEventsForTeam(teamName).then((tempEvents) => {
+      // console.log(tempEvents[0].data())
+      console.log(tempEvents[0].data().endDate > Date.now())
       console.log(tempEvents?.map((d) => ({ data: d.data(), id: d.id })))
       setEvents(tempEvents?.map((d) => ({ data: d.data(), id: d.id })))
     })
@@ -54,12 +56,17 @@ export default function Team() {
                 <h3>Events:</h3>
                 <Link to='/crowsnest/event/create'>Create</Link>
               </div>
-              <ul className='eventList'>
-                {events?.map((event) => (
-                  <li key={event.id}>
-                    <Link to={`/crowsnest/event/${event.id}`}>{event.data.name}</Link>
-                  </li>
-                ))}
+              <ul className='noStyleList'>
+                {events
+                  ?.filter((event) => event.endDate < Date.now())
+                  .map((event) => (
+                    <Link to={`/crowsnest/event/${event.id}`}>
+                      <li key={event.id} className='contentBox eventBox'>
+                        <strong>{event.data.name}</strong>
+                        {' ' + event.data.startDate.toDate().toDateString()}
+                      </li>
+                    </Link>
+                  ))}
               </ul>
             </div>
             <div className='contentBox'>
