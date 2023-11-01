@@ -1,5 +1,5 @@
 import AuthCheck from '../components/AuthCheck'
-import { getTeamWithName } from '../lib/firebase'
+import { getTeamWithName, getEventsForTeam } from '../lib/firebase'
 import { Link, useParams, useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import { UserContext } from '../lib/context'
@@ -14,6 +14,7 @@ export default function Team() {
   const { user, userVals } = useContext(UserContext)
   const [team, setTeam] = useState({})
   const [memberNames, setMemeberNames] = useState([])
+  const [events, setEvents] = useState([])
   const [teamID, setTeamID] = useState('')
   const [curTeamname, setTeamName] = useState('')
   const { teamName } = useParams()
@@ -26,7 +27,11 @@ export default function Team() {
       setTeamID(tempTeam.id)
       setTeamName(tempTeam.name)
     })
-  }, [memberNames])
+    getEventsForTeam(teamName).then((tempEvents) => {
+      console.log(tempEvents?.map((d) => ({ data: d.data(), id: d.id })))
+      setEvents(tempEvents?.map((d) => ({ data: d.data(), id: d.id })))
+    })
+  }, [teamName])
 
   // console.log(teamID)
   console.log(team?.members)
@@ -43,6 +48,19 @@ export default function Team() {
               <Link to={`/crowsnest/team/${team?.teamName}/pairs`}>
                 <button>Pairs</button>
               </Link>
+            </div>
+            <div className='contentBox'>
+              <div className='flexRowContainer'>
+                <h3>Events:</h3>
+                <Link to='/crowsnest/event/create'>Create</Link>
+              </div>
+              <ul className='eventList'>
+                {events?.map((event) => (
+                  <li key={event.id}>
+                    <Link to={`/crowsnest/event/${event.id}`}>{event.data.name}</Link>
+                  </li>
+                ))}
+              </ul>
             </div>
             <div className='contentBox'>
               <h3>Members:</h3>

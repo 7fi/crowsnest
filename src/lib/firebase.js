@@ -29,6 +29,12 @@ const getUserWithUsername = async (username) => {
   let doc = (await getDocs(q)).docs[0]
   return { tempuser: doc.data(), uid: doc.id }
 }
+const getUserWithID = async (uid) => {
+  const q = query(collection(db, 'users'), where(documentId(), '==', uid))
+  let doc = (await getDocs(q)).docs[0]
+  return { tempuser: doc.data(), uid: doc.id }
+}
+
 const getEventWithID = async (id) => {
   const q = query(collection(db, 'events'), where(documentId(), '==', id))
   let doc = (await getDocs(q)).docs[0]
@@ -50,6 +56,12 @@ const getTeamWithName = async (teamName) => {
 const getTeamList = async () => {
   const docSnaps = await getDocs(collection(db, 'techscoreTeams'))
   // console.log(docSnaps)
+  return docSnaps
+}
+const getEventsForTeam = async (teamName) => {
+  const q = query(collection(db, 'events'), where('team', '==', teamName))
+  const docSnaps = (await getDocs(q)).docs
+  console.log(docSnaps)
   return docSnaps
 }
 
@@ -87,4 +99,4 @@ const scrapeTeamListToDb = async (district, seasons) => {
   scrToDb({ seasons: seasons })
 }
 
-export { app, getUserWithUsername, getTeamWithName, getTeamWithID, getTeamList, scrapeTeamListToDb, getEventWithID }
+export { app, getUserWithUsername, getTeamWithName, getTeamWithID, getTeamList, scrapeTeamListToDb, getEventWithID, getEventsForTeam, getUserWithID }

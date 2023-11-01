@@ -37,7 +37,7 @@ function EventNameForm() {
   const db = getFirestore()
   const navigate = useNavigate()
 
-  console.log(user)
+  console.log(userTeams.length)
 
   useEffect(() => {
     console.log(user?.displayName)
@@ -129,7 +129,7 @@ function EventNameForm() {
     e.preventDefault()
 
     // const eventDoc = doc(db, 'events')
-    const eventObj = { name: eventnameValue, startDate: eventStartValue, endDate: eventEndValue, description: eventDescriptionValue, location: eventLocationValue, sport: eventSport, type: eventType, team: eventTeamName != '' ? eventTeamName : userTeams[0] }
+    const eventObj = { name: eventnameValue, startDate: eventStartValue, endDate: eventEndValue, description: eventDescriptionValue, location: eventLocationValue, sport: eventSport, type: eventType, team: eventTeamName != '' ? eventTeamName : userTeams[0], going: [], maybe: [], ngoing: [] }
     console.log(eventObj)
 
     const eventDoc = await addDoc(collection(db, 'events'), eventObj)
@@ -170,15 +170,6 @@ function EventNameForm() {
           <button type='submit' className='btn-green' disabled={!isValid}>
             Create
           </button>
-
-          {/* <h3>Debug State</h3>
-          <div>
-            Teamname: {teamnameValue}
-            <br />
-            Loading: {loading.toString()}
-            <br />
-            Valid Name: {isValid.toString()}
-          </div> */}
         </form>
       </section>
     </>
