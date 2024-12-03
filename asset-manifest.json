@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/crowsnest/static/css/main.6821b1b6.css",
-    "main.js": "/crowsnest/static/js/main.5b99ba2b.js",
-    "static/js/787.df788c46.chunk.js": "/crowsnest/static/js/787.df788c46.chunk.js",
+    "main.css": "/crowsnest/static/css/main.cc886a7b.css",
+    "main.js": "/crowsnest/static/js/main.e157ca6b.js",
+    "static/js/787.dd81f9ac.chunk.js": "/crowsnest/static/js/787.dd81f9ac.chunk.js",
     "index.html": "/crowsnest/index.html",
-    "main.6821b1b6.css.map": "/crowsnest/static/css/main.6821b1b6.css.map",
-    "main.5b99ba2b.js.map": "/crowsnest/static/js/main.5b99ba2b.js.map",
-    "787.df788c46.chunk.js.map": "/crowsnest/static/js/787.df788c46.chunk.js.map"
+    "main.cc886a7b.css.map": "/crowsnest/static/css/main.cc886a7b.css.map",
+    "main.e157ca6b.js.map": "/crowsnest/static/js/main.e157ca6b.js.map",
+    "787.dd81f9ac.chunk.js.map": "/crowsnest/static/js/787.dd81f9ac.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.6821b1b6.css",
-    "static/js/main.5b99ba2b.js"
+    "static/css/main.cc886a7b.css",
+    "static/js/main.e157ca6b.js"
   ]
 }
