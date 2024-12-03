@@ -39,11 +39,11 @@ export default function PosNegBarChart({ data, dataKey }) {
       return (
         <>
           <div className='contentBox' style={{ padding: 4, fontSize: '0.8rem' }}>
-            Rating Change: {payload[0].payload.change.toFixed(2)}
+            Rating Change: {payload[0]?.payload.change.toFixed(2)}
             <br />
-            Race Score : {payload[0].payload.score}
+            Race Score : {payload[0]?.payload.score}
             <br />
-            Race Ratio: {payload[0].payload.ratio.toFixed(2)}
+            Race Ratio: {payload[0]?.payload.ratio.toFixed(2)}
             <br />
             Race ID: {payload[0]?.payload?.raceID.split('/')[1]}/{payload[0]?.payload?.raceID.split('/')[2]}
           </div>
