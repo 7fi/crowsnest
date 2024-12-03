@@ -1,13 +1,13 @@
 import AuthCheck from '../components/AuthCheck'
 import { Link, useParams } from 'react-router-dom'
-import { getEventWithID, getTeamWithID, getUserWithUsername, getUserWithID } from '../lib/firebase'
+import { getEventWithID, getUserWithID } from '../lib/firebase'
 import { useEffect, useState, useContext } from 'react'
 import { updateDoc, doc, getFirestore, arrayUnion, arrayRemove, getDoc, deleteDoc } from 'firebase/firestore'
 import Pairs from '../pages/Pairs'
 import { UserContext } from '../lib/context'
 import { toast } from 'react-hot-toast'
 
-export default function Home() {
+export default function Event() {
   const { user, userVals } = useContext(UserContext)
   const [pageEvent, setPageEvent] = useState({})
   const [pageEventId, setPageEventId] = useState('')
@@ -15,6 +15,7 @@ export default function Home() {
   const [going, setGoing] = useState([])
   const [maybe, setMaybe] = useState([])
   const [ngoing, setNGoing] = useState([])
+  const [rides, setRides] = useState([]) //{ driver: 'Carter', riders: [{ displayName: 'Conor', uid: '' }], spots: 3, available: 2 }
   const { eventID } = useParams()
 
   useEffect(() => {
@@ -25,17 +26,16 @@ export default function Home() {
       setGoing(tempEvent?.data?.going)
       setMaybe(tempEvent?.data?.maybe)
       setNGoing(tempEvent?.data?.ngoing)
+      setRides(tempEvent?.data?.rides)
     })
   }, [eventID])
+
+  useEffect(() => {}, [going, maybe, ngoing])
 
   console.log(team)
   console.log(pageEvent)
   console.log(going, maybe, ngoing)
   console.log(user)
-
-  const setAttendance = async (e) => {
-    let val = e.target.innerText
-  }
 
   return (
     <main>
@@ -48,12 +48,20 @@ export default function Home() {
             <strong>{pageEvent?.endDate?.toDate().toLocaleString()}</strong>
           </span>
           <div className='eventHeaderFlex'>
-            <span>Location: {pageEvent?.location || 'Unknown Location'}</span>
-            <span>Type: {pageEvent?.type}</span>
+            <span>
+              <strong>Location:</strong> {pageEvent?.location || 'Unknown Location'}
+            </span>
+            <span>
+              <strong>Type:</strong> {pageEvent?.type}
+            </span>
             {/* Convert to icon: */}
-            <span>Sport: {pageEvent?.sport}</span>
+            <span>
+              <strong>Sport:</strong> {pageEvent?.sport}
+            </span>
             <Link to={`/crowsnest/team/${team}`} className='text-titlecase'>
-              <span>Team: </span>
+              <span>
+                <strong>Team:</strong>{' '}
+              </span>
               {team || 'Unknown Team'}
             </Link>
           </div>
@@ -66,49 +74,24 @@ export default function Home() {
         <div className='contentBox'>
           <div className='flexRowContainer'>
             <button
-              onClick={(e) => {
-                toast(
-                  (t) => (
-                    <div>
-                      Do you need a ride?
-                      <div className='flexRowContainer'>
-                        <button
-                          onClick={() => {
-                            updateGoing(pageEventId, user, team, 'going', true)
-                            toast.dismiss(t.id)
-                            toast.success('Yes! We will try to find a ride for you.')
-                          }}
-                          className='text-sucess'>
-                          Yes
-                        </button>
-                        <button
-                          onClick={() => {
-                            updateGoing(pageEventId, user, team, 'going', false)
-
-                            toast.dismiss(t.id)
-                            toast.error('No! We assume you will get yourself to this event.')
-                          }}
-                          className='text-danger'>
-                          No
-                        </button>
-                      </div>
-                    </div>
-                  )
-                  // { position: 'top-center' }
-                )
+              onClick={async () => {
+                await updateGoing(pageEvent, pageEventId, user, team, 'going', false, going, setGoing, maybe, setMaybe, ngoing, setNGoing)
+                setGoing([])
               }}>
               Going
             </button>
 
             <button
-              onClick={() => {
-                updateGoing(pageEventId, user, team, 'maybe', false)
+              onClick={async () => {
+                await updateGoing(pageEvent, pageEventId, user, team, 'maybe', false, going, setGoing, maybe, setMaybe, ngoing, setNGoing)
+                setMaybe([])
               }}>
               Maybe
             </button>
             <button
               onClick={() => {
-                updateGoing(pageEventId, user, team, 'ngoing', false)
+                updateGoing(pageEvent, pageEventId, user, team, 'ngoing', false, going, setGoing, maybe, setMaybe, ngoing, setNGoing)
+                setNGoing([])
               }}>
               Not Going
             </button>
@@ -143,31 +126,171 @@ export default function Home() {
               </Link>
             ))}
           </ul>
+          <div className='contentBox'>
+            <div className='flexRowContainer'>
+              <h3>Rides</h3> <button onClick={() => addRide(pageEvent, pageEventId, user, team, rides, setRides)}>Add Car</button>
+            </div>
+            <ul className='noStyleList'>
+              {rides.map((ride) => (
+                <li className='eventBox contentBox'>
+                  <label>
+                    <strong>
+                      {ride.driver + ' ' + ride.available}/{ride.spots} left
+                    </strong>
+                  </label>
+                  <div className='contentBox'>
+                    <ul className='noStyleList'>
+                      {ride.riders.map((rider) => (
+                        <li className='eventBox contentBox'>{rider.displayName}</li>
+                      ))}
+                    </ul>
+                  </div>
+                  <button
+                    onClick={() => {
+                      updateRiders(eventID, rides, setRides, user, ride.driver)
+                    }}>
+                    Join Car
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
-        {pageEvent.sport == 'sailing' && <Pairs />}
+        {/* {pageEvent.sport == 'Sailing' && <Pairs />} */}
       </AuthCheck>
     </main>
   )
 }
 
-async function updateGoing(eventID, user, team, status, ride) {
+async function findRide() {}
+
+async function addRide(pageEvent, eventID, user, team, rides, setRides) {
   const curUserData = (await getUserWithID(user.uid)).tempuser
   if (curUserData.teams.includes(team)) {
+    if (Date.now() < pageEvent.startDate.toDate()) {
+      let spots = 0
+      toast((t) => (
+        <div className='flexCol'>
+          How many empty spots do you have?
+          <input
+            type='number'
+            onChange={(e) => {
+              spots = parseInt(e.target.value, 10)
+            }}
+            onKeyDown={(e) => {
+              console.log(e.key)
+              if (e.key == 'Enter') {
+                updateRides(eventID, rides, setRides, curUserData, spots)
+                toast.dismiss(t.id)
+              }
+            }}></input>
+          <div className='flexRowContainer'>
+            <button
+              onClick={() => {
+                toast.dismiss(t.id)
+              }}
+              className='text-danger'>
+              Cancel
+            </button>
+            <button
+              onClick={() => {
+                updateRides(eventID, rides, setRides, curUserData, spots)
+                toast.dismiss(t.id)
+              }}>
+              Add Ride!
+            </button>
+          </div>
+        </div>
+      ))
+    } else {
+      toast.error("You can't add a ride for this event during or after the event")
+    }
+  } else {
+    toast.error('You must be on this team to give rides for it!')
+  }
+}
+async function updateRides(eventID, rides, setRides, user, spots, riders = []) {
+  if (spots > 0 && spots < 20) {
+    let ride = { driver: user.displayName, riders: riders, spots: spots, available: spots }
+    setRides([...rides, ride])
+
+    // update db
     const db = getFirestore()
     let d = doc(db, `events/${eventID}`)
     let docSnap = (await getDoc(d)).data()
-    console.log(docSnap)
-    // console.log(docSnap?.going.find((m) => uid == m.uid))
-    // if (docSnap?.going.find((m) => uid == m.uid) == undefined)
+    console.log(docSnap.rides)
+    console.log(ride)
 
-    await deleteRSVP(eventID, user)
-    if (status == 'going') {
-      await updateDoc(d, { going: arrayUnion({ userId: user.uid, username: curUserData.username, displayName: curUserData.displayName, needsRide: ride }) })
-    } else if (status == 'maybe') {
-      await updateDoc(d, { maybe: arrayUnion({ userId: user.uid, username: curUserData.username, displayName: curUserData.displayName, needsRide: ride }) })
-    } else if (status == 'ngoing') {
-      await updateDoc(d, { ngoing: arrayUnion({ userId: user.uid, username: curUserData.username, displayName: curUserData.displayName, needsRide: ride }) })
+    await updateDoc(d, { rides: arrayUnion({ driver: user.displayName, riders: riders, spots: spots, available: spots }) })
+
+    toast.success('Ride successfully added!')
+  } else {
+    toast.error('Invalid number of spots')
+  }
+}
+async function updateRiders(eventID, rides, setRides, user, rideName) {
+  let ride = rides.find((x) => x.driver === rideName)
+  ride.riders.push(user.displayName)
+  setRides([...rides])
+}
+
+async function updateGoing(pageEvent, eventID, user, team, status, ride, going, setGoing, maybe, setMaybe, ngoing, setNGoing) {
+  const curUserData = (await getUserWithID(user.uid)).tempuser
+  console.log(Date.now() < pageEvent.startDate.toDate())
+  if (curUserData.teams.includes(team)) {
+    if (Date.now() < pageEvent.startDate.toDate()) {
+      const db = getFirestore()
+      let d = doc(db, `events/${eventID}`)
+      let docSnap = (await getDoc(d)).data()
+      console.log(docSnap)
+      // console.log(docSnap?.going.find((m) => uid == m.uid))
+      // if (docSnap?.going.find((m) => uid == m.uid) == undefined)
+
+      await deleteRSVP(eventID, user)
+      if (status == 'going') {
+        toast(
+          (t) => (
+            <div>
+              Do you need a ride?
+              <div className='flexRowContainer'>
+                <button
+                  onClick={async () => {
+                    await updateDoc(d, { going: arrayUnion({ userId: user.uid, username: curUserData.username, displayName: curUserData.displayName, needsRide: true }) })
+                    // setGoing([...going, { userId: user.uid, username: curUserData.username, displayName: curUserData.displayName, needsRide: true }])
+                    toast.dismiss(t.id)
+                    toast.success('Yes! We will try to find a ride for you.')
+                  }}
+                  className='text-sucess'>
+                  Yes
+                </button>
+                <button
+                  onClick={async () => {
+                    await updateDoc(d, { going: arrayUnion({ userId: user.uid, username: curUserData.username, displayName: curUserData.displayName, needsRide: false }) })
+                    // setGoing([...going, { userId: user.uid, username: curUserData.username, displayName: curUserData.displayName, needsRide: false }])
+
+                    toast.dismiss(t.id)
+                    toast.error('No! We assume you will get yourself to this event.')
+                  }}
+                  className='text-danger'>
+                  No
+                </button>
+              </div>
+            </div>
+          )
+          // { position: 'top-center' }
+        )
+      } else if (status == 'maybe') {
+        await updateDoc(d, { maybe: arrayUnion({ userId: user.uid, username: curUserData.username, displayName: curUserData.displayName, needsRide: ride }) })
+        // setMaybe([...maybe, { userId: user.uid, username: curUserData.username, displayName: curUserData.displayName, needsRide: ride }])
+      } else if (status == 'ngoing') {
+        await updateDoc(d, { ngoing: arrayUnion({ userId: user.uid, username: curUserData.username, displayName: curUserData.displayName, needsRide: ride }) })
+        // setNGoing([...ngoing, { userId: user.uid, username: curUserData.username, displayName: curUserData.displayName, needsRide: ride }])
+      }
+    } else {
+      toast.error("You can't RSVP for this event during or after the event")
     }
+  } else {
+    toast.error('You must be on this team to RSVP!')
   }
 }
 

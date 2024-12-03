@@ -1,10 +1,10 @@
 import { FaBars } from 'react-icons/fa'
 import Name from './Name'
 
-export default function Pairing({ prov }) {
+export default function Pairing({ prov, innerRef }) {
   let slotNames = ['Skipper', 'Crew', 'Rot']
   return (
-    <div className='pairing flexRowContainer' ref={prov.innerRef} {...prov.draggableProps}>
+    <div className='pairing flexRowContainer' ref={innerRef} {...prov.draggableProps}>
       <div className='pairDrag' {...prov.dragHandleProps}>
         <FaBars />
       </div>

@@ -10,7 +10,7 @@ import { updateDoc, doc, getFirestore, arrayUnion, arrayRemove, getDoc, deleteDo
 import { FaTrash } from 'react-icons/fa'
 import { update } from 'lodash'
 
-export default function Team() {
+export default function Events() {
   const { user, userVals } = useContext(UserContext)
   const [team, setTeam] = useState({})
   const [memberNames, setMemeberNames] = useState([])
@@ -46,16 +46,13 @@ export default function Team() {
         {Object.keys(team).length > 0 ? (
           <>
             <div className='contentBox flexRowContainer'>
-              <span className='text-title text-titlecase'>{team?.teamName}</span>
-              <Link to={`/crowsnest/team/${team?.teamName}/pairs`}>
-                <button>Pairs</button>
+              <Link to={`/crowsnest/team/${team?.teamName}`}>
+                <span className='text-title text-titlecase'>{team?.teamName}</span>
               </Link>
             </div>
             <div className='contentBox'>
               <div className='flexRowContainer'>
-                <Link to={`/crowsnest/team/${team?.teamName}/events`}>
-                  <h3>Events</h3>
-                </Link>
+                <h3>Future Events</h3>
                 <button>
                   <Link to='/crowsnest/event/create'>Create</Link>
                 </button>
@@ -77,71 +74,25 @@ export default function Team() {
               </ul>
             </div>
             <div className='contentBox'>
-              <h3>Members</h3>
-              <ul className='memberList'>
-                {team?.members?.map((member) => (
-                  <li key={team?.members.find((item) => item.displayName == member.displayName).uid} className='teamMember contentBox'>
-                    <Link to={`/crowsnest/profile/${member.username}`}>
-                      <strong>{member.displayName}</strong>
+              <div className='flexRowContainer'>
+                <h3>Past Events</h3>
+              </div>
+              <ul className='noStyleList'>
+                {events
+                  ?.filter((event) => event?.data?.endDate?.toDate() < Date.now())
+                  .sort((a, b) => {
+                    return a?.data?.endDate?.toDate() - b?.data?.endDate?.toDate()
+                  })
+                  .map((event) => (
+                    <Link to={`/crowsnest/event/${event.id}`} key={event.id}>
+                      <li key={event.id} className='contentBox eventBox'>
+                        <strong>{event.data.name}</strong>
+                        {' ' + event.data.startDate.toDate().toDateString()}
+                      </li>
                     </Link>
-                    <span> ({member.role})</span>
-                    {team?.owner == user?.uid && team?.owner != member.uid && (
-                      <button
-                        onClick={() => {
-                          toast(
-                            (t) => (
-                              <div>
-                                Delete Member?
-                                <div className='flexRowContainer'>
-                                  <button
-                                    onClick={() => {
-                                      toast.dismiss(t.id)
-                                      toast.error('Cancelled')
-                                    }}>
-                                    Cancel
-                                  </button>
-                                  <button
-                                    onClick={() => {
-                                      deleteMember(teamName, teamID, team?.members.find((item) => item.displayName == member.displayName).uid, team?.members, setMemeberNames)
-                                      toast.dismiss(t.id)
-                                      toast.success('Deleted!')
-                                    }}
-                                    className='text-danger'>
-                                    Delete!
-                                  </button>
-                                </div>
-                              </div>
-                            )
-                            // { position: 'top-center' }
-                          )
-                        }}>
-                        <FaTrash />
-                      </button>
-                    )}
-                  </li>
-                ))}
+                  ))}
               </ul>
             </div>
-            {team?.members.find((u) => user?.uid == u.uid) != undefined && (
-              <div className='contentBox'>
-                <button className='text-danger' onClick={() => deleteMember(teamID, user?.uid, team?.members, setMemeberNames)}>
-                  Leave Team
-                </button>
-              </div>
-            )}
-
-            {team?.owner == user?.uid && <TeamControls team={team} teamID={teamID} teamName={teamName} setMemeberNames={setMemeberNames} />}
-            {!(team?.owner == user?.uid) && !team?.members.some((u) => user?.uid == u.uid) && (
-              <div className='contentBox'>
-                <button
-                  onClick={() => {
-                    requestTeam(teamID, user.uid, userVals.username, userVals.displayName)
-                    toast.success('Request Sent!')
-                  }}>
-                  Request
-                </button>
-              </div>
-            )}
           </>
         ) : (
           <h1>Team not found!</h1>
@@ -157,7 +108,7 @@ function TeamControls({ team, teamID, teamName, setMemeberNames }) {
 
   return (
     <div className='contentBox'>
-      <h3>Admin Controls</h3>
+      <h3>Admin Controls:</h3>
       {team?.requests.length > 0 && <>Requests:</>}
       <ul className='requestsList'>
         {team?.requests?.map((request) => {

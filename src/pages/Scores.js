@@ -1,4 +1,4 @@
-import { Chart as ChartJS, LinearScale, PointElement, LineElement, Tooltip, Legend } from 'chart.js'
+// import { Chart as ChartJS, LinearScale, PointElement, LineElement, Tooltip, Legend } from 'chart.js'
 import { Scatter } from 'react-chartjs-2'
 import RegattaData from '../components/scores/RegattaData'
 import { scrapeTeamListToDb, getTeamList } from '../lib/firebase'
@@ -154,93 +154,94 @@ import { collection, getDocs, getFirestore } from 'firebase/firestore'
 export default function Scores() {
   const db = getFirestore()
   const seasons = ['f22']
+  return <></>
 
-  ChartJS.register(LinearScale, PointElement, LineElement, Tooltip, Legend)
-  const [teams, setTeams] = useState([])
-  const [regattas, setRegattas] = useState([{ seasons: seasons, teams: teams, regatta: '' }])
+  // ChartJS.register(LinearScale, PointElement, LineElement, Tooltip, Legend)
+  // const [teams, setTeams] = useState([])
+  // const [regattas, setRegattas] = useState([{ seasons: seasons, teams: teams, regatta: '' }])
 
-  const options = {
-    scales: {
-      y: {
-        beginAtZero: true,
-        max: 20,
-      },
-    },
-  }
+  // const options = {
+  //   scales: {
+  //     y: {
+  //       beginAtZero: true,
+  //       max: 20,
+  //     },
+  //   },
+  // }
 
-  const data = {
-    datasets: [
-      {
-        label: 'Fake Scores',
-        data: [
-          { x: 1, y: 5 },
-          { x: 2, y: 10 },
-          { x: 3, y: 3 },
-        ],
-        backgroundColor: 'rgba(255, 0, 0, 1)',
-      },
-    ],
-  }
+  // const data = {
+  //   datasets: [
+  //     {
+  //       label: 'Fake Scores',
+  //       data: [
+  //         { x: 1, y: 5 },
+  //         { x: 2, y: 10 },
+  //         { x: 3, y: 3 },
+  //       ],
+  //       backgroundColor: 'rgba(255, 0, 0, 1)',
+  //     },
+  //   ],
+  // }
 
-  useEffect(() => {
-    scrapeTeamListToDb('NWISA', seasons)
+  // useEffect(() => {
+  //   scrapeTeamListToDb('NWISA', seasons)
 
-    getTeamList().then((docs) => {
-      // docs.forEach((doc) => console.log(doc.data()))
-      let tempDocs = []
-      docs.forEach((doc) => {
-        tempDocs.push(doc.id)
-      })
-      setTeams(tempDocs)
-      console.log(teams)
-    })
-  }, [])
+  //   getTeamList().then((docs) => {
+  //     // docs.forEach((doc) => console.log(doc.data()))
+  //     let tempDocs = []
+  //     docs.forEach((doc) => {
+  //       tempDocs.push(doc.id)
+  //     })
+  //     setTeams(tempDocs)
+  //     console.log(teams)
+  //   })
+  // }, [])
 
-  function removeRegatta(index, regatta) {
-    console.log(index, regatta)
-    let tempRegattas = regattas
-    tempRegattas.splice(index, 1)
-    console.log('TEMP', tempRegattas)
-    setRegattas([...tempRegattas])
-    // console.log(regattas)
-  }
+  // function removeRegatta(index, regatta) {
+  //   console.log(index, regatta)
+  //   let tempRegattas = regattas
+  //   tempRegattas.splice(index, 1)
+  //   console.log('TEMP', tempRegattas)
+  //   setRegattas([...tempRegattas])
+  //   // console.log(regattas)
+  // }
 
-  function updateRegatta(index, regatta) {
-    console.log(index, regatta)
-    if (regatta != '') {
-      let tempRegattas = regattas
-      tempRegattas[index] = { seasons: seasons, teams: teams, regatta: regatta }
-      setRegattas([...tempRegattas])
-      // console.log(regattas)
-    }
-  }
+  // function updateRegatta(index, regatta) {
+  //   console.log(index, regatta)
+  //   if (regatta != '') {
+  //     let tempRegattas = regattas
+  //     tempRegattas[index] = { seasons: seasons, teams: teams, regatta: regatta }
+  //     setRegattas([...tempRegattas])
+  //     // console.log(regattas)
+  //   }
+  // }
 
-  useEffect(() => {
-    console.log('CUR REGATTAS: ', regattas)
-  }, [regattas])
+  // useEffect(() => {
+  //   console.log('CUR REGATTAS: ', regattas)
+  // }, [regattas])
 
-  console.log(regattas.length, regattas)
+  // console.log(regattas.length, regattas)
 
-  return (
-    <main>
-      {regattas.map((rgta, i) => (
-        <span>{rgta.regatta}</span>
-      ))}
-      <div className="regattasHolder">
-        {regattas.map((e, i) => (
-          <RegattaData key={i} index={i} seasons={seasons} teams={teams} removeRegatta={removeRegatta} updateRegatta={updateRegatta} />
-        ))}
-        <button
-          onClick={() => {
-            // console.log(regattas)
-            setRegattas((cur) => [...cur, { seasons: seasons, teams: teams, regatta: '' }])
-            // console.log(regattas)
-          }}>
-          +
-        </button>
-      </div>
-      {/* <RegattaData /> */}
-      <Scatter options={options} data={data} />
-    </main>
-  )
+  // return (
+  //   <main>
+  //     {regattas.map((rgta, i) => (
+  //       <span>{rgta.regatta}</span>
+  //     ))}
+  //     <div className='regattasHolder'>
+  //       {regattas.map((e, i) => (
+  //         <RegattaData key={i} index={i} seasons={seasons} teams={teams} removeRegatta={removeRegatta} updateRegatta={updateRegatta} />
+  //       ))}
+  //       <button
+  //         onClick={() => {
+  //           // console.log(regattas)
+  //           setRegattas((cur) => [...cur, { seasons: seasons, teams: teams, regatta: '' }])
+  //           // console.log(regattas)
+  //         }}>
+  //         +
+  //       </button>
+  //     </div>
+  //     {/* <RegattaData /> */}
+  //     <Scatter options={options} data={data} />
+  //   </main>
+  // )
 }

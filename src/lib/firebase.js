@@ -99,4 +99,20 @@ const scrapeTeamListToDb = async (district, seasons) => {
   scrToDb({ seasons: seasons })
 }
 
-export { app, getUserWithUsername, getTeamWithName, getTeamWithID, getTeamList, scrapeTeamListToDb, getEventWithID, getEventsForTeam, getUserWithID }
+const getSailorElo = async (sailorname, position) => {
+  const q = query(collection(db, 'sailorsElo'), where('Name', '==', sailorname), where('Position', '==', position))
+  const doc = (await getDocs(q)).docs[0]
+  if (doc != undefined) {
+    return { data: doc.data(), id: doc.id }
+  } else {
+    return undefined
+  }
+}
+
+const getTeamElo = async (teamname) => {
+  const q = query(collection(db, 'sailorsElo'), where('Team', '==', teamname))
+  const docs = (await getDocs(q)).docs
+  return docs
+}
+
+export { app, getUserWithUsername, getTeamWithName, getTeamWithID, getTeamList, scrapeTeamListToDb, getEventWithID, getEventsForTeam, getUserWithID, getSailorElo, getTeamElo }

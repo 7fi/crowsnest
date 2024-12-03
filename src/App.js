@@ -16,7 +16,10 @@ import Teams from './pages/Teams'
 import Pairs from './pages/Pairs'
 import Scores from './pages/Scores'
 import Event from './pages/Event'
+import Events from './pages/Events'
 import CreateEvent from './pages/CreateEvent'
+import TestDrag from './pages/TestDrag'
+import Rankings from './pages/Rankings'
 
 export default function App() {
   const userData = useUserData()
@@ -32,12 +35,15 @@ export default function App() {
           <Route path='/crowsnest/profile/:profileName' element={<Profile />} />
           {/* <Route path="/crowsnest/profile" element={<Navigate to={`/crowsnest/profile/${userData.username}`} />} /> */}
           <Route path='/crowsnest/team/:teamName' element={<Team />} />
+          <Route path='/crowsnest/team/:teamName/events' element={<Events />} />
           <Route path='/crowsnest/teams' element={<Teams />} />
           <Route path='/crowsnest/event/create' element={<CreateEvent />} />
           <Route path='/crowsnest/event/:eventID' element={<Event />} />
           <Route path='/crowsnest/createteam' element={<CreateTeam />} />
           <Route path='/crowsnest/team/:teamName/pairs' element={<Pairs />} />
           <Route path='/crowsnest/scores' element={<Scores />} />
+          <Route path='/crowsnest/rankings/:position/:sailor' element={<Rankings />} />
+          <Route path='/crowsnest/drag' element={<TestDrag />} />
           <Route path='/crowsnest/:text' element={<NotFound />} />
         </Routes>
         <Toaster position='top-center' reverseOrder={false} />

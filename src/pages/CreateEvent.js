@@ -129,7 +129,7 @@ function EventNameForm() {
     e.preventDefault()
 
     // const eventDoc = doc(db, 'events')
-    const eventObj = { name: eventnameValue, startDate: eventStartValue, endDate: eventEndValue, description: eventDescriptionValue, location: eventLocationValue, sport: eventSport, type: eventType, team: eventTeamName != '' ? eventTeamName : userTeams[0], going: [], maybe: [], ngoing: [] }
+    const eventObj = { name: eventnameValue, startDate: eventStartValue, endDate: eventEndValue, description: eventDescriptionValue, location: eventLocationValue, sport: eventSport, type: eventType, team: eventTeamName != '' ? eventTeamName : userTeams[0], going: [], maybe: [], ngoing: [], rides: [] }
     console.log(eventObj)
 
     const eventDoc = await addDoc(collection(db, 'events'), eventObj)

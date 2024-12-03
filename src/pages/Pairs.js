@@ -28,25 +28,23 @@ export default function Page() {
         onDragEnd={(...props) => {
           // console.log(props)
         }}>
-        <Droppable droppableId='droppable-1'>
+        <Droppable droppableId='droppable'>
           {(provided, _) => (
             <div className='pairSlots' ref={provided.innerRef} {...provided.droppableProps}>
               {[...Array(Math.ceil(memberList.length / 2) || 1)].map((e, i) => (
                 <Draggable draggableId={'draggable-' + i} index={i} key={i}>
-                  {(provided, snapshot) => <Pairing prov={provided} />}
+                  {(provided, snapshot) => <Pairing prov={provided} innerRef={provided.innerRef} />}
                 </Draggable>
               ))}
               {provided.placeholder}
             </div>
           )}
-        </Droppable>
-        <Droppable droppableId='droppable-2'>
+          {/* </Droppable>
+        <Droppable droppableId='droppable-2'> */}
           {(provided, _) => (
             <div className='nameList' ref={provided.innerRef} {...provided.droppableProps}>
               {[...Array(memberList.length || 1)].map((e, i) => (
-                <Draggable draggableId={'draggable2-' + i} index={i} key={i}>
-                  {(provided, snapshot) => <Name name={memberList[i]} prov={provided} />}
-                </Draggable>
+                <Name name={memberList[i]} index={i} />
               ))}
               {/* {[...Array(25)].map((e, i) => (
                 <Draggable draggableId={'draggable2-' + i} index={i}>
@@ -58,6 +56,28 @@ export default function Page() {
           )}
         </Droppable>
       </DragDropContext>
+
+      {/* <Droppable
+        droppableId='pairDrop'
+        renderClone={(provided, snapshot, rubric) => (
+          <div {...provided.draggableProps} {...provided.dragHandleProps} ref={provided.innerRef}>
+            Item id: {items[rubric.source.index].id}
+          </div>
+        )}>
+        {(provided) => (
+          <div ref={provided.innerRef} {...provided.droppableProps}>
+            {items.map((item) => (
+              <Draggable draggableId={item.id} index={item.index}>
+                {(provided, snapshot) => (
+                  <div {...provided.draggableProps} {...provided.dragHandleProps} ref={provided.innerRef}>
+                    Item id: {item.id}
+                  </div>
+                )}
+              </Draggable>
+            ))}
+          </div>
+        )}
+      </Droppable> */}
     </>
   )
 }

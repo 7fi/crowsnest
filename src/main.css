@@ -409,3 +409,8 @@ select {
   align-items: center;
   padding: 0.3rem;
 }
+
+.flexCol {
+  display: flex;
+  flex-direction: column;
+}

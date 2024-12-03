@@ -23,6 +23,11 @@ service cloud.firestore {
         allow create: if canCreateTeamname();
       }
 
+      match /sailorElo/{sailorID} {
+      	allow read;
+        allow create: if true;
+      }
+
       function isValidUser(userId) {
         let isOwner = request.auth.uid == userId;
       	let username = request.resource.data.username;
