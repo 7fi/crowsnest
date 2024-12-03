@@ -26,8 +26,13 @@ export default function Rankings() {
       <h2>
         Current {position} rating: {rating}
       </h2>
+      {/* <h2>Scores by race (lower is better)</h2>
+      <PosNegBarChart data={sailorRaces} dataKey='score' />
+      <h2>Ratio by race (higher is better)</h2>
+      <span>(essentially percentage of fleet beaten)</span>
+      <PosNegBarChart data={sailorRaces} dataKey='ratio' /> */}
       <h2>Ranking changes by race</h2>
-      <PosNegBarChart data={sailorRaces} />
+      <PosNegBarChart data={sailorRaces} dataKey='change' />
       <h2>Ranking change over time </h2>
       <EloLineChart data={sailorRaces} />
       <a href={`https://scores.collegesailing.org/sailors/${sailor.toLowerCase().replace(' ', '-')}/`} target='1'>

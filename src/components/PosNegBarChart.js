@@ -1,6 +1,6 @@
 import { BarChart, Bar, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ReferenceLine, ResponsiveContainer } from 'recharts'
 
-export default function PosNegBarChart({ data }) {
+export default function PosNegBarChart({ data, dataKey }) {
   const colors = ['#8884d8', '#82ca9d', '#ffc658', '#ff8042', '#8dd1e1']
   const eventToColor = {}
 
@@ -34,17 +34,33 @@ export default function PosNegBarChart({ data }) {
     return null // No label for non-unique events
   }
 
+  const CustomTooltip = ({ active, payload, label }) => {
+    if (active) {
+      return (
+        <>
+          <div className='contentBox' style={{ padding: 4, fontSize: '0.8rem' }}>
+            Rating Change: {payload[0].payload.change.toFixed(2)}
+            <br />
+            Race Score : {payload[0].payload.score}
+            <br />
+            Race Ratio: {payload[0].payload.ratio.toFixed(2)}
+            <br />
+            Race ID: {payload[0]?.payload?.raceID.split('/')[1]}/{payload[0]?.payload?.raceID.split('/')[2]}
+          </div>
+        </>
+      )
+    }
+
+    return null
+  }
+
   return (
     <ResponsiveContainer width='100%' height={400}>
       <BarChart margin={{ top: 20, right: 30, bottom: 100, left: 30 }} data={data}>
         <XAxis dataKey='raceID' tick={<CustomTick />} height={60} interval={0} />
         <YAxis />
-        <Tooltip
-          labelFormatter={(race, props) => {
-            return `${props[0]?.value.toFixed(2)} ${race.split('/')[1]}/${race.split('/')[2]}`
-          }}
-        />
-        <Bar dataKey='change' fill='#fff'>
+        <Tooltip content={<CustomTooltip />} />
+        <Bar dataKey={dataKey} fill='#fff'>
           {data.map((entry, index) => {
             return <Cell key={`cell-${index}`} fill={eventToColor[entry.raceID.split('/')[0] + '/' + entry.raceID.split('/')[1]]} />
           })}

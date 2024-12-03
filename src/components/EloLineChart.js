@@ -21,6 +21,27 @@ export default function EloLineChart({ data }) {
     }
     return null // No label for non-unique events
   }
+  const CustomTooltip = ({ active, payload, label }) => {
+    if (active) {
+      return (
+        <>
+          <div className='contentBox' style={{ padding: 4, fontSize: '0.8rem' }}>
+            Sailor Rating: {payload[0].payload.newRating.toFixed(2)}
+            <br />
+            Average Regatta Rating: {payload[0].payload.regAvg.toFixed(2)}
+            <br />
+            Race Score : {payload[0].payload.score}
+            <br />
+            Race Ratio: {payload[0].payload.ratio.toFixed(2)}
+            <br />
+            Race ID: {payload[0]?.payload?.raceID.split('/')[1]}/{payload[0]?.payload?.raceID.split('/')[2]}
+          </div>
+        </>
+      )
+    }
+
+    return null
+  }
   return (
     <ResponsiveContainer width='100%' height={400}>
       <LineChart
@@ -34,7 +55,7 @@ export default function EloLineChart({ data }) {
         <CartesianGrid strokeDasharray='3 3' />
         <XAxis dataKey='raceID' tick={<CustomTick />} height={60} interval={0} />
         <YAxis />
-        <Tooltip />
+        <Tooltip content={<CustomTooltip />} />
         <Line type='monotone' dataKey='newRating' stroke='#faa' />
         <Line type='monotone' dataKey='regAvg' stroke='#aaf' />
       </LineChart>
