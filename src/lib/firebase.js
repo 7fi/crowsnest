@@ -110,7 +110,7 @@ const getSailorElo = async (sailorname, position) => {
 }
 
 const getTeamElo = async (teamname) => {
-  const q = query(collection(db, 'sailorsElo'), where('Team', '==', teamname))
+  const q = query(collection(db, 'sailorsElo'), where('Teams', 'array-contains', teamname))
   const docs = (await getDocs(q)).docs
   return docs
 }

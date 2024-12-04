@@ -45,6 +45,8 @@ export default function PosNegBarChart({ data, dataKey }) {
             <br />
             Race Ratio: {payload[0]?.payload.ratio.toFixed(2)}
             <br />
+            Partner: {payload[0]?.payload.partner}
+            <br />
             Race ID: {payload[0]?.payload?.raceID.split('/')[1]}/{payload[0]?.payload?.raceID.split('/')[2]}
           </div>
         </>
