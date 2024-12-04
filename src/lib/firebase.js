@@ -109,10 +109,23 @@ const getSailorElo = async (sailorname, position) => {
   }
 }
 
-const getTeamElo = async (teamname) => {
-  const q = query(collection(db, 'sailorsElo'), where('Teams', 'array-contains', teamname))
-  const docs = (await getDocs(q)).docs
-  return docs
+const getAllTeams = async () => {
+  const thisDoc = await getDoc(doc(db, 'vars', 'eloTeams'))
+  if (thisDoc != undefined) {
+    return { data: thisDoc.data(), id: thisDoc.id }
+  } else {
+    return undefined
+  }
 }
 
-export { app, getUserWithUsername, getTeamWithName, getTeamWithID, getTeamList, scrapeTeamListToDb, getEventWithID, getEventsForTeam, getUserWithID, getSailorElo, getTeamElo }
+const getTeamElos = async (teamname) => {
+  const q = query(collection(db, 'eloTeams'), where('name', '==', teamname))
+  const doc = (await getDocs(q)).docs[0]
+  if (doc != undefined) {
+    return { data: doc.data(), id: doc.id }
+  } else {
+    return undefined
+  }
+}
+
+export { app, getUserWithUsername, getTeamWithName, getTeamWithID, getTeamList, scrapeTeamListToDb, getEventWithID, getEventsForTeam, getUserWithID, getSailorElo, getAllTeams, getTeamElos }

@@ -21,6 +21,7 @@ import CreateEvent from './pages/CreateEvent'
 import TestDrag from './pages/TestDrag'
 import Rankings from './pages/Rankings'
 import TeamRankings from './pages/TeamRankings'
+import EloTeams from './pages/EloTeams'
 
 export default function App() {
   const userData = useUserData()
@@ -44,6 +45,7 @@ export default function App() {
           <Route path='/crowsnest/team/:teamName/pairs' element={<Pairs />} />
           <Route path='/crowsnest/scores' element={<Scores />} />
           <Route path='/crowsnest/rankings/:position/:sailor' element={<Rankings />} />
+          <Route path='/crowsnest/rankings/team' element={<EloTeams />} />
           <Route path='/crowsnest/rankings/team/:teamName' element={<TeamRankings />} />
           <Route path='/crowsnest/drag' element={<TestDrag />} />
           <Route path='/crowsnest/:text' element={<NotFound />} />
