@@ -101,7 +101,9 @@ const scrapeTeamListToDb = async (district, seasons) => {
 
 const getSailorElo = async (sailorname, position) => {
   const q = query(collection(db, 'sailorsElo'), where('Name', '==', sailorname), where('Position', '==', position))
-  const doc = (await getDocs(q)).docs[0]
+  const docs = await getDocs(q)
+  console.log('reads: ' + docs.docs.length)
+  const doc = docs.docs[0]
   if (doc != undefined) {
     return { data: doc.data(), id: doc.id }
   } else {
@@ -111,6 +113,7 @@ const getSailorElo = async (sailorname, position) => {
 
 const getAllTeams = async () => {
   const thisDoc = await getDoc(doc(db, 'vars', 'eloTeams'))
+  console.log('reads: %d', 1)
   if (thisDoc != undefined) {
     return { data: thisDoc.data(), id: thisDoc.id }
   } else {
@@ -120,7 +123,9 @@ const getAllTeams = async () => {
 
 const getTeamElos = async (teamname) => {
   const q = query(collection(db, 'eloTeams'), where('name', '==', teamname))
-  const doc = (await getDocs(q)).docs[0]
+  const docs = await getDocs(q)
+  console.log('reads: ' + docs.docs.length)
+  const doc = docs.docs[0]
   if (doc != undefined) {
     return { data: doc.data(), id: doc.id }
   } else {

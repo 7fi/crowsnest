@@ -53,7 +53,7 @@ export default function TeamRankings() {
       <div className='contentBox'>
         <h3>Skippers: (in f24)</h3>
         {teamSkippers
-          // .filter((member) => member.races.some((race) => race.raceID.startsWith('f24')))
+          .filter((member) => member.seasons.includes('f24'))
           .sort((a, b) => {
             return b.rating - a.rating
           })
@@ -65,7 +65,7 @@ export default function TeamRankings() {
       <div className='contentBox'>
         <h3>Crews:</h3>
         {teamCrews
-          // .filter((member) => member.races.some((race) => race.raceID.startsWith('f24')))
+          .filter((member) => member.seasons.includes('f24'))
           .sort((a, b) => {
             return b.rating - a.rating
           })

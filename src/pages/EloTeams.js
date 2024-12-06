@@ -5,10 +5,12 @@ import { Link, useParams, useNavigate } from 'react-router-dom'
 export default function EloTeams() {
   const [teams, setTeams] = useState([])
 
-  getAllTeams().then((tempTeams) => {
-    let teams = tempTeams.data.teams
-    setTeams(teams)
-  })
+  useEffect(() => {
+    getAllTeams().then((tempTeams) => {
+      let teams = tempTeams.data.teams
+      setTeams(teams)
+    })
+  }, [])
 
   return (
     <>

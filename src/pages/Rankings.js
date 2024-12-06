@@ -7,6 +7,7 @@ import EloLineChart from '../components/EloLineChart'
 export default function Rankings() {
   const { position, sailor } = useParams()
   const [rating, setRating] = useState(1500)
+  const [global, setGlobal] = useState(1500)
   const [teamNames, setTeamNames] = useState([])
   const [sailorRaces, setSailorRaces] = useState([])
 
@@ -16,13 +17,14 @@ export default function Rankings() {
       setRating(tempSailor.data.Rating.toFixed(0))
       setSailorRaces(tempSailor.data.races)
       setTeamNames(tempSailor.data.Teams)
+      setGlobal(tempSailor.data.GlobalRank)
     })
   }, [sailor])
 
   return (
     <div style={{ padding: 15 }}>
       <h2>
-        Current {position} rating for {sailor}: {rating}
+        Current {position} rating for {sailor}: {rating} (globally ranked: #{global} for {position}s)
       </h2>
       Team{teamNames.length > 1 ? 's' : ''}:
       {teamNames.map((teamName) => (
