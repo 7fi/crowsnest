@@ -21,3 +21,6 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+*.csv
+elo calculation/thecrowsnestapp-creds.json
+elo calculation/EloScript.py.lprof

@@ -4,7 +4,7 @@ export default function Home() {
   return (
     <main>
       <h1>Welcome!</h1>
-      <Link to={'/crowsnest/scores'}>Scores!</Link>
+      <Link to={'/crowsnest/rankings/team'}>Rankings!</Link>
     </main>
   )
 }

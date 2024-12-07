@@ -121,6 +121,16 @@ const getAllTeams = async () => {
   }
 }
 
+const getTop100People = async () => {
+  const thisDoc = await getDoc(doc(db, 'vars', 'topSailors'))
+  console.log('reads: %d', 1)
+  if (thisDoc != undefined) {
+    return { data: thisDoc.data(), id: thisDoc.id }
+  } else {
+    return undefined
+  }
+}
+
 const getTeamElos = async (teamname) => {
   const q = query(collection(db, 'eloTeams'), where('name', '==', teamname))
   const docs = await getDocs(q)
@@ -133,4 +143,4 @@ const getTeamElos = async (teamname) => {
   }
 }
 
-export { app, getUserWithUsername, getTeamWithName, getTeamWithID, getTeamList, scrapeTeamListToDb, getEventWithID, getEventsForTeam, getUserWithID, getSailorElo, getAllTeams, getTeamElos }
+export { app, getUserWithUsername, getTeamWithName, getTeamWithID, getTeamList, scrapeTeamListToDb, getEventWithID, getEventsForTeam, getUserWithID, getSailorElo, getAllTeams, getTeamElos, getTop100People }
