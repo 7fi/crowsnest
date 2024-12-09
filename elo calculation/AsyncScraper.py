@@ -135,7 +135,7 @@ def processData(soup):
                 4, (4 + raceCount)) if scoreData[(i*(numDivisions + 1)) - (numDivisions + 1) + 2].contents[j].text.isdigit()]
 
         # teamNameEls = [i.parent for i in sailors.find_all('a') if i['href'] == teamLink] # this actually doesnt work because what if teams have two boats...
-        teamNameEls = [i for i in sailors.find_all('td', class_="teamname") if i.text == teamName]
+        teamNameEls = [i for i in sailors.find_all('td', class_="teamname") if i.text == teamName and i.previous_sibling.find('a')['href'] == teamLink]
         
         if len(teamNameEls) == 0:
             print("team name entered wrong. Skipping team", teamName, regatta)
@@ -143,20 +143,14 @@ def processData(soup):
         
         teamNameEl = teamNameEls[0]
 
-        rowClass = teamNameEl.parent['class'][1]
-
         index = 0
         row = teamNameEl.parent
         
-        prevSkipper = ""
-        prevCrew = ""
+        skippers = []
+        crews = []
         
-        # skipperName = ""
-        
-        # crewName = ""
-        
-        # only chooses active sailor rows
-        while row.next_sibling is not None and row['class'][0] != "topborder" and row['class'][0] != "reserves-row" or index == 0:
+        # only chooses active sailor rows (.next_sibling is not None)
+        while row is not None and row['class'][0] != "topborder" and row['class'][0] != "reserves-row" or index == 0:
             curRow = row
             while curRow.find_all('td', class_="division-cell") == []:
                 curRow = curRow.previous_sibling
@@ -165,84 +159,95 @@ def processData(soup):
             # Get Skipper
             skipper = row.contents[len(row.contents) - 4]
             skipperName = skipper.text.split(" '", 1)[0]
-            
-            if skipperName == "No show":
-                skipperName = ""
 
             # Get Crew
             crew = row.contents[len(row.contents) - 2]
             crewName = crew.text.split(" '", 1)[0]
             
-            if crewName == "No show":
-                crewName = ""
-            
-            if skipperName != "" and crewName != "":
+            if skipperName != "" and skipperName != "No show":
                 skipperRaceNums = skipper.next_sibling.text.split(",")
-                skipperRaceNums = getRaceNums([i.split("-", 1) for i in skipperRaceNums], len(teamScores[division]))
-                if len(skipperRaceNums) == 0:
-                    print(f"skipper {skipperName} sailed no races? skipping")
-                    row = row.next_sibling
-                    index += 1
-                    continue
-                
-                crewRaceNums = crew.next_sibling.text.split(",")
-                crewRaceNums = getRaceNums([i.split("-", 1) for i in crewRaceNums], len(teamScores[division]))
-                
-                if len(crewRaceNums) == 0:
-                    print(f"crew {crewName} sailed no races? skipping")
-                    row = row.next_sibling
-                    index += 1
-                    continue
-                
-                
-                skipperPartners = [(crewName if curRace in crewRaceNums else "Unknown") for curRace in range(1, skipperRaceNums[-1] + 1)]
-                crewPartners = [(skipperName if curRace in skipperRaceNums else "Unknown") for curRace in range(1, crewRaceNums[-1] + 1)]
-                
-                for i, score in enumerate(teamScores[division]):
-                    if i + 1 in skipperRaceNums:
-                        finalRaces.append(makeRaceSeries(score, teamHome, i + 1, division, skipperName, "Skipper", skipperPartners[i], host,regatta,[t for t in teamHomes], date, teamLink))
-                    if i + 1 in crewRaceNums:
-                        finalRaces.append(makeRaceSeries(score, teamHome, i + 1, division, crewName, "Crew", crewPartners[i], host,regatta,[t for t in teamHomes],date, teamLink))
-                
-                prevSkipper = skipperName
-                prevCrew = crewName
+                skippers.append({'name':skipperName, 'races': getRaceNums([i.split("-", 1) for i in skipperRaceNums], len(teamScores[division])), 'div':division})
             
-            elif skipperName != "":
-                raceNums = skipper.next_sibling.text.split(",")
-                raceNums = getRaceNums([i.split("-", 1) for i in raceNums], len(teamScores[division]))
-
-                # need to implement previous persion if unknown
-                # previous implementation doesn't work anymore becase it relied on changing a person's races. 
-                # now have to edit the dataframe if we use same approach.
-
-                for i, score in enumerate(teamScores[division]):
-                    if i + 1 in raceNums:
-                        finalRaces.append(makeRaceSeries(score, teamHome, i + 1, division, skipperName, "Skipper", "Unknown", host,regatta,[t for t in teamHomes],date, teamLink))
+            if crewName != "":
+                crewRaceNums = crew.next_sibling.text.split(",")
+                crews.append({'name':crewName, 'races': getRaceNums([i.split("-", 1) for i in crewRaceNums], len(teamScores[division])), 'div':division})
                 
-                        
-                prevSkipper = skipperName
-                
-            elif crewName != "":
-                raceNums = crew.next_sibling.text.split(",")
-                raceNums = getRaceNums([i.split("-", 1) for i in raceNums], len(teamScores[division]))
-                
-                # still need prev person
-                for i, score in enumerate(teamScores[division]):
-                    if i + 1 in raceNums:
-                        finalRaces.append(makeRaceSeries( score, teamHome, i + 1, division, crewName, "Crew", "Unknown", host,regatta,[t for t in teamHomes],date, teamLink))
-    
-                    
-                prevCrew = crewName
-
             row = row.next_sibling
             index += 1
-        # update skippers and crews
         
-        for i, score in enumerate(teamScores[division]):
-                    if i + 1 in skipperRaceNums:
-                        finalRaces.append(makeRaceSeries(score, teamHome, i + 1, division, skipperName, "Skipper", skipperPartners[i], host,regatta,[t for t in teamHomes], date, teamLink))
-                    if i + 1 in crewRaceNums:
-                        finalRaces.append(makeRaceSeries(score, teamHome, i + 1, division, crewName, "Crew", crewPartners[i], host,regatta,[t for t in teamHomes],date, teamLink))
+        
+        # check for same person in 2 places at once and discard
+        # skipper and crew for same boat in same races?
+        for skipper in skippers:
+            for crew in crews:
+                for i,race in enumerate(skipper['races']):
+                    if skipper['name'] == crew['name'] and race in crew['races'] and skipper['div'] == crew['div']:
+                        skippers.remove(skipper)
+                        crews.remove(crew)
+                        print('removed duplicate skipper/crew',skipper['name'],crew['name'], regatta)
+                        break
+                        
+        # Skipper for both A and B maybe shouldnt be removed? it is legal to do once
+        for skipper in skippers:
+            # self = 0
+            # for other in skippers: 
+            #     if other['name'] == skipper['name']:
+            #         self +=1
+            # if self > 1 and skipper in skippers:
+            #     skippers.remove(skipper)
+            #     print('removed duplicate skipper',skipper['name'], regatta)
+            #     continue
+            
+            # sail for two different boats at the same time (impossible)
+            
+            for i, score in enumerate(teamScores[skipper['div']]):
+                    if i + 1 in skipper['races']:
+                        for race in finalRaces:
+                            if race['raceID'] == f"{regatta}/{str(i + 1)}{skipper['div']}":
+                                if race['Sailor'] == skipper['name'] and race['Div'] == skipper['div']:
+                                    print("found illegal duplicate skipper:", skipper['name'], regatta)
+                                    finalRaces = [s for s in finalRaces if not s.equals(race)]
+                                    skipper['races'].remove(i+1)
+
+        # Crew for boath A and B maybe shouldnt be removed? it is legal to do once
+        for crew in crews:
+        #     self = 0
+        #     for other in crews: 
+        #         if other['name'] == crew['name']:
+        #             self +=1
+        #     if self > 1 and crew in crews:
+        #         crews.remove(crew)
+        #         print('removed duplicate crew',crew['name'], regatta)
+            
+            for i, score in enumerate(teamScores[crew['div']]):
+                    if i + 1 in crew['races']:
+                        for race in finalRaces:
+                            if race['raceID'] == f"{regatta}/{str(i + 1)}{crew['div']}":
+                                if race['Sailor'] == crew['name'] and race['Div'] == crew['div']:
+                                    print("found illegal duplicate crew:", crew['name'], regatta)
+                                    finalRaces = [s for s in finalRaces if not s.equals(race)]
+                                    crew['races'].remove(i+1)
+        
+        
+        # update skippers and crews once all rows for a team are done.
+        for skipper in skippers:
+            partners = [crew['name'] for race in skipper['races'] for crew in crews if crew['div'] == skipper['div'] and race in crew['races']]
+            for i, score in enumerate(teamScores[skipper['div']]):
+                if i + 1 in skipper['races']:
+                    partner = partners[skipper['races'].index(i + 1)] if skipper['races'].index(i + 1) < len(partners) else "Unknown"
+                    finalRaces.append(makeRaceSeries(score, teamHome, i + 1, skipper['div'], skipper['name'], "Skipper", partner, host,regatta,[t for t in teamHomes], date, teamLink))
+        
+        for crew in crews:
+            partners = [skipper['name'] for race in crew['races'] for skipper in skippers if skipper['div'] == crew['div'] and race in skipper['races']]
+            if teamName == 'UC Davis':
+                print(crew['name'],partners)
+            for i, score in enumerate(teamScores[crew['div']]):
+                if i + 1 in crew['races']:
+                    partner = partners[crew['races'].index(i + 1)] if crew['races'].index(i + 1) < len(partners) else "Unknown"
+                    finalRaces.append(makeRaceSeries(score, teamHome, i + 1, crew['div'], crew['name'], "Crew", partner, host,regatta,[t for t in teamHomes],date, teamLink))
+
+        skippers = []
+        crews = []
 
     return finalRaces
 
@@ -283,12 +288,13 @@ async def main(regattas):
 
 if __name__ == "__main__":
     
+    seasons = ['f24', 's24', 'f23', 's23', 'f22','s22', 'f21', 's21', 'f20', 's20']
     # seasons = ['f24', 's24', 'f23', 's23', 'f22','s22']
-    seasons = ['f24']
+    # seasons = ['f24']
 
     df_races = pd.DataFrame()
     try:
-        df_races = pd.read_csv("races123.csv")
+        df_races = pd.read_csv("races.csv")
     except:
         df_races = pd.DataFrame(columns=["Score", "Div", "Sailor", "Position", "Partner", "Venue", "Regatta", "Teams"])
 
@@ -306,12 +312,13 @@ if __name__ == "__main__":
                 if (scoring == "3 Divisions" or scoring == "2 Divisions" or scoring == "Combined"):
                     regattas[season + "/" + link['href']] = {"link":season + "/" + link['href'], "scoring":scoring}
 
-    # regattas = {'f24/fall-pacific-coast':{'link':'f24/fall-pacific-coast','scoring':'3 Divisions'}}
+    # regattas = {'f24/stoney-burke-jv':{'link':'f24/stoney-burke-jv','scoring':'2 Divisions'}}
+
     start = time.time()
     totalRows = asyncio.run(main(regattas))
     totalRows = [sub for row in totalRows for sub in row]
     df_races = pd.DataFrame(totalRows)
-    df_races.to_csv(f"asyncracestest.csv", index=False)
+    df_races.to_csv(f"races.csv", index=False)
 
     end = time.time()
     print(f"{int((end-start) // 60)}:{int((end-start) % 60)}")

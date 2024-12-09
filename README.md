@@ -39,15 +39,22 @@ Users will be able to view statistics about their individual/team perfromance ba
 website:
 
 - [x] Elo change vs partners
-- [_] Venue list and frequency
+- [x] Venue list and frequency
+
+features:
+
+- [_] sailor v sailor comparison
+- [_] regatta page
 
 scraper:
 
-- [_] fix unknown partners
+- [x] fix unknown partners
+- [x] Huskies being marked as on both Northeastern and U Conn if sailed in a regatta together (same with MMA and KP)
+- [x] Duplicate sailors being counted twice if sailed for different boats
 - [_] wind condition support? (with google places api and historical weather data)
 
 elo calc:
 
 - [_] fix skipping small regattas
 - [_] sailors with multiple teams show up on both team pages if sailed in most recent season
-- [_] Huskies being marked as on both Northeastern and U Conn if sailed in a regatta together
+- [_] implement 25 races vs out of conference for top 100

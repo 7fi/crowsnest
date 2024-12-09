@@ -23,6 +23,8 @@ import Rankings from './pages/Rankings'
 import TeamRankings from './pages/TeamRankings'
 import EloTeams from './pages/EloTeams'
 import GlobalRankings from './pages/GlobalRankings'
+import RegattaRankings from './pages/RegattaRankings'
+import RankingsHome from './pages/RankingsHome'
 
 export default function App() {
   const userData = useUserData()
@@ -45,10 +47,12 @@ export default function App() {
           <Route path='/crowsnest/createteam' element={<CreateTeam />} />
           <Route path='/crowsnest/team/:teamName/pairs' element={<Pairs />} />
           <Route path='/crowsnest/scores' element={<Scores />} />
+          <Route path='/crowsnest/rankings/' element={<RankingsHome />} />
           <Route path='/crowsnest/rankings/:position' element={<GlobalRankings />} />
           <Route path='/crowsnest/rankings/:position/:sailor' element={<Rankings />} />
           <Route path='/crowsnest/rankings/team' element={<EloTeams />} />
           <Route path='/crowsnest/rankings/team/:teamName' element={<TeamRankings />} />
+          <Route path='/crowsnest/rankings/regatta/:regattaName' element={<RegattaRankings />} />
           <Route path='/crowsnest/drag' element={<TestDrag />} />
           <Route path='/crowsnest/:text' element={<NotFound />} />
         </Routes>
