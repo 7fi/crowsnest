@@ -143,4 +143,16 @@ const getTeamElos = async (teamname) => {
   }
 }
 
-export { app, getUserWithUsername, getTeamWithName, getTeamWithID, getTeamList, scrapeTeamListToDb, getEventWithID, getEventsForTeam, getUserWithID, getSailorElo, getAllTeams, getTeamElos, getTop100People }
+const getRegattaElos = async (regattaName) => {
+  const q = query(collection(db, 'eloRegattas'), where('regattaName', '==', regattaName))
+  const docs = await getDocs(q)
+  console.log('reads: ' + docs.docs.length)
+  const doc = docs.docs[0]
+  if (doc != undefined) {
+    return { data: doc.data(), id: doc.id }
+  } else {
+    return undefined
+  }
+}
+
+export { app, getUserWithUsername, getTeamWithName, getTeamWithID, getTeamList, scrapeTeamListToDb, getEventWithID, getEventsForTeam, getUserWithID, getSailorElo, getAllTeams, getTeamElos, getTop100People, getRegattaElos }

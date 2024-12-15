@@ -1,7 +1,7 @@
 import { BarChart, Bar, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ReferenceLine, ResponsiveContainer } from 'recharts'
 
-export default function PosNegBarChart({ data, dataKey }) {
-  const colors = ['#8884d8', '#82ca9d', '#ffc658', '#ff8042', '#8dd1e1']
+export default function PosNegBarChart({ data, dataKey, showLabels, color }) {
+  const colors = ['#ffc658', '#82ca9d', '#8884d8', '#ff8042', '#8dd1e1']
   const eventToColor = {}
 
   // const data = datax.map((race, index) => ({ race, change: datay[index] }))
@@ -19,7 +19,7 @@ export default function PosNegBarChart({ data, dataKey }) {
     const previousEvent = index > 0 ? data[index - 1]?.raceID.split('/')[0] + '/' + data[index - 1]?.raceID.split('/')[1] : null
 
     // Only render the label if the event is different from the previous one
-    if (currentEvent !== previousEvent) {
+    if (currentEvent !== previousEvent && showLabels) {
       return (
         <text
           x={x}
@@ -43,6 +43,8 @@ export default function PosNegBarChart({ data, dataKey }) {
             <br />
             Race Score : {payload[0]?.payload.score}
             <br />
+            Predicted Score : {payload[0]?.payload.predicted}
+            <br />
             Race Ratio: {payload[0]?.payload.ratio.toFixed(2)}
             <br />
             Partner: {payload[0]?.payload.partner}
@@ -57,14 +59,14 @@ export default function PosNegBarChart({ data, dataKey }) {
   }
 
   return (
-    <ResponsiveContainer width='100%' height={400}>
-      <BarChart margin={{ top: 20, right: 30, bottom: 100, left: 30 }} data={data}>
-        <XAxis dataKey='raceID' tick={<CustomTick />} height={60} interval={0} />
+    <ResponsiveContainer width='100%' height={showLabels ? 400 : 120}>
+      <BarChart margin={{ top: 20, right: showLabels ? 30 : 0, bottom: showLabels ? 100 : 0, left: showLabels ? 30 : 0 }} data={data}>
+        <XAxis dataKey='raceID' tick={<CustomTick />} height={showLabels ? 60 : 0} interval={0} />
         <YAxis />
         <Tooltip content={<CustomTooltip />} />
         <Bar dataKey={dataKey} fill='#fff'>
           {data.map((entry, index) => {
-            return <Cell key={`cell-${index}`} fill={eventToColor[entry.raceID.split('/')[0] + '/' + entry.raceID.split('/')[1]]} />
+            return <Cell key={`cell-${index}`} fill={color ? color : eventToColor[entry.raceID.split('/')[0] + '/' + entry.raceID.split('/')[1]]} />
           })}
         </Bar>
         <ReferenceLine y={0} stroke='#000' />

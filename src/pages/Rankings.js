@@ -46,9 +46,9 @@ export default function Rankings() {
       <div>
         {sortedPartners.map((partner, index) =>
           partner.name != 'Unknown' ? (
-            <Link to={`/crowsnest/rankings/${position == 'skipper' ? 'crew' : 'skipper'}/${partner.name}`}>
-              <div className='contentBox' key={partner.name} style={{ margin: '5px' }}>
-                <span style={{ color: '#aaa' }}>({index + 1})</span> {partner.name}:{' '}
+            <Link to={`/crowsnest/rankings/${position == 'skipper' ? 'crew' : 'skipper'}/${partner.name}`} key={index}>
+              <div className='contentBox' style={{ margin: '5px' }}>
+                <span className='secondaryText'>({index + 1})</span> {partner.name}:{' '}
                 <span style={{ color: partner.change > 0 ? 'green' : 'red' }}>
                   {partner.change > 0 ? '+' : ''}
                   {partner.change.toFixed(0)}
@@ -90,7 +90,7 @@ export default function Rankings() {
         {sortedVenues.map((venue, index) =>
           venue.name != 'Unknown' ? (
             <div className='contentBox' key={venue.name} style={{ margin: '5px' }}>
-              <span style={{ color: '#aaa' }}>({index + 1})</span> {venue.name}:{' '}
+              <span className='secondaryText'>({index + 1})</span> {venue.name}:{' '}
               <span style={{ color: venue.change > 0 ? 'green' : 'red' }}>
                 {venue.change > 0 ? '+' : ''}
                 {venue.change.toFixed(0)}
@@ -101,6 +101,42 @@ export default function Rankings() {
             <></>
           )
         )}
+      </div>
+    )
+  }
+
+  const RaceByRace = ({ races }) => {
+    return (
+      <div style={{ height: 425, overflow: 'scroll' }}>
+        {races
+          .slice(0) // dont mutate original array.
+          .reverse()
+          .map((race, i) => (
+            <Link to={`/crowsnest/rankings/regatta/${race.raceID}`} key={i}>
+              <div className='contentBox flexRowContainer' style={{ justifyContent: 'space-between' }}>
+                <div>
+                  <span className='secondaryText'>
+                    {race.date[1].toString().padStart(2, '0')}/{race.date[2].toString().padStart(2, '0')}/{race.date[0]}
+                  </span>
+                  {race.score < 10 ? '   ' : ' '}
+                  {race.score}
+                  {race.score == 1 ? 'st' : race.score == 2 ? 'nd' : race.score == 3 ? 'rd' : 'th'}{' '}
+                  <span style={{ textTransform: 'capitalize', fontWeight: 'bold' }}>
+                    {race.raceID.split('/')[1].split('-').join(' ')} {race.raceID.split('/')[2]}
+                  </span>{' '}
+                </div>
+                <div>
+                  Partner: {race.partner} &nbsp;
+                  {(race.newRating - race.change).toFixed(0)}
+                  <span style={{ color: race.change > 0 ? 'green' : 'red', float: 'right' }}>
+                    &nbsp;
+                    {race.change > 0 ? '+' : ''}
+                    {race.change.toFixed(0)}
+                  </span>
+                </div>
+              </div>
+            </Link>
+          ))}
       </div>
     )
   }
@@ -118,7 +154,7 @@ export default function Rankings() {
         </Link>
         )
       </h2>
-      <span style={{ color: '#ccc', position: 'absolute', right: 10 }}> * all-time is only from s22 onwards</span>
+      <span style={{ color: '#ccc', position: 'absolute', right: 10 }}> * all-time is only from s20 onwards</span>
       Team{teamNames.length > 1 ? 's' : ''}:{' '}
       {teamNames.map((teamName, i) => (
         <Link style={{ textDecoration: 'underline' }} key={teamName} to={`/crowsnest/rankings/team/${teamName}`}>
@@ -126,20 +162,24 @@ export default function Rankings() {
         </Link>
       ))}{' '}
       <h2>Ranking changes by race</h2>
-      <PosNegBarChart data={sailorRaces} dataKey='change' />
+      <PosNegBarChart showLabels={true} data={sailorRaces} dataKey='change' />
       <h2>Ranking change over time </h2>
       <EloLineChart data={sailorRaces} />
       <h2>Elo changes by partner (higher is better)</h2>
       (keep in mind that these values are skewed due to earlier races being highly influential)
       <RaceResults races={sailorRaces} />
+      <h2>
+        Race by race breakdown: <span className='secondaryText'>(scroll for more)</span>
+      </h2>
+      <RaceByRace races={sailorRaces} />
       <h2>Elo changes by Venue (higher is better)</h2>
       (keep in mind that these values are skewed due to earlier races being highly influential)
       <VenueResults races={sailorRaces} />
       <h2>Scores by race (lower is better)</h2>
-      <PosNegBarChart data={sailorRaces} dataKey='score' />
+      <PosNegBarChart showLabels={true} data={sailorRaces} dataKey='score' />
       <h2>Ratio by race (higher is better)</h2>
       <span>(essentially percentage of fleet beaten)</span>
-      <PosNegBarChart data={sailorRaces} dataKey='ratio' />
+      <PosNegBarChart showLabels={true} data={sailorRaces} dataKey='ratio' />
     </div>
   )
 }

@@ -5,6 +5,7 @@
   --border: #d1d1d1;
   --highlight1: #12a5b1;
   --highlight2: #203960;
+  --highlight3: #aaa;
   --text: #000;
   --danger: #f00;
   --sucess: #3ee13e;
@@ -20,6 +21,7 @@
   --border: #363636;
   --highlight1: #222;
   --highlight2: #222;
+  --highlight3: #444;
   --text: #eee;
 }
 [data-theme='red'] {
@@ -35,7 +37,7 @@
 body {
   margin: 0;
   padding: 0;
-  margin-top: 75px;
+  margin-top: 80px;
   font-family: var(--font), sans-serif;
   background-color: var(--bg);
   color: var(--text);
@@ -413,4 +415,29 @@ select {
 .flexCol {
   display: flex;
   flex-direction: column;
+}
+
+/* rankings */
+
+.secondaryText {
+  color: var(--highlight3);
+}
+
+.raceEntryAligned {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+}
+
+.raceEntryAlignedFull {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.raceElementBox {
+  bottom: 5px;
+  top: 220px;
+  right: 15px;
+  left: 15px;
+  overflow: scroll;
+  position: absolute;
 }
