@@ -1,8 +1,10 @@
 import { BarChart, Bar, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ReferenceLine, ResponsiveContainer } from 'recharts'
+import { useNavigate } from 'react-router-dom'
 
-export default function PosNegBarChart({ data, dataKey, showLabels, color }) {
+export default function PosNegBarChart({ data, dataKey, showLabels, color, pos }) {
   const colors = ['#ffc658', '#82ca9d', '#8884d8', '#ff8042', '#8dd1e1']
   const eventToColor = {}
+  const navigate = useNavigate()
 
   // const data = datax.map((race, index) => ({ race, change: datay[index] }))
 
@@ -66,7 +68,16 @@ export default function PosNegBarChart({ data, dataKey, showLabels, color }) {
         <Tooltip content={<CustomTooltip />} />
         <Bar dataKey={dataKey} fill='#fff'>
           {data.map((entry, index) => {
-            return <Cell key={`cell-${index}`} fill={color ? color : eventToColor[entry.raceID.split('/')[0] + '/' + entry.raceID.split('/')[1]]} />
+            console.log(entry)
+            return (
+              <Cell
+                key={`cell-${index}`}
+                onClick={() => {
+                  navigate(`/crowsnest/rankings/regatta/${entry.raceID}/${pos}`)
+                }}
+                fill={color ? color : eventToColor[entry.raceID.split('/')[0] + '/' + entry.raceID.split('/')[1]]}
+              />
+            )
           })}
         </Bar>
         <ReferenceLine y={0} stroke='#000' />

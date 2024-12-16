@@ -1,7 +1,7 @@
 import Navbar from './components/Navbar'
 //eslint-disable-next-line
 import { app } from './lib/firebase'
-import { Route, Routes } from 'react-router'
+import { Route, Routes, useLocation } from 'react-router'
 import { useUserData } from './lib/hooks'
 import { UserContext } from './lib/context'
 import { Toaster } from 'react-hot-toast'
@@ -25,14 +25,26 @@ import EloTeams from './pages/EloTeams'
 import GlobalRankings from './pages/GlobalRankings'
 import RegattaRankings from './pages/RegattaRankings'
 import RankingsHome from './pages/RankingsHome'
+import { useEffect } from 'react'
 
 export default function App() {
   const userData = useUserData()
   checkTheme()
 
+  function ScrollToTop() {
+    const { pathname } = useLocation()
+
+    useEffect(() => {
+      window.scrollTo(0, 0)
+    }, [pathname])
+
+    return null
+  }
+
   return (
     <>
       <UserContext.Provider value={userData}>
+        <ScrollToTop />
         <Navbar />
         <Routes>
           <Route path='/crowsnest/' element={<Home />} />
@@ -54,6 +66,7 @@ export default function App() {
           <Route path='/crowsnest/rankings/team/:teamName' element={<TeamRankings />} />
           <Route path='/crowsnest/rankings/regatta/:season/:regattaName' element={<RegattaRankings />} />
           <Route path='/crowsnest/rankings/regatta/:season/:regattaName/:raceNum' element={<RegattaRankings />} />
+          <Route path='/crowsnest/rankings/regatta/:season/:regattaName/:raceNum/:pos' element={<RegattaRankings />} />
           <Route path='/crowsnest/drag' element={<TestDrag />} />
           <Route path='/crowsnest/:text' element={<NotFound />} />
         </Routes>

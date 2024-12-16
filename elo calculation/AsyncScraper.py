@@ -19,6 +19,7 @@ def getRaceNums(oldNums, scoresLen):
             else:
                 newNums.append(int(num[0]))
     return newNums
+
 def makeRaceSeries(score, team, raceNum, division, name, position, partner, venue, regatta, teams, date, teamlink):
     raceSeries = pd.Series()
     raceSeries['raceID'] = "" + regatta + "/" + str(raceNum) + division
@@ -80,6 +81,13 @@ async def fetchData(client, semaphore,regattaID, link, scoring):
     await cleanup_semaphore(semaphore)
     return {'regattaID': regattaID, 'fullScores': fullScores, "sailors": sailors, 'scoring':regattaID}
 
+# need to deal with redress
+def parseScore(scoreString):
+    if scoreString.text.isdigit():
+        return int(scoreString.text)
+    elif scoreString.has_attr('title'):
+        return int(scoreString['title'][1:-1].split(",")[0].split(":")[0])
+
 def processData(soup):
     finalRaces = []
     
@@ -118,20 +126,17 @@ def processData(soup):
 
     # loop through teams
 
-    for i in range(1, teamCount):
+    for i in range(1, teamCount + 1):
         teamHome = scoreData[(i*(numDivisions + 1)) - (numDivisions + 1)].find('a').text
         teamName = scoreData[(i*(numDivisions + 1)) - (numDivisions + 1) + 1].contents[2].text
         teamLink = scoreData[(i*(numDivisions + 1)) - (numDivisions + 1)].find('a')['href']
         teamScores = {'A': [], 'B': [], 'C':[]}
 
-        teamScores["A"] = [int(scoreData[(i*(numDivisions + 1)) - (numDivisions + 1)].contents[j].text) for j in range(
-            4, (4 + raceCount)) if scoreData[(i*(numDivisions + 1)) - (numDivisions + 1)].contents[j].text.isdigit()]
+        teamScores["A"] = [parseScore(scoreData[(i*(numDivisions + 1)) - (numDivisions + 1)].contents[j]) for j in range(4, (4 + raceCount))]
         if numDivisions > 1:
-            teamScores["B"] = [int(scoreData[(i*(numDivisions + 1)) - (numDivisions + 1) + 1].contents[j].text) for j in range(
-                4, (4 + raceCount)) if scoreData[(i*(numDivisions + 1)) - (numDivisions + 1) + 1].contents[j].text.isdigit()]
+            teamScores["B"] = [parseScore(scoreData[(i*(numDivisions + 1)) - (numDivisions + 1) + 1].contents[j]) for j in range(4, (4 + raceCount))]
         if numDivisions > 2:
-            teamScores["C"] = [int(scoreData[(i*(numDivisions + 1)) - (numDivisions + 1) + 2].contents[j].text) for j in range(
-                4, (4 + raceCount)) if scoreData[(i*(numDivisions + 1)) - (numDivisions + 1) + 2].contents[j].text.isdigit()]
+            teamScores["C"] = [parseScore(scoreData[(i*(numDivisions + 1)) - (numDivisions + 1) + 2].contents[j]) for j in range(4, (4 + raceCount))]
 
         # teamNameEls = [i.parent for i in sailors.find_all('a') if i['href'] == teamLink] # this actually doesnt work because what if teams have two boats...
         teamNameEls = [i for i in sailors.find_all('td', class_="teamname") if i.text == teamName and i.previous_sibling.find('a')['href'] == teamLink]
@@ -165,15 +170,16 @@ def processData(soup):
             
             if skipperName != "" and skipperName != "No show":
                 skipperRaceNums = skipper.next_sibling.text.split(",")
+                    
                 skippers.append({'name':skipperName, 'races': getRaceNums([i.split("-", 1) for i in skipperRaceNums], len(teamScores[division])), 'div':division})
             
-            if crewName != "":
+            if crewName != "" and crewName != "No show":
                 crewRaceNums = crew.next_sibling.text.split(",")
+                    
                 crews.append({'name':crewName, 'races': getRaceNums([i.split("-", 1) for i in crewRaceNums], len(teamScores[division])), 'div':division})
                 
             row = row.next_sibling
             index += 1
-        
         
         # check for same person in 2 places at once and discard
         # skipper and crew for same boat in same races?
@@ -248,6 +254,20 @@ def processData(soup):
         skippers = []
         crews = []
 
+    # Test for duplicate scores
+    # for pos in ['Skipper', 'Crew']:
+    #     for division in range(numDivisions):
+    #         div = ['A', 'B', 'C'][division]
+    #         for race in range(raceCount):
+    #             seen = []
+    #             for score in [r for r in finalRaces if r['raceID'].split("/")[2] == str(race) + div and r['Position'] == pos]:
+    #                 if score['Score'] not in seen:
+    #                     seen.append(score['Score'])
+    #                 else:
+    #                     # print('Duplicate score found in', regatta, race)
+    #                     # print(score['Score'], score['Sailor'])
+    #                     print(f"Duplicate score found in {regatta} race:{str(race)} score:{str(score['Score'])} {score['Sailor']}")
+    
     return finalRaces
 
 async def process_in_process(executor, result):
@@ -299,7 +319,7 @@ if __name__ == "__main__":
 
     df_races = pd.DataFrame()
     try:
-        df_races = pd.read_csv("races.json")
+        df_races = pd.read_csv("racessadfas.json")
     except:
         df_races = pd.DataFrame(columns=["Score", "Div", "Sailor", "Position", "Partner", "Venue", "Regatta", "Teams"])
 
@@ -319,7 +339,7 @@ if __name__ == "__main__":
                 if (scoring == "3 Divisions" or scoring == "2 Divisions" or scoring == "Combined"):
                     regattas[season + "/" + link['href']] = {"link":season + "/" + link['href'], "scoring":scoring}
 
-    # regattas = {'f24/stoney-burke-jv':{'link':'f24/stoney-burke-jv','scoring':'2 Divisions'}}
+    # regattas = {'f24/women-atlantic-coast-finals':{'link':'f24/women-atlantic-coast-finals','scoring':'2 Divisions'}}
 
     if len(regattas.values()) > 0:
         totalRows = asyncio.run(main(regattas))

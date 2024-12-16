@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { getTop100People } from '../lib/firebase'
+import { getTop100Crews, getTop100Skippers } from '../lib/firebase'
 import { Link, useParams } from 'react-router-dom'
 
 export default function GlobalRankings() {
@@ -7,14 +7,15 @@ export default function GlobalRankings() {
   const [people, setPeople] = useState([])
 
   useEffect(() => {
-    getTop100People().then((people) => {
-      if (position == 'skipper') {
-        setPeople(people.data.skippers)
-      } else if (position == 'crew') {
-        console.log(people.data)
-        setPeople(people.data.crews)
-      }
-    })
+    if (position == 'skipper') {
+      getTop100Skippers().then((people) => {
+        setPeople(people.data.sailors)
+      })
+    } else if (position == 'crew') {
+      getTop100Crews().then((people) => {
+        setPeople(people.data.sailors)
+      })
+    }
   }, [position])
 
   const Person = ({ member }) => {

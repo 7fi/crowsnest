@@ -5,22 +5,37 @@ import EloLineChart from '../components/EloLineChart'
 import PosNegBarChart from '../components/PosNegBarChart'
 
 export default function RegattaRankings() {
-  const { season, regattaName, raceNum } = useParams()
+  const { season, regattaName, raceNum, pos } = useParams()
   const [sailors, setSailors] = useState([])
   const [raceIDs, setRaceIDs] = useState([])
   const [activeTab, setActiveTab] = useState('')
   const [position, setPosition] = useState('Skipper')
+  const [divisions, setDivs] = useState(['A', 'B'])
 
   useEffect(() => {
     getRegattaElos(`${season}/${regattaName}`).then((sailors) => {
       setSailors(sailors?.data?.sailors)
       setRaceIDs(sailors?.data?.raceIDs)
       setActiveTab(sailors?.data?.raceIDs[0].split('/')[2])
+      raceIDs.forEach((id) => {
+        if (id.slice(-1) == 'C') {
+          setDivs(['A', 'B', 'C'])
+          console.log(divisions)
+        }
+      })
+
       if (raceNum) {
         setActiveTab(raceNum)
       }
+      if (pos) {
+        if (pos.toLowerCase() == 'skipper') {
+          setPosition('Skipper')
+        } else if (pos.toLowerCase() == 'crew') {
+          setPosition('Crew')
+        }
+      }
     })
-  }, [season, regattaName, raceNum])
+  }, [season, regattaName])
 
   const RaceBreakdown = ({ raceID, sailors, pos }) => {
     const filteredPeople = sailors.filter((person) => person.races.some((race) => race.raceID === raceID) && person.Position == pos)
@@ -130,7 +145,7 @@ export default function RegattaRankings() {
                     {person.totalRatingChange.toFixed(0)}
                   </span>
                   <div style={{ gridColumnStart: 1, gridColumnEnd: 5 }}>
-                    <PosNegBarChart data={person.races} dataKey={'change'} showLabels={false} color={colors[Math.floor(Math.random() * colors.length)]} />
+                    <PosNegBarChart data={person.races} dataKey={'change'} showLabels={false} color={colors[Math.floor(Math.random() * colors.length)]} pos={position} />
                   </div>
                 </div>
               </Link>
@@ -146,16 +161,27 @@ export default function RegattaRankings() {
     }
     return (
       <div className='flexRowContainer contentBox'>
-        <button onClick={() => setPosition('Skipper')}>Skippers</button>
-        <button onClick={() => setPosition('Crew')}>Crews</button>
-        <button onClick={() => setActiveTab(activeTab.replace(/.$/, 'A'))}>A</button>
-        <button onClick={() => setActiveTab(activeTab.replace(/.$/, 'B'))}>B</button>
-        {[...new Set(raceIDs.map((id) => id.split('/')[2].slice(0, -1)))].map((id, index) => (
-          <button key={index} style={{ flexGrow: 1, textAlign: 'center' }} onClick={() => handleTabClick(id + activeTab.charAt(activeTab.length - 1))}>
-            {id}
-          </button>
+        <Link to={`/crowsnest/rankings/regatta/${season}/${regattaName}/${activeTab}/${'Skipper'}`}>
+          <button onClick={() => setPosition('Skipper')}>Skippers</button>
+        </Link>
+        <Link to={`/crowsnest/rankings/regatta/${season}/${regattaName}/${activeTab}/${'Crew'}`}>
+          <button onClick={() => setPosition('Crew')}>Crews</button>
+        </Link>
+        {divisions.map((div) => (
+          <Link to={`/crowsnest/rankings/regatta/${season}/${regattaName}/${activeTab.slice(0, -1) + div}/${position}`}>
+            <button onClick={() => setActiveTab(activeTab.replace(/.$/, div))}>{div}</button>
+          </Link>
         ))}
-        <button onClick={() => setActiveTab('All' + activeTab.slice(-1))}>All</button>
+        {[...new Set(raceIDs.map((id) => id.split('/')[2].slice(0, -1)))].map((id, index) => (
+          <Link key={index} to={`/crowsnest/rankings/regatta/${season}/${regattaName}/${id + activeTab.charAt(activeTab.length - 1)}/${position}`}>
+            <button style={{ flexGrow: 1, textAlign: 'center' }} onClick={() => handleTabClick(id + activeTab.charAt(activeTab.length - 1))}>
+              {id}
+            </button>
+          </Link>
+        ))}
+        <Link to={`/crowsnest/rankings/regatta/${season}/${regattaName}/${'All' + activeTab.charAt(activeTab.length - 1)}/${position}`}>
+          <button onClick={() => setActiveTab('All' + activeTab.slice(-1))}>All</button>
+        </Link>
       </div>
     )
   }
@@ -170,9 +196,11 @@ export default function RegattaRankings() {
               if (activeTab === id.split('/')[2]) {
                 return (
                   <div key={id}>
-                    <h2 style={{ textTransform: 'capitalize' }}>
-                      {id.split('/')[1].split('-').join(' ')} Race: {id.split('/')[2]} ({pos}s)
-                    </h2>
+                    <a target='1' href={`https://scores.collegesailing.org/${season}/${regattaName}/full-scores`}>
+                      <h2 style={{ textTransform: 'capitalize' }}>
+                        {id.split('/')[1].split('-').join(' ')} Race: {id.split('/')[2]} ({pos}s)
+                      </h2>
+                    </a>
                     <TabList />
                     <RaceBreakdown raceID={id} sailors={sailors} pos={pos} />
                   </div>
@@ -182,7 +210,12 @@ export default function RegattaRankings() {
             })}
             {activeTab.startsWith('All') ? (
               <div>
-                <h2> All Scores </h2>
+                <a target='1' href={`https://scores.collegesailing.org/${season}/${regattaName}/full-scores`}>
+                  <h2>
+                    {' '}
+                    All Scores for {position}s in {activeTab.slice(-1)}{' '}
+                  </h2>
+                </a>
                 <TabList />
                 <AllScores sailors={sailors} division={activeTab.slice(-1)} pos={position} />
               </div>

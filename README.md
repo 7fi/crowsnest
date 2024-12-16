@@ -8,7 +8,7 @@ For now it is focused on college sailing, as it is an area that is lacking in pr
 
 ### Ranking:
 
-All scores from techscore in 2022 onward have been scraped to our database and analyzed with our modified elo ranking system to create a system for ranking college sailors.
+All scores from techscore in 2016 onward have been scraped to our database and analyzed with our modified elo ranking system to create a system for ranking college sailors.
 
 [All teams ranking](https://7fi.github.io/crowsnest/rankings/team)
 
@@ -36,25 +36,7 @@ Users will be able to view statistics about their individual/team perfromance ba
 
 ### TO-DO:
 
-website:
+bugs!!! oh no:
 
-- [x] Elo change vs partners
-- [x] Venue list and frequency
-
-features:
-
-- [_] sailor v sailor comparison
-- [_] regatta page
-
-scraper:
-
-- [x] fix unknown partners
-- [x] Huskies being marked as on both Northeastern and U Conn if sailed in a regatta together (same with MMA and KP)
-- [x] Duplicate sailors being counted twice if sailed for different boats
-- [_] wind condition support? (with google places api and historical weather data)
-
-elo calc:
-
-- [_] fix skipping small regattas
-- [_] sailors with multiple teams show up on both team pages if sailed in most recent season
-- [_] implement 25 races vs out of conference for top 100
+- [_] womens acc finals race 15a two people got 3rd
+- [_] womens acc finals race 14a two people got 3rd

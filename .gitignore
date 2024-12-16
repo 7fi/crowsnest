@@ -24,4 +24,4 @@ yarn-error.log*
 *.csv
 elo calculation/thecrowsnestapp-creds.json
 elo calculation/EloScript.py.lprof
-elo calculation/races.json
+*.json

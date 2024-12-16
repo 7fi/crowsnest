@@ -7,6 +7,7 @@ export default function EloTeams() {
 
   useEffect(() => {
     getAllTeams().then((tempTeams) => {
+      console.log(tempTeams)
       let teams = tempTeams.data.teams
       setTeams(teams)
     })

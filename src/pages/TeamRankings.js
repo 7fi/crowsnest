@@ -12,7 +12,7 @@ export default function TeamRankings() {
 
   useEffect(() => {
     getTeamElos(teamName).then((tempTeam) => {
-      const members = tempTeam.data.members
+      const members = tempTeam.data.members.filter((member) => member.teams[member.teams.length - 1] == teamName)
       const skippers = members.filter((member) => member.pos.toLowerCase() === 'skipper')
       const crews = members.filter((member) => member.pos.toLowerCase() === 'crew')
       setTeamSkippers(skippers)
