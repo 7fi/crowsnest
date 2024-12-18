@@ -1,6 +1,7 @@
 import { getTeamElos } from '../lib/firebase'
 import { useEffect, useState } from 'react'
 import { Link, useParams, useNavigate } from 'react-router-dom'
+import Loader from '../components/loader'
 
 export default function TeamRankings() {
   const { teamName } = useParams()
@@ -9,6 +10,7 @@ export default function TeamRankings() {
   const [teamCrews, setTeamCrews] = useState([])
   const [teamLink, setTeamLink] = useState('')
   const [teamRegion, setTeamRegion] = useState('')
+  const [loaded, setLoaded] = useState(false)
 
   useEffect(() => {
     getTeamElos(teamName).then((tempTeam) => {
@@ -20,6 +22,7 @@ export default function TeamRankings() {
       setRating(tempTeam.data.avg)
       setTeamLink(tempTeam.data.link)
       setTeamRegion(tempTeam.data.region)
+      setLoaded(true)
     })
   }, [teamName])
 
@@ -35,44 +38,49 @@ export default function TeamRankings() {
   }
 
   return (
-    <>
-      <div className='contentBox' style={{ marginTop: 80 }}>
-        <h2>
-          Team:{' '}
-          <a href={teamLink} target={1}>
-            {teamName}
-          </a>
-        </h2>{' '}
-        <span>
-          ({teamRegion}) (avg rating:{rating.toFixed(0)})
-        </span>
-        <Link to={'/crowsnest/rankings/team'} style={{ position: 'absolute', right: 20, top: 90 }}>
-          <button>all teams</button>
-        </Link>
-      </div>
-      <div className='contentBox'>
-        <h3>Skippers: (in f24)</h3>
-        {teamSkippers
-          .filter((member) => member.seasons.includes('f24'))
-          .sort((a, b) => {
-            return b.rating - a.rating
-          })
-          .map((member) => (
-            <TeamMember key={member.name + member.pos} member={member} />
-          ))}
-      </div>
-
-      <div className='contentBox'>
-        <h3>Crews:</h3>
-        {teamCrews
-          .filter((member) => member.seasons.includes('f24'))
-          .sort((a, b) => {
-            return b.rating - a.rating
-          })
-          .map((member) => (
-            <TeamMember key={member.name + member.pos} member={member} />
-          ))}
-      </div>
-    </>
+    <div>
+      {loaded ? (
+        <div>
+          <div className='contentBox' style={{ marginTop: 80 }}>
+            <h2>
+              Team:{' '}
+              <a href={teamLink} target={1}>
+                {teamName}
+              </a>
+            </h2>{' '}
+            <span>
+              ({teamRegion}) (avg rating:{rating.toFixed(0)})
+            </span>
+            <Link to={'/crowsnest/rankings/team'} style={{ position: 'absolute', right: 20, top: 90 }}>
+              <button>all teams</button>
+            </Link>
+          </div>
+          <div className='contentBox'>
+            <h3>Skippers: (in f24)</h3>
+            {teamSkippers
+              .filter((member) => member.seasons.includes('f24'))
+              .sort((a, b) => {
+                return b.rating - a.rating
+              })
+              .map((member) => (
+                <TeamMember key={member.name + member.pos} member={member} />
+              ))}
+          </div>
+          <div className='contentBox'>
+            <h3>Crews:</h3>
+            {teamCrews
+              .filter((member) => member.seasons.includes('f24'))
+              .sort((a, b) => {
+                return b.rating - a.rating
+              })
+              .map((member) => (
+                <TeamMember key={member.name + member.pos} member={member} />
+              ))}
+          </div>{' '}
+        </div>
+      ) : (
+        <Loader show={!loaded} />
+      )}
+    </div>
   )
 }

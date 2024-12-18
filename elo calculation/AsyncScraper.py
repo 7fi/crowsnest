@@ -5,6 +5,7 @@ import asyncio
 import pandas as pd
 import numpy as np
 import time
+import os
 from concurrent.futures import ProcessPoolExecutor
 
 def getRaceNums(oldNums, scoresLen):
@@ -20,7 +21,7 @@ def getRaceNums(oldNums, scoresLen):
                 newNums.append(int(num[0]))
     return newNums
 
-def makeRaceSeries(score, team, raceNum, division, name, position, partner, venue, regatta, teams, date, teamlink):
+def makeRaceSeries(score, team, raceNum, division, name, link, gradYear, position, partner, venue, regatta, teams, date, teamlink):
     raceSeries = pd.Series()
     raceSeries['raceID'] = "" + regatta + "/" + str(raceNum) + division
     if isinstance(score, int):
@@ -30,6 +31,8 @@ def makeRaceSeries(score, team, raceNum, division, name, position, partner, venu
     raceSeries["Date"] = date
     raceSeries["Div"] = division
     raceSeries["Sailor"] = name
+    raceSeries["Link"] = link
+    raceSeries["GradYear"] = gradYear
     raceSeries["Position"] = position
     raceSeries["Partner"] = partner
     raceSeries["Team"] = team
@@ -46,39 +49,51 @@ async def cleanup_semaphore(semaphore):
         print("Semaphore was released manually.")
 
 async def fetchData(client, semaphore,regattaID, link, scoring):
-    retries = 5
+    retries = 10
     backoff = 1
-    for attempt in range(retries):
-        try:
-            async with semaphore:  # Limit concurrent requests
-                # full scores
-                url = f"https://scores.collegesailing.org/{link}/full-scores/"
-                page = await client.get(url)
-                fullScores = BeautifulSoup(page.content, 'html.parser')
-                page.raise_for_status()  # Raise HTTPError for bad responses (4xx, 5xx)
+    if not os.path.exists(f"pages/{link.split("/")[0]}"):
+        os.makedirs(f"pages/{link.split("/")[0]}")
+    if os.path.exists(f"pages/{link}-fullscores.html") and os.path.exists(f"pages/{link}-sailors.html"):
+        with open(f"pages/{link}-fullscores.html", "r") as f:
+            fullScores = BeautifulSoup(f.read(), 'html.parser')
+        with open(f"pages/{link}-sailors.html", "r") as f:
+            sailors = BeautifulSoup(f.read(), 'html.parser')
+    else:
+        for attempt in range(retries):
+            try:
+                async with semaphore:  # Limit concurrent requests
+                    # full scores
+                    url = f"https://scores.collegesailing.org/{link}/full-scores/"
+                    page = await client.get(url)
+                    with open(f"pages/{link}-fullscores.html", "w") as f:
+                        f.write(str(page.content))
+                    fullScores = BeautifulSoup(page.content, 'html.parser')
+                    page.raise_for_status()  # Raise HTTPError for bad responses (4xx, 5xx)
 
-                # sailors
-                url = f"https://scores.collegesailing.org/{link}/sailors/"
-                page = await client.get(url)
-                sailors = BeautifulSoup(page.content, 'html.parser')
-                page.raise_for_status()  # Raise HTTPError for bad responses (4xx, 5xx)
-        except httpx.ConnectTimeout as e:
-            print(f"Connection timeout when fetching {url}. Retrying... ({attempt + 1}/{retries})")
-            await asyncio.sleep(backoff)  # Wait before retrying
-            backoff *= 2  # Exponential backoff
-        except httpx.ReadError as e:
-            print(f"Read error when fetching {url}. Retrying... ({attempt + 1}/{retries})")
-            await asyncio.sleep(backoff)  # Wait before retrying
-            backoff *= 2  # Exponential backoff
-        except httpx.HTTPStatusError as e:
-            print(f"HTTP error {e.response.status_code} when fetching {url}. Skipping...")
-            await cleanup_semaphore(semaphore)
-            return None
-        except httpx.RequestError as e:
-            print(f"Request error {e}. Skipping...")
-            await cleanup_semaphore(semaphore)
-            return None
-    await cleanup_semaphore(semaphore)
+                    # sailors
+                    url = f"https://scores.collegesailing.org/{link}/sailors/"
+                    page = await client.get(url)
+                    with open(f"pages/{link}-sailors.html", "w") as f:
+                        f.write(str(page.content))
+                    sailors = BeautifulSoup(page.content, 'html.parser')
+                    page.raise_for_status()  # Raise HTTPError for bad responses (4xx, 5xx)
+            except httpx.ConnectTimeout as e:
+                print(f"Connection timeout when fetching {url}. Retrying... ({attempt + 1}/{retries})")
+                await asyncio.sleep(backoff)  # Wait before retrying
+                backoff *= 2  # Exponential backoff
+            except httpx.ReadError as e:
+                print(f"Read error when fetching {url}. Retrying... ({attempt + 1}/{retries})")
+                await asyncio.sleep(backoff)  # Wait before retrying
+                backoff *= 2  # Exponential backoff
+            except httpx.HTTPStatusError as e:
+                print(f"HTTP error {e.response.status_code} when fetching {url}. Skipping...")
+                await cleanup_semaphore(semaphore)
+                return None
+            except httpx.RequestError as e:
+                print(f"Request error {e}. Skipping...")
+                await cleanup_semaphore(semaphore)
+                return None
+        await cleanup_semaphore(semaphore)
     return {'regattaID': regattaID, 'fullScores': fullScores, "sailors": sailors, 'scoring':regattaID}
 
 # need to deal with redress
@@ -89,6 +104,9 @@ def parseScore(scoreString):
         return int(scoreString['title'][1:-1].split(",")[0].split(":")[0])
 
 def processData(soup):
+    if soup is None:
+        print("None soup...")
+        return []
     finalRaces = []
     
     regatta = soup['regattaID']
@@ -162,21 +180,33 @@ def processData(soup):
 
             # Get Skipper
             skipper = row.contents[len(row.contents) - 4]
-            skipperName = skipper.text.split(" '", 1)[0]
-
+            skipperName = skipper.text.split(" '")[0]
+            
             # Get Crew
             crew = row.contents[len(row.contents) - 2]
             crewName = crew.text.split(" '", 1)[0]
             
             if skipperName != "" and skipperName != "No show":
                 skipperRaceNums = skipper.next_sibling.text.split(",")
+                skipperYear = skipper.text.split(" '")[1]
+                skipperLink = skipper.find('a')
+                if skipperLink != None:
+                    skipperLink = skipperLink['href'].split("/")[2]
+                else:
+                    skipperLink = None
                     
-                skippers.append({'name':skipperName, 'races': getRaceNums([i.split("-", 1) for i in skipperRaceNums], len(teamScores[division])), 'div':division})
+                skippers.append({'name':skipperName, 'year': skipperYear, 'link':skipperLink, 'races': getRaceNums([i.split("-", 1) for i in skipperRaceNums], len(teamScores[division])), 'div':division})
             
             if crewName != "" and crewName != "No show":
                 crewRaceNums = crew.next_sibling.text.split(",")
+                crewYear = crew.text.split(" '")[1]
+                crewLink = crew.find('a')
+                if crewLink != None:
+                    crewLink = crewLink['href'].split("/")[2]
+                else:
+                    crewLink = None
                     
-                crews.append({'name':crewName, 'races': getRaceNums([i.split("-", 1) for i in crewRaceNums], len(teamScores[division])), 'div':division})
+                crews.append({'name':crewName, 'year': crewYear, 'link': crewLink, 'races': getRaceNums([i.split("-", 1) for i in crewRaceNums], len(teamScores[division])), 'div':division})
                 
             row = row.next_sibling
             index += 1
@@ -240,7 +270,7 @@ def processData(soup):
             for i, score in enumerate(teamScores[skipper['div']]):
                 if i + 1 in skipper['races']:
                     partner = partners[skipper['races'].index(i + 1)] if skipper['races'].index(i + 1) < len(partners) else "Unknown"
-                    finalRaces.append(makeRaceSeries(score, teamHome, i + 1, skipper['div'], skipper['name'], "Skipper", partner, host,regatta,[t for t in teamHomes], date, teamLink))
+                    finalRaces.append(makeRaceSeries(score, teamHome, i + 1, skipper['div'], skipper['name'], skipper['link'],skipperYear, "Skipper", partner, host,regatta,[t for t in teamHomes], date, teamLink))
         
         for crew in crews:
             partners = [skipper['name'] for race in crew['races'] for skipper in skippers if skipper['div'] == crew['div'] and race in skipper['races']]
@@ -249,7 +279,7 @@ def processData(soup):
             for i, score in enumerate(teamScores[crew['div']]):
                 if i + 1 in crew['races']:
                     partner = partners[crew['races'].index(i + 1)] if crew['races'].index(i + 1) < len(partners) else "Unknown"
-                    finalRaces.append(makeRaceSeries(score, teamHome, i + 1, crew['div'], crew['name'], "Crew", partner, host,regatta,[t for t in teamHomes],date, teamLink))
+                    finalRaces.append(makeRaceSeries(score, teamHome, i + 1, crew['div'], crew['name'],crew['link'], crewYear, "Crew", partner, host,regatta,[t for t in teamHomes],date, teamLink))
 
         skippers = []
         crews = []
@@ -306,22 +336,17 @@ async def main(regattas):
         return allRows
 
 if __name__ == "__main__":
-    
     start = time.time()
     seasons = [[f"f{i}",f"s{i}"] for i in range (16,25)]
     seasons = [sub for s in seasons for sub in s]
-    print(seasons)
     
-    # seasons = ['f24', 's24', 'f23', 's23', 'f22','s22', 'f21', 's21', 'f20', 's20', 'f19', 's19','f18','s18','f17','s17']
-    # seasons = ['f24', 's24', 'f23', 's23', 'f22','s22', 'f21', 's21', 'f20', 's20']
-    # seasons = ['f24', 's24', 'f23', 's23', 'f22','s22']
     # seasons = ['f24']
 
     df_races = pd.DataFrame()
     try:
-        df_races = pd.read_csv("racessadfas.json")
+        df_races = pd.read_csv("racesasdfasd.json")
     except:
-        df_races = pd.DataFrame(columns=["Score", "Div", "Sailor", "Position", "Partner", "Venue", "Regatta", "Teams"])
+        df_races = pd.DataFrame(columns=["Score", "Div", "Sailor","Link", "GradYear", "Position", "Partner", "Venue", "Regatta", "Teams"])
 
     regattas = {}
     for season in seasons:

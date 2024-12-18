@@ -12,18 +12,28 @@ export default function EloTeams() {
       setTeams(teams)
     })
   }, [])
+  const navigate = useNavigate()
 
   return (
-    <>
-      {teams
-        .sort((a, b) => b.avg - a.avg)
-        .map((team) => (
-          <Link to={`/crowsnest/rankings/team/${team.name}`}>
-            <div className='contentBox'>
-              {team.name} ({team.region}) <span style={{ float: 'right' }}> Avg Elo: {team.avg.toFixed(2)}</span>
-            </div>
-          </Link>
-        ))}
-    </>
+    <div style={{ padding: 15 }}>
+      <table className='raceByRaceTable'>
+        <thead>
+          <th>Name</th>
+          <th>Region</th>
+          <th style={{ textAlign: 'right' }}>Avg Rating</th>
+        </thead>
+        <tbody>
+          {teams
+            .sort((a, b) => b.avg - a.avg)
+            .map((team) => (
+              <tr onClick={() => navigate(`/crowsnest/rankings/team/${team.name}`)} style={{ cursor: 'pointer' }}>
+                <td className=''>{team.name}</td>
+                <td className=''>{team.region}</td>
+                <td style={{ textAlign: 'right' }}> {team.avg.toLocaleString().split('.')[0]}</td>
+              </tr>
+            ))}
+        </tbody>
+      </table>
+    </div>
   )
 }

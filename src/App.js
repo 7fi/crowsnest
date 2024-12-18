@@ -26,6 +26,7 @@ import GlobalRankings from './pages/GlobalRankings'
 import RegattaRankings from './pages/RegattaRankings'
 import RankingsHome from './pages/RankingsHome'
 import { useEffect } from 'react'
+import VersusRanking from './pages/VersusRanking'
 
 export default function App() {
   const userData = useUserData()
@@ -62,6 +63,7 @@ export default function App() {
           <Route path='/crowsnest/rankings/' element={<RankingsHome />} />
           <Route path='/crowsnest/rankings/:position' element={<GlobalRankings />} />
           <Route path='/crowsnest/rankings/:position/:sailor' element={<Rankings />} />
+          <Route path='/crowsnest/rankings/:sailorAName/vs/:sailorBName' element={<VersusRanking />} />
           <Route path='/crowsnest/rankings/team' element={<EloTeams />} />
           <Route path='/crowsnest/rankings/team/:teamName' element={<TeamRankings />} />
           <Route path='/crowsnest/rankings/regatta/:season/:regattaName' element={<RegattaRankings />} />

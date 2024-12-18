@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
-import { Link, useParams, useNavigate } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import { getRegattaElos } from '../lib/firebase'
-import EloLineChart from '../components/EloLineChart'
 import PosNegBarChart from '../components/PosNegBarChart'
+import Loader from '../components/loader'
 
 export default function RegattaRankings() {
   const { season, regattaName, raceNum, pos } = useParams()
@@ -11,30 +11,33 @@ export default function RegattaRankings() {
   const [activeTab, setActiveTab] = useState('')
   const [position, setPosition] = useState('Skipper')
   const [divisions, setDivs] = useState(['A', 'B'])
+  const [loaded, setLoaded] = useState(false)
 
   useEffect(() => {
-    getRegattaElos(`${season}/${regattaName}`).then((sailors) => {
-      setSailors(sailors?.data?.sailors)
-      setRaceIDs(sailors?.data?.raceIDs)
-      setActiveTab(sailors?.data?.raceIDs[0].split('/')[2])
-      raceIDs.forEach((id) => {
-        if (id.slice(-1) == 'C') {
-          setDivs(['A', 'B', 'C'])
-          console.log(divisions)
+    getRegattaElos(`${season}/${regattaName}`)
+      .then((sailors) => {
+        setSailors(sailors?.data?.sailors)
+        setRaceIDs(sailors?.data?.raceIDs)
+        setActiveTab(sailors?.data?.raceIDs[0].split('/')[2])
+        raceIDs.forEach((id) => {
+          if (id.slice(-1) == 'C') {
+            setDivs(['A', 'B', 'C'])
+            console.log(divisions)
+          }
+        })
+
+        if (raceNum) {
+          setActiveTab(raceNum)
+        }
+        if (pos) {
+          if (pos.toLowerCase() == 'skipper') {
+            setPosition('Skipper')
+          } else if (pos.toLowerCase() == 'crew') {
+            setPosition('Crew')
+          }
         }
       })
-
-      if (raceNum) {
-        setActiveTab(raceNum)
-      }
-      if (pos) {
-        if (pos.toLowerCase() == 'skipper') {
-          setPosition('Skipper')
-        } else if (pos.toLowerCase() == 'crew') {
-          setPosition('Crew')
-        }
-      }
-    })
+      .then(() => setLoaded(true))
   }, [season, regattaName])
 
   const RaceBreakdown = ({ raceID, sailors, pos }) => {
@@ -120,7 +123,6 @@ export default function RegattaRankings() {
         totalRatingChange: totals.totalRatingChange,
       }
     })
-    console.log(summed)
 
     const colors = ['#ffc658', '#82ca9d', '#8884d8', '#ff8042', '#8dd1e1']
 
@@ -196,11 +198,14 @@ export default function RegattaRankings() {
               if (activeTab === id.split('/')[2]) {
                 return (
                   <div key={id}>
-                    <a target='1' href={`https://scores.collegesailing.org/${season}/${regattaName}/full-scores`}>
+                    <span>
                       <h2 style={{ textTransform: 'capitalize' }}>
                         {id.split('/')[1].split('-').join(' ')} Race: {id.split('/')[2]} ({pos}s)
+                        <a style={{ fontSize: '1rem' }} className='secondaryText' target='1' href={`https://scores.collegesailing.org/${season}/${regattaName}/full-scores`}>
+                          (techscore)
+                        </a>
                       </h2>
-                    </a>
+                    </span>
                     <TabList />
                     <RaceBreakdown raceID={id} sailors={sailors} pos={pos} />
                   </div>
@@ -210,11 +215,11 @@ export default function RegattaRankings() {
             })}
             {activeTab.startsWith('All') ? (
               <div>
+                <h2>
+                  All Scores for {position}s in {activeTab.slice(-1)}{' '}
+                </h2>
                 <a target='1' href={`https://scores.collegesailing.org/${season}/${regattaName}/full-scores`}>
-                  <h2>
-                    {' '}
-                    All Scores for {position}s in {activeTab.slice(-1)}{' '}
-                  </h2>
+                  (techscore)
                 </a>
                 <TabList />
                 <AllScores sailors={sailors} division={activeTab.slice(-1)} pos={position} />
@@ -226,9 +231,5 @@ export default function RegattaRankings() {
     )
   }
 
-  return (
-    <>
-      <TabComponent raceIDs={raceIDs} pos={position} />
-    </>
-  )
+  return <>{loaded ? <TabComponent raceIDs={raceIDs} pos={position} /> : <Loader show={!loaded} />}</>
 }

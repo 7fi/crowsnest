@@ -99,13 +99,13 @@ const scrapeTeamListToDb = async (district, seasons) => {
   scrToDb({ seasons: seasons })
 }
 
-const getSailorElo = async (sailorname, position) => {
-  const q = query(collection(db, 'sailorsElo'), where('Name', '==', sailorname), where('Position', '==', position))
+const getSailorElo = async (sailorname) => {
+  const q = query(collection(db, 'sailorsElo'), where('Name', '==', sailorname))
   const docs = await getDocs(q)
   console.log('reads: ' + docs.docs.length)
-  const doc = docs.docs[0]
-  if (doc != undefined) {
-    return { data: doc.data(), id: doc.id }
+  // const doc = docs.docs[0]
+  if (docs != undefined) {
+    return { docs: docs.docs }
   } else {
     return undefined
   }
