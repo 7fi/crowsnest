@@ -3,6 +3,7 @@
   --bg: #fff;
   --component-bg: #eaeaea;
   --border: #d1d1d1;
+  --veryLight: #f4f4f4;
   --highlight1: #12a5b1;
   --highlight2: #203960;
   --highlight3: #aaa;
@@ -19,6 +20,7 @@
   --highlight: #eaeaea;
   --bg: #171717;
   --component-bg: #202020;
+  --veryLight: #1c1c1c;
   --border: #363636;
   --highlight1: #222;
   --highlight2: #222;
@@ -73,11 +75,14 @@ img {
 
 button,
 input {
-  border: var(--border) 0.2rem solid;
+  border: none;
   border-radius: var(--radius);
   background-color: transparent;
   padding: 0.2rem;
   color: inherit;
+}
+input {
+  border: var(--border) 0.2rem solid;
 }
 
 button {
@@ -132,12 +137,15 @@ select {
   padding: 1rem;
   margin: 0.5rem;
 }
+.clickable {
+  cursor: pointer;
+}
 
 .flexRowContainer {
   display: flex;
   flex-direction: row;
   gap: 0.3rem;
-  align-items: center;
+  align-items: start;
 }
 
 /* Navbar */
@@ -471,13 +479,13 @@ select {
   grid-template-rows: 1fr 1fr 1fr;
 }
 .raceByRaceTable {
-  /* width: 100%; */
+  width: 100%;
   border-collapse: collapse;
   /* border: var(--border) 0.2rem solid;
   border-radius: var(--radius); */
 }
 .raceByRaceBox {
-  height: 425px;
+  height: 500px;
   overflow: scroll;
 }
 .tableColFit {
@@ -494,14 +502,14 @@ th,
 td {
   padding: 0.3rem;
   text-align: left;
-  border-bottom: 2px solid var(--border);
+  border-bottom: 1px solid var(--border);
 }
 .tdRightBorder {
-  border-right: 2px solid var(--border);
+  border-right: 1px solid var(--border);
 }
 
 tbody tr:nth-child(odd) {
-  background-color: var(--component-bg);
+  background-color: var(--veryLight);
 }
 
 tbody tr:nth-child(even) {
@@ -511,12 +519,28 @@ tbody tr:nth-child(even) {
 .ratioBarBg {
   width: 100px;
   height: 100%;
-  border: #cfa220 0.2rem solid;
+  border: var(--border) 0.2rem solid;
   /* background-color: var(--border); */
   border-radius: var(--radius);
 }
 .ratioBar {
   text-align: left;
-  background-color: var(--highlight1);
+  background-color: var(--border);
   border-radius: 3px 0 0 3px;
+}
+
+.flexGrowChild {
+  flex-grow: 1;
+}
+.filterOption {
+  padding: 0.4rem;
+  border-radius: var(--radius);
+  width: fit-content;
+  background-color: var(--highlight1);
+}
+.filterInactive {
+  background-color: #ccc;
+}
+.tabButton {
+  border: var(--border) 0.2rem solid;
 }

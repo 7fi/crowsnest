@@ -8,33 +8,62 @@ import VenueResults from '../components/rankings/VenueResults'
 import RaceByRace from '../components/rankings/RaceByRace'
 
 export default function Rankings() {
-  const { position, sailor } = useParams()
-  const [rating, setRating] = useState(1500)
-  const [global, setGlobal] = useState(1500)
+  const { sailor } = useParams()
+  const [ratingSkipper, setRatingSkipper] = useState(0)
+  const [globalSkipper, setGlobalSkipper] = useState(0)
+  const [ratingCrew, setRatingCrew] = useState(0)
+  const [globalCrew, setGlobalCrew] = useState(0)
+  const [links, setLinks] = useState([])
   const [teamNames, setTeamNames] = useState([])
   const [sailorRaces, setSailorRaces] = useState([])
   const [hasOtherPos, setHasOtherPos] = useState(false)
   const [loaded, setLoaded] = useState(false)
+  const navigate = useNavigate()
 
   useEffect(() => {
-    let pos = position == 'crew' ? 'Crew' : 'Skipper'
     getSailorElo(sailor).then((tempSailor) => {
-      console.log(tempSailor)
+      setRatingCrew(0)
+      setRatingSkipper(0)
+      setGlobalCrew(0)
+      setGlobalSkipper(0)
+      setTeamNames([])
+      setSailorRaces([])
+      setLinks([])
+      console.log(sailorRaces.length)
       tempSailor?.docs.forEach((sailor) => {
         if (sailor != undefined) {
-          if (sailor.data().Position == pos) {
-            setRating(sailor?.data().Rating.toFixed(0))
-            setSailorRaces(sailor?.data().races)
-            setTeamNames(sailor?.data().Teams)
-            setGlobal(sailor?.data().GlobalRank)
-          } else {
-            setHasOtherPos(true)
+          console.log(sailor.data())
+          setSailorRaces((sailorRaces) => [...sailorRaces, ...sailor?.data().races])
+          sailor?.data().Teams.forEach((team) => {
+            setTeamNames((prevTeamNames) => {
+              if (!prevTeamNames.includes(team)) {
+                return [...prevTeamNames, team]
+              }
+              return prevTeamNames
+            })
+          })
+
+          setLinks((prevLinks) => {
+            console.log(sailor?.data().Link)
+            if (!prevLinks.includes(sailor?.data().Link)) {
+              return [...prevLinks, sailor?.data().Link]
+            }
+            return prevLinks
+          })
+
+          if (sailor.data().Position == 'Skipper') {
+            setGlobalSkipper(sailor?.data().GlobalRank)
+            setRatingSkipper(sailor?.data().Rating.toFixed(0))
+          }
+          if (sailor.data().Position == 'Crew') {
+            setGlobalCrew(sailor?.data().GlobalRank)
+            setRatingCrew(sailor?.data().Rating.toFixed(0))
           }
         }
       })
       setLoaded(true)
     })
-  }, [position, sailor])
+  }, [sailor])
 
   const RaceResults = ({ races }) => {
     // Step 1: Calculate total change and count for each partner
@@ -58,24 +87,31 @@ export default function Rankings() {
 
     // Step 3: Map to <span> elements with rank and total change
     return (
-      <div>
-        {sortedPartners.map((partner, index) =>
-          partner.name != 'Unknown' ? (
-            <Link to={`/crowsnest/rankings/${position == 'skipper' ? 'crew' : 'skipper'}/${partner.name}`} key={index}>
-              <div className='contentBox' style={{ margin: '5px' }}>
-                <span className='secondaryText'>({index + 1})</span> {partner.name}{' '}
-                <span style={{ color: partner.change > 0 ? 'green' : 'red' }}>
+      <table className='raceByRaceTable'>
+        <thead>
+          <th></th>
+          <th>Partner</th>
+          <th>Races</th>
+          <th>Rating Change</th>
+        </thead>
+        <tbody>
+          {sortedPartners.map((partner, index) =>
+            partner.name != 'Unknown' ? (
+              <tr className='clickable' style={{ margin: '5px' }} onClick={() => navigate(`/crowsnest/rankings/${partner.name}`)}>
+                <td className='tdRightBorder tableColFit secondaryText'>{index + 1}</td>
+                <td>{partner.name}</td>
+                <td>{partner.count} races</td>
+                <td style={{ color: partner.change > 0 ? 'green' : 'red' }}>
                   {partner.change > 0 ? '+' : ''}
                   {partner.change.toFixed(0)}
-                </span>
-                {'  '}({partner.count} races)
-              </div>
-            </Link>
-          ) : (
-            <></>
-          )
-        )}
-      </div>
+                </td>
+              </tr>
+            ) : (
+              <></>
+            )
+          )}
+        </tbody>
+      </table>
     )
   }
 
@@ -84,28 +120,61 @@ export default function Rankings() {
       {loaded == true && sailorRaces.length > 0 ? (
         <div>
           <h2>
-            Current <Link to={`/crowsnest/rankings/${position}`}>{position}</Link> rating for{' '}
-            <a href={`https://scores.collegesailing.org/sailors/${sailor.toLowerCase().replace(' ', '-')}/`} target='1'>
+            Current rating for{' '}
+            <a href={`https://scores.collegesailing.org/sailors/${links[0]}/`} target='1'>
               {sailor}
             </a>
-            : {rating} (globally ranked: #{global} for all-time*{' '}
-            <Link style={{ textDecoration: 'underline' }} to={`/crowsnest/rankings/${position}`}>
-              {position}s
-            </Link>
-            )
+            {links.map((link, index) => (
+              <span className='secondaryText' key={index} style={{ fontSize: '1rem' }}>
+                <a href={`https://scores.collegesailing.org/sailors/${link}/`} target='1'>
+                  {' '}
+                  (Techscore {index + 1})
+                </a>
+              </span>
+            ))}
           </h2>
-          {hasOtherPos ? (
-            <Link to={`/crowsnest/rankings/${position.toLowerCase() == 'skipper' ? 'crew' : 'skipper'}/${sailor}`}>
-              <button>See {position.toLowerCase() == 'skipper' ? 'crew' : 'skipper'} page</button>
-            </Link>
+          {ratingSkipper != 0 ? (
+            <div>
+              Skipper {ratingSkipper} elo{' '}
+              {globalSkipper != 0 ? (
+                <span>
+                  globally ranked: #{globalSkipper} for{' '}
+                  <Link style={{ textDecoration: 'underline' }} to={`/crowsnest/rankings/skipper`}>
+                    skippers
+                  </Link>
+                  *
+                </span>
+              ) : (
+                <span> (did not skipper in f24)</span>
+              )}
+            </div>
           ) : undefined}
-          <span style={{ color: '#ccc', position: 'absolute', right: 10 }}> * all-time is only from s16 onwards</span>
-          Team{teamNames.length > 1 ? 's' : ''}:{' '}
-          {teamNames.map((teamName, i) => (
-            <Link style={{ textDecoration: 'underline' }} key={teamName} to={`/crowsnest/rankings/team/${teamName}`}>
-              {i != 0 ? ', ' : ''} {teamName}
-            </Link>
-          ))}{' '}
+          {ratingCrew != 0 ? (
+            <>
+              Crew: {ratingCrew} elo
+              {globalCrew != 0 ? (
+                <span>
+                  {' '}
+                  globally ranked: #{globalCrew} for{' '}
+                  <Link style={{ textDecoration: 'underline' }} to={`/crowsnest/rankings/crew`}>
+                    crews
+                  </Link>
+                  *
+                </span>
+              ) : (
+                <span> (did not crew in f24)</span>
+              )}
+            </>
+          ) : undefined}
+          <span style={{ color: '#ccc', position: 'absolute', right: 10 }}> * in f24</span>
+          <div>
+            Team{teamNames.length > 1 ? 's' : ''}:{' '}
+            {teamNames.map((teamName, i) => (
+              <Link style={{ textDecoration: 'underline' }} key={i} to={`/crowsnest/rankings/team/${teamName}`}>
+                {i != 0 ? ', ' : ''} {teamName}
+              </Link>
+            ))}{' '}
+          </div>
           <h2>Ranking changes by race</h2>
           <PosNegBarChart
             showLabels={true}
@@ -126,19 +195,27 @@ export default function Rankings() {
               return raceNumA - raceNumB
             })}
             dataKey='change'
-            pos={position}
           />
           <h2>Ranking change over time </h2>
-          <EloLineChart data={sailorRaces} />
+          {ratingSkipper != 0 ? (
+            <>
+              (Skipper)
+              <EloLineChart data={sailorRaces.filter((race) => race.pos == 'Skipper')} />
+            </>
+          ) : undefined}
+          {ratingCrew != 0 ? (
+            <>
+              (Crew)
+              <EloLineChart data={sailorRaces.filter((race) => race.pos == 'Crew')} />
+            </>
+          ) : undefined}
           <h2>
             Race by race breakdown: <span className='secondaryText'>(scroll for more)</span>
           </h2>
           <RaceByRace
-            position={position}
             races={sailorRaces.slice(0).sort((a, b) => {
               let datea = new Date(a.date.seconds * 1000)
               let dateb = new Date(b.date.seconds * 1000)
-              console.log(datea.getFullYear())
               if (datea.getFullYear() != dateb.getFullYear()) {
                 return datea.getFullYear() - dateb.getFullYear()
               }
@@ -153,21 +230,37 @@ export default function Rankings() {
               return raceNumA - raceNumB
             })}
           />
-          <h2>Elo changes by partner (higher is better)</h2>
-          (keep in mind that these values are skewed due to earlier races being highly influential)
-          <RaceResults races={sailorRaces} />
-          <h2>Elo changes by Venue (higher is better)</h2>
-          (keep in mind that these values are skewed due to earlier races being highly influential)
-          <VenueResults races={sailorRaces} />
-          <h2>Scores by race (lower is better)</h2>
-          <PosNegBarChart showLabels={true} data={sailorRaces} dataKey='score' pos={position} />
-          <h2>Ratio by race (higher is better)</h2>
-          <span>(essentially percentage of fleet beaten)</span>
-          <PosNegBarChart showLabels={true} data={sailorRaces} dataKey='ratio' pos={position} />
+          <div className='flexRowContainer'>
+            <div className='flexGrowChild'>
+              <h2>Elo changes by partner (higher is better)</h2>
+              (keep in mind that these values are skewed due to earlier races being highly influential)
+              <RaceResults races={sailorRaces} />
+            </div>
+            <div className='flexGrowChild'>
+              <h2>Elo changes by Venue (higher is better)</h2>
+              (keep in mind that these values are skewed due to earlier races being highly influential)
+              <VenueResults races={sailorRaces} />
+            </div>
+          </div>
+          <h2>Scores (lower is better) and Ratio* (higher is better) by race</h2>
+          <span>*(essentially percentage of fleet beaten) (is slightly broken for combined division)</span>
+          <PosNegBarChart showLabels={false} data={sailorRaces} dataKey='score' syncID='ranking' />
+          {/* <h2>Ratio by race (higher is better)</h2> */}
+          <PosNegBarChart
+            showLabels={true}
+            data={sailorRaces.map((race) => {
+              if (race.ratio < 0) {
+                race.ratio = 0
+              }
+              return race
+            })}
+            dataKey='ratio'
+            syncID='ranking'
+          />
         </div>
       ) : loaded ? (
         <div>
-          Sailor {sailor} not found... (or has not loaded yet) <br /> Keep these in mind
+          Sailor {sailor} not found... <br /> Keep these in mind
           <ul>
             <li>Capitalization must be correct (ie first letter of each name capitalized)</li>
             <li>Check that the position is correct (skipper/crew)</li>

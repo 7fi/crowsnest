@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { getRegattaElos } from '../lib/firebase'
 import PosNegBarChart from '../components/PosNegBarChart'
 import Loader from '../components/loader'
@@ -40,6 +40,8 @@ export default function RegattaRankings() {
       .then(() => setLoaded(true))
   }, [season, regattaName])
 
+  const navigate = useNavigate()
+
   const RaceBreakdown = ({ raceID, sailors, pos }) => {
     const filteredPeople = sailors.filter((person) => person.races.some((race) => race.raceID === raceID) && person.Position == pos)
 
@@ -62,38 +64,37 @@ export default function RegattaRankings() {
 
     // Step 2: Generate race elements based on the sorted list
     const raceElements = sortedPeople.map((sailor, index) => (
-      <Link to={`/crowsnest/rankings/${sailor.position.toLowerCase()}/${sailor.name}`} key={index}>
-        <div className='contentBox raceEntryAligned'>
-          <span>{sailor.name}</span>
-          <span>{sailor.team}</span> <span className='secondaryText'>{sailor.curRating.toFixed(0)} </span>
-          <span style={{ color: sailor.score < sailor.predicted ? 'green' : sailor.score > sailor.predicted ? 'red' : '' }}>
-            {sailor.score}
-            {sailor.score == 1 ? 'st' : sailor.score == 2 ? 'nd' : sailor.score == 3 ? 'rd' : 'th'}
-          </span>
-          <span>
-            {sailor.predicted}
-            {sailor.predicted == 1 ? 'st' : sailor.predicted == 2 ? 'nd' : sailor.predicted == 3 ? 'rd' : 'th'}
-          </span>
-          <span style={{ color: sailor.change > 0 ? 'green' : 'red', float: 'right' }}>
-            {sailor.change > 0 ? '+' : ''}
-            {sailor.change.toFixed(0)}
-          </span>
-        </div>
-      </Link>
+      <tr className='clickable' onClick={() => navigate(`/crowsnest/rankings/${sailor.name}`)}>
+        <td>{sailor.name}</td>
+        <td>{sailor.team}</td>
+        <td style={{ color: sailor.score < sailor.predicted ? 'green' : sailor.score > sailor.predicted ? 'red' : '' }}>
+          {sailor.score}
+          {sailor.score == 1 ? 'st' : sailor.score == 2 ? 'nd' : sailor.score == 3 ? 'rd' : 'th'}
+        </td>
+        <td>
+          {sailor.predicted}
+          {sailor.predicted == 1 ? 'st' : sailor.predicted == 2 ? 'nd' : sailor.predicted == 3 ? 'rd' : 'th'}
+        </td>
+        <td className='secondaryText'>{sailor.curRating.toFixed(0)} </td>
+        <td style={{ color: sailor.change > 0 ? 'green' : 'red', textAlign: 'right' }}>
+          {sailor.change > 0 ? '+' : ''}
+          {sailor.change.toFixed(0)}
+        </td>
+      </tr>
     ))
 
     return (
-      <div>
-        <div className='raceEntryAligned contentBox' style={{ position: 'sticky', fontWeight: 'bold' }}>
-          <span>Name</span>
-          <span>Team</span>
-          <span>Rating</span>
-          <span>Score</span>
-          <span>Predicted</span>
-          <span>Rating Change</span>
-        </div>
-        <div className='raceElementBox'>{raceElements}</div>
-      </div>
+      <table className='raceByRaceTable'>
+        <thead className=''>
+          <th>Name</th>
+          <th>Team</th>
+          <th>Score</th>
+          <th>Predicted</th>
+          <th>Rating</th>
+          <th style={{ textAlign: 'right' }}>Rating Change</th>
+        </thead>
+        <tbody className=''>{raceElements}</tbody>
+      </table>
     )
   }
 
@@ -128,7 +129,7 @@ export default function RegattaRankings() {
 
     return (
       <div>
-        <div className='raceEntryAlignedFull contentBox' style={{ position: 'sticky', fontWeight: 'bold' }}>
+        <div className='raceEntryAlignedFull' style={{ position: 'sticky', fontWeight: 'bold' }}>
           <span>Name</span>
           <span>Team</span>
           <span>New Rating</span>
@@ -164,25 +165,33 @@ export default function RegattaRankings() {
     return (
       <div className='flexRowContainer contentBox'>
         <Link to={`/crowsnest/rankings/regatta/${season}/${regattaName}/${activeTab}/${'Skipper'}`}>
-          <button onClick={() => setPosition('Skipper')}>Skippers</button>
+          <button className='tabButton' onClick={() => setPosition('Skipper')}>
+            Skippers
+          </button>
         </Link>
         <Link to={`/crowsnest/rankings/regatta/${season}/${regattaName}/${activeTab}/${'Crew'}`}>
-          <button onClick={() => setPosition('Crew')}>Crews</button>
+          <button className='tabButton' onClick={() => setPosition('Crew')}>
+            Crews
+          </button>
         </Link>
         {divisions.map((div) => (
           <Link to={`/crowsnest/rankings/regatta/${season}/${regattaName}/${activeTab.slice(0, -1) + div}/${position}`}>
-            <button onClick={() => setActiveTab(activeTab.replace(/.$/, div))}>{div}</button>
+            <button className='tabButton' onClick={() => setActiveTab(activeTab.replace(/.$/, div))}>
+              {div}
+            </button>
           </Link>
         ))}
         {[...new Set(raceIDs.map((id) => id.split('/')[2].slice(0, -1)))].map((id, index) => (
           <Link key={index} to={`/crowsnest/rankings/regatta/${season}/${regattaName}/${id + activeTab.charAt(activeTab.length - 1)}/${position}`}>
-            <button style={{ flexGrow: 1, textAlign: 'center' }} onClick={() => handleTabClick(id + activeTab.charAt(activeTab.length - 1))}>
+            <button className='tabButton' style={{ flexGrow: 1, textAlign: 'center' }} onClick={() => handleTabClick(id + activeTab.charAt(activeTab.length - 1))}>
               {id}
             </button>
           </Link>
         ))}
         <Link to={`/crowsnest/rankings/regatta/${season}/${regattaName}/${'All' + activeTab.charAt(activeTab.length - 1)}/${position}`}>
-          <button onClick={() => setActiveTab('All' + activeTab.slice(-1))}>All</button>
+          <button className='tabButton' onClick={() => setActiveTab('All' + activeTab.slice(-1))}>
+            All
+          </button>
         </Link>
       </div>
     )
@@ -191,7 +200,7 @@ export default function RegattaRankings() {
   const TabComponent = ({ raceIDs, pos }) => {
     return (
       <>
-        <div className='contentBox' style={{ bottom: 5, top: 75, left: 5, right: 5, overflow: 'hidden', position: 'absolute' }}>
+        <div className='' style={{ margin: 15 }}>
           <div>
             {raceIDs.map((id) => {
               // Render content only for the active tab

@@ -1,32 +1,36 @@
 import { useEffect, useState } from 'react'
 import { getTop100Crews, getTop100Skippers } from '../lib/firebase'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 
-export default function GlobalRankings() {
-  const { position } = useParams()
+export default function GlobalRankings({ pos }) {
   const [people, setPeople] = useState([])
 
   useEffect(() => {
-    if (position == 'skipper') {
+    console.log(pos)
+    if (pos == 'Skipper') {
       getTop100Skippers().then((people) => {
         setPeople(people.data.sailors)
       })
-    } else if (position == 'crew') {
+    } else if (pos == 'Crew') {
       getTop100Crews().then((people) => {
         setPeople(people.data.sailors)
       })
     }
-  }, [position])
+  }, [pos])
+
+  const nav = useNavigate()
 
   const Person = ({ member }) => {
     return (
       <>
-        <Link to={`/crowsnest/rankings/${member.pos.toLowerCase()}/${member.name}`}>
-          <div className='contentBox'>
-            <span style={{ color: '#aaa' }}>({member.rank}) </span>
-            {member.name} ({member.team[member.team.length - 1]})<span style={{ color: '#aaa' }}> ({member.pos})</span> <span style={{ float: 'right' }}>Rating: {member.rating.toFixed(2)}</span>
-          </div>
-        </Link>
+        <tr className='contentBox clickable' onClick={() => nav(`/crowsnest/rankings/${member.name}`)}>
+          <td className='tdRightBorder tableColFit secondaryText' style={{ color: '#aaa' }}>
+            {member.rank}{' '}
+          </td>
+          <td>{member.name}</td> <td>{member.team[member.team.length - 1]}</td>
+          <td style={{ color: '#aaa' }}> {member.pos}</td>
+          <td style={{ textAlign: 'right' }}>{member.rating.toFixed(2)}</td>
+        </tr>
       </>
     )
   }
@@ -34,15 +38,25 @@ export default function GlobalRankings() {
   return (
     <>
       <div className='contentBox' style={{ marginTop: 80 }}>
-        <h2>Top 100 {position}s in Fall 24</h2>
+        <h2>Top 100 {pos}s in Fall 24</h2>
+        <Link to={`/crowsnest/rankings/${pos == 'Skipper' ? 'crew' : 'skipper'}`}>See {pos == 'Skipper' ? 'Crews' : 'Skippers'}</Link>
       </div>
-      <div className='contentBox'>
-        {people
-          .filter((member) => member.seasons.includes('f24'))
-          .map((person) => (
-            <Person member={person} />
-          ))}
-      </div>
+      <table className='raceByRaceTable'>
+        <thead>
+          <th></th>
+          <th>Name</th>
+          <th>Team</th>
+          <th>Pos</th>
+          <th style={{ textAlign: 'right' }}>Rating</th>
+        </thead>
+        <tbody>
+          {people
+            .filter((member) => member.seasons.includes('f24'))
+            .map((person) => (
+              <Person member={person} />
+            ))}
+        </tbody>
+      </table>
     </>
   )
 }

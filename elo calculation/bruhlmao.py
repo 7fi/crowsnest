@@ -119,7 +119,6 @@ def processData(soup):
 
         # Remove illegal duplicates (skippers/crews in same boat simultaneously)
         removeIllegalDuplicates(skippers, crews, finalRaces, regatta, teamScores)
-        print("adding races:",skippers, teamScores, finalRaces, teamHome, "Skipper", host, regatta, teamHomes, date, teamLink)
 
         # Add races for skippers
         addRaces(skippers, teamScores, finalRaces, teamHome, "Skipper", host, regatta, teamHomes, date, teamLink)
@@ -133,8 +132,10 @@ def processData(soup):
 def processSailors(row, sailors, teamScores, regatta, numDivisions):
     skippers = []
     crews = []
+    index = 0
 
-    while row and row['class'][0] not in {"topborder", "reserves-row"}:
+    while row and row['class'][0] not in {"topborder", "reserves-row"} or index == 0:
+        index += 1
         division = row.find('td', class_="division-cell").text
 
         skipper = row.contents[-4]
@@ -146,14 +147,14 @@ def processSailors(row, sailors, teamScores, regatta, numDivisions):
         if skipperName and skipperName != "No show":
             skippers.append({
                 'name': skipperName, 'year': skipperYear, 'link': skipperLink,
-                'races': getRaceNums(parseRaces(skipper.next_sibling), len(teamScores[division])),
+                'races': getRaceNums(parseRaces(skipper.next_sibling.text), len(teamScores[division])),
                 'div': division
             })
 
         if crewName and crewName != "No show":
             crews.append({
                 'name': crewName, 'year': crewYear, 'link': crewLink,
-                'races': getRaceNums(parseRaces(crew.next_sibling), len(teamScores[division])),
+                'races': getRaceNums(parseRaces(crew.next_sibling.text), len(teamScores[division])),
                 'div': division
             })
 

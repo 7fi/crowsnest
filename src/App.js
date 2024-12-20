@@ -48,6 +48,8 @@ export default function App() {
         <ScrollToTop />
         <Navbar />
         <Routes>
+          <Route path='' element={<Home />} />
+          <Route path='/' element={<Home />} />
           <Route path='/crowsnest/' element={<Home />} />
           <Route path='/crowsnest/enter' element={<Enter />} />
           <Route path='/crowsnest/profile/:profileName' element={<Profile />} />
@@ -61,8 +63,9 @@ export default function App() {
           <Route path='/crowsnest/team/:teamName/pairs' element={<Pairs />} />
           <Route path='/crowsnest/scores' element={<Scores />} />
           <Route path='/crowsnest/rankings/' element={<RankingsHome />} />
-          <Route path='/crowsnest/rankings/:position' element={<GlobalRankings />} />
-          <Route path='/crowsnest/rankings/:position/:sailor' element={<Rankings />} />
+          <Route path='/crowsnest/rankings/skipper' element={<GlobalRankings pos={'Skipper'} />} />
+          <Route path='/crowsnest/rankings/crew' element={<GlobalRankings pos='Crew' />} />
+          <Route path='/crowsnest/rankings/:sailor' element={<Rankings />} />
           <Route path='/crowsnest/rankings/:sailorAName/vs/:sailorBName' element={<VersusRanking />} />
           <Route path='/crowsnest/rankings/team' element={<EloTeams />} />
           <Route path='/crowsnest/rankings/team/:teamName' element={<TeamRankings />} />

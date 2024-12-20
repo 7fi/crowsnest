@@ -191,7 +191,7 @@ def processData(soup):
                 skipperYear = skipper.text.split(" '")[1]
                 skipperLink = skipper.find('a')
                 if skipperLink != None:
-                    skipperLink = skipperLink['href'].split("/")[2]
+                    skipperLink = skipperLink['href'].split("/")[2].split(" ")[0]
                 else:
                     skipperLink = None
                     
@@ -202,7 +202,7 @@ def processData(soup):
                 crewYear = crew.text.split(" '")[1]
                 crewLink = crew.find('a')
                 if crewLink != None:
-                    crewLink = crewLink['href'].split("/")[2]
+                    crewLink = crewLink['href'].split("/")[2].split(" ")[0]
                 else:
                     crewLink = None
                     
@@ -270,7 +270,7 @@ def processData(soup):
             for i, score in enumerate(teamScores[skipper['div']]):
                 if i + 1 in skipper['races']:
                     partner = partners[skipper['races'].index(i + 1)] if skipper['races'].index(i + 1) < len(partners) else "Unknown"
-                    finalRaces.append(makeRaceSeries(score, teamHome, i + 1, skipper['div'], skipper['name'], skipper['link'],skipperYear, "Skipper", partner, host,regatta,[t for t in teamHomes], date, teamLink))
+                    finalRaces.append(makeRaceSeries(score, teamHome, i + 1, skipper['div'], skipper['name'], skipper['link'],skipper['year'], "Skipper", partner, host,regatta,[t for t in teamHomes], date, teamLink))
         
         for crew in crews:
             partners = [skipper['name'] for race in crew['races'] for skipper in skippers if skipper['div'] == crew['div'] and race in skipper['races']]
@@ -279,7 +279,7 @@ def processData(soup):
             for i, score in enumerate(teamScores[crew['div']]):
                 if i + 1 in crew['races']:
                     partner = partners[crew['races'].index(i + 1)] if crew['races'].index(i + 1) < len(partners) else "Unknown"
-                    finalRaces.append(makeRaceSeries(score, teamHome, i + 1, crew['div'], crew['name'],crew['link'], crewYear, "Crew", partner, host,regatta,[t for t in teamHomes],date, teamLink))
+                    finalRaces.append(makeRaceSeries(score, teamHome, i + 1, crew['div'], crew['name'],crew['link'], crew['year'], "Crew", partner, host,regatta,[t for t in teamHomes],date, teamLink))
 
         skippers = []
         crews = []
@@ -328,7 +328,7 @@ async def main(regattas):
         executor = ProcessPoolExecutor()  # Process pool for CPU-bound work
         
         for j in range (0, len(regattas.values()), batchSize):
-            print(f"Processing batch {j // batchSize + 1}...")
+            print(f"Processing batch {j // batchSize + 1}/{len(regattas.values()) // batchSize + 1}...")
             batchKeys = list(regattas.keys())[j:j + batchSize]
             batchRegattas = list(regattas.values())[j:j + batchSize]
             results = await getBatch(client,batchKeys, batchRegattas, semaphore, executor)
@@ -344,10 +344,13 @@ if __name__ == "__main__":
 
     df_races = pd.DataFrame()
     try:
-        df_races = pd.read_csv("racesasdfasd.json")
+        print("attempting to read from file")
+        df_races = pd.read_json("racest.json")
+        print("read from file")
     except:
         df_races = pd.DataFrame(columns=["Score", "Div", "Sailor","Link", "GradYear", "Position", "Partner", "Venue", "Regatta", "Teams"])
 
+    racesRegattas = df_races['Regatta'].unique()
     regattas = {}
     for season in seasons:
         print("getting all regattas in", season)
@@ -355,22 +358,24 @@ if __name__ == "__main__":
         page = requests.get(url)
         listSoup = BeautifulSoup(page.content, 'html.parser')
         
-        
         tbody = listSoup.find('table', class_="season-summary").find('tbody')
         
         for link in tbody.find_all("a", href=True):
-            if (season + "/" + link['href']) not in df_races['Regatta'].unique():
+            if (season + "/" + link['href']) not in racesRegattas:
                 scoring = link.parent.next_sibling.next_sibling.next_sibling.text
                 if (scoring == "3 Divisions" or scoring == "2 Divisions" or scoring == "Combined"):
                     regattas[season + "/" + link['href']] = {"link":season + "/" + link['href'], "scoring":scoring}
 
-    # regattas = {'f24/women-atlantic-coast-finals':{'link':'f24/women-atlantic-coast-finals','scoring':'2 Divisions'}}
+    # regattas = {'s24/st-francis-invite':{'link':'s24/st-francis-invite','scoring':'2 Divisions'}}
 
     if len(regattas.values()) > 0:
         totalRows = asyncio.run(main(regattas))
         totalRows = [sub for row in totalRows for sub in row]
-        df_races = pd.DataFrame(totalRows)
+        df_races = pd.concat([df_races, pd.DataFrame(totalRows)])
         df_races.to_json(f"races.json", index=False)
+        if len(totalRows) > 0:
+            df_races_new = pd.DataFrame(totalRows)
+            df_races_new.to_json("races_new.json", index=False)
     else:
         print("no new races to be scraped.")
 

@@ -1,7 +1,7 @@
 import { BarChart, Bar, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ReferenceLine, ResponsiveContainer } from 'recharts'
 import { useNavigate } from 'react-router-dom'
 
-export default function PosNegBarChart({ data, dataKey, showLabels, color, alternate }) {
+export default function PosNegBarChart({ data, dataKey, showLabels, color, alternate, syncID }) {
   const colors = ['#ffc658', '#82ca9d', '#8884d8', '#ff8042', '#8dd1e1']
   const eventToColor = {}
   const navigate = useNavigate()
@@ -44,6 +44,8 @@ export default function PosNegBarChart({ data, dataKey, showLabels, color, alter
           <div className='contentBox' style={{ padding: 4, fontSize: '0.8rem' }}>
             Sailor: {payload[0]?.payload.sailor}
             <br />
+            Position: {payload[0]?.payload.pos}
+            <br />
             Rating Change: {payload[0]?.payload.change.toFixed(2)}
             <br />
             Race Score : {payload[0]?.payload.score}
@@ -66,7 +68,7 @@ export default function PosNegBarChart({ data, dataKey, showLabels, color, alter
   let offset = Math.floor(Math.random() * colors.length + 1)
   return (
     <ResponsiveContainer width='100%' height={showLabels ? 400 : 120}>
-      <BarChart margin={{ bottom: showLabels ? 100 : 0 }} data={data}>
+      <BarChart margin={{ top: 10, bottom: showLabels ? 100 : 0 }} data={data} syncId={syncID}>
         <XAxis dataKey='raceID' tick={<CustomTick />} height={showLabels ? 60 : 0} interval={0} />
         <YAxis />
         <Tooltip content={<CustomTooltip />} />

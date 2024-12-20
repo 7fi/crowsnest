@@ -20,21 +20,30 @@ export default function VenueResults({ races }) {
 
   // Step 3: Map to <span> elements with rank and total change
   return (
-    <div>
-      {sortedVenues.map((venue, index) =>
-        venue.name != 'Unknown' ? (
-          <div className='contentBox' key={venue.name} style={{ margin: '5px' }}>
-            <span className='secondaryText'>({index + 1})</span> {venue.name}{' '}
-            <span style={{ color: venue.change > 0 ? 'green' : 'red' }}>
-              {venue.change > 0 ? '+' : ''}
-              {venue.change.toFixed(0)}
-            </span>
-            {'  '}({venue.count} races)
-          </div>
-        ) : (
-          <></>
-        )
-      )}
-    </div>
+    <table className='raceByRaceTable'>
+      <thead>
+        <th></th>
+        <th>Venue (host)</th>
+        <th>Races</th>
+        <th>Rating Change</th>
+      </thead>
+      <tbody>
+        {sortedVenues.map((venue, index) =>
+          venue.name != 'Unknown' ? (
+            <tr className='' key={venue.name} style={{ margin: '5px' }}>
+              <td className='tdRightBorder tableColFit secondaryText'>{index + 1}</td>
+              <td>{venue.name}</td>
+              <td>{venue.count} races</td>
+              <td style={{ color: venue.change > 0 ? 'green' : 'red' }}>
+                {venue.change > 0 ? '+' : ''}
+                {venue.change.toFixed(0)}
+              </td>
+            </tr>
+          ) : (
+            <></>
+          )
+        )}
+      </tbody>
+    </table>
   )
 }
