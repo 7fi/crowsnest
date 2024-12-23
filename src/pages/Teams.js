@@ -24,13 +24,13 @@ export default function Teams() {
         <ul className='teamsList'>
           {teams.map((team) => (
             <li>
-              <Link to={`/crowsnest/team/${team}`} className='text-titlecase'>
+              <Link to={`/team/${team}`} className='text-titlecase'>
                 {team}
               </Link>
             </li>
           ))}
         </ul>
-        <Link to='/crowsnest/createteam'>
+        <Link to='/createteam'>
           <button>Create Team</button>
         </Link>
       </div>

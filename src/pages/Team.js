@@ -47,17 +47,17 @@ export default function Team() {
           <>
             <div className='contentBox flexRowContainer'>
               <span className='text-title text-titlecase'>{team?.teamName}</span>
-              <Link to={`/crowsnest/team/${team?.teamName}/pairs`}>
+              <Link to={`/team/${team?.teamName}/pairs`}>
                 <button>Pairs</button>
               </Link>
             </div>
             <div className='contentBox'>
               <div className='flexRowContainer'>
-                <Link to={`/crowsnest/team/${team?.teamName}/events`}>
+                <Link to={`/team/${team?.teamName}/events`}>
                   <h3>Events</h3>
                 </Link>
                 <button>
-                  <Link to='/crowsnest/event/create'>Create</Link>
+                  <Link to='/event/create'>Create</Link>
                 </button>
               </div>
               <ul className='noStyleList'>
@@ -67,7 +67,7 @@ export default function Team() {
                     return a?.data?.endDate?.toDate() - b?.data?.endDate?.toDate()
                   })
                   .map((event) => (
-                    <Link to={`/crowsnest/event/${event.id}`} key={event.id}>
+                    <Link to={`/event/${event.id}`} key={event.id}>
                       <li key={event.id} className='contentBox eventBox'>
                         <strong>{event.data.name}</strong>
                         {' ' + event.data.startDate.toDate().toDateString()}
@@ -81,7 +81,7 @@ export default function Team() {
               <ul className='memberList'>
                 {team?.members?.map((member) => (
                   <li key={team?.members.find((item) => item.displayName == member.displayName).uid} className='teamMember contentBox'>
-                    <Link to={`/crowsnest/profile/${member.username}`}>
+                    <Link to={`/profile/${member.username}`}>
                       <strong>{member.displayName}</strong>
                     </Link>
                     <span> ({member.role})</span>
@@ -229,7 +229,7 @@ function TeamControls({ team, teamID, teamName, setMemeberNames }) {
                     await deleteTeam(teamID)
                     toast.dismiss(t.id)
                     toast.success('Team deleted!')
-                    navigate('/crowsnest/teams')
+                    navigate('/teams')
                   }}
                   className='text-danger'>
                   Delete!

@@ -12,7 +12,7 @@ export default function AuthCheck(props) {
         <div className='contentBox'>
           You must be signed in to view this content!
           <br />
-          <a href='/crowsnest/enter' className='text-danger'>
+          <a href='/enter' className='text-danger'>
             Click here to sign in!
           </a>
         </div>

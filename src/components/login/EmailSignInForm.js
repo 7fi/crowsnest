@@ -60,7 +60,7 @@ export default function EmailSignInForm() {
         // const errorMessage = error.message
         toast.error(error.message)
       })
-    navigate('/crowsnest/')
+    navigate('/')
   }
 
   return (

@@ -64,7 +64,7 @@ export default function RegattaRankings() {
 
     // Step 2: Generate race elements based on the sorted list
     const raceElements = sortedPeople.map((sailor, index) => (
-      <tr className='clickable' onClick={() => navigate(`/crowsnest/rankings/${sailor.name}`)}>
+      <tr className='clickable' onClick={() => navigate(`/rankings/${sailor.name}`)}>
         <td>{sailor.name}</td>
         <td>{sailor.team}</td>
         <td style={{ color: sailor.score < sailor.predicted ? 'green' : sailor.score > sailor.predicted ? 'red' : '' }}>
@@ -139,7 +139,7 @@ export default function RegattaRankings() {
           {summed
             .sort((a, b) => b.totalRatingChange - a.totalRatingChange)
             .map((person, index) => (
-              <Link to={`/crowsnest/rankings/${person.position.toLowerCase()}/${person.name}`} key={index}>
+              <Link to={`/rankings/${person.position.toLowerCase()}/${person.name}`} key={index}>
                 <div className='raceEntryAlignedFull contentBox'>
                   <span>{person.name}</span> <span>{person.team}</span>
                   <span>{person.newRating.toFixed(0)}</span>
@@ -164,31 +164,31 @@ export default function RegattaRankings() {
     }
     return (
       <div className='flexRowContainer contentBox'>
-        <Link to={`/crowsnest/rankings/regatta/${season}/${regattaName}/${activeTab}/${'Skipper'}`}>
+        <Link to={`/rankings/regatta/${season}/${regattaName}/${activeTab}/${'Skipper'}`}>
           <button className='tabButton' onClick={() => setPosition('Skipper')}>
             Skippers
           </button>
         </Link>
-        <Link to={`/crowsnest/rankings/regatta/${season}/${regattaName}/${activeTab}/${'Crew'}`}>
+        <Link to={`/rankings/regatta/${season}/${regattaName}/${activeTab}/${'Crew'}`}>
           <button className='tabButton' onClick={() => setPosition('Crew')}>
             Crews
           </button>
         </Link>
         {divisions.map((div) => (
-          <Link to={`/crowsnest/rankings/regatta/${season}/${regattaName}/${activeTab.slice(0, -1) + div}/${position}`}>
+          <Link to={`/rankings/regatta/${season}/${regattaName}/${activeTab.slice(0, -1) + div}/${position}`}>
             <button className='tabButton' onClick={() => setActiveTab(activeTab.replace(/.$/, div))}>
               {div}
             </button>
           </Link>
         ))}
         {[...new Set(raceIDs.map((id) => id.split('/')[2].slice(0, -1)))].map((id, index) => (
-          <Link key={index} to={`/crowsnest/rankings/regatta/${season}/${regattaName}/${id + activeTab.charAt(activeTab.length - 1)}/${position}`}>
+          <Link key={index} to={`/rankings/regatta/${season}/${regattaName}/${id + activeTab.charAt(activeTab.length - 1)}/${position}`}>
             <button className='tabButton' style={{ flexGrow: 1, textAlign: 'center' }} onClick={() => handleTabClick(id + activeTab.charAt(activeTab.length - 1))}>
               {id}
             </button>
           </Link>
         ))}
-        <Link to={`/crowsnest/rankings/regatta/${season}/${regattaName}/${'All' + activeTab.charAt(activeTab.length - 1)}/${position}`}>
+        <Link to={`/rankings/regatta/${season}/${regattaName}/${'All' + activeTab.charAt(activeTab.length - 1)}/${position}`}>
           <button className='tabButton' onClick={() => setActiveTab('All' + activeTab.slice(-1))}>
             All
           </button>

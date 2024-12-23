@@ -69,8 +69,8 @@ export default function PosNegBarChart({ data, dataKey, showLabels, color, alter
   return (
     <ResponsiveContainer width='100%' height={showLabels ? 400 : 120}>
       <BarChart margin={{ top: 10, bottom: showLabels ? 100 : 0 }} data={data} syncId={syncID}>
-        <XAxis dataKey='raceID' tick={<CustomTick />} height={showLabels ? 60 : 0} interval={0} />
-        <YAxis />
+        <XAxis type='category' dataKey='raceID' tick={<CustomTick />} height={showLabels ? 60 : 0} interval={0} />
+        <YAxis type='number' />
         <Tooltip content={<CustomTooltip />} />
         <Bar dataKey={dataKey} fill='#fff'>
           {data.map((entry, index) => {
@@ -78,7 +78,7 @@ export default function PosNegBarChart({ data, dataKey, showLabels, color, alter
               <Cell
                 key={`cell-${index}`}
                 onClick={() => {
-                  navigate(`/crowsnest/rankings/regatta/${entry.raceID}/${entry.pos}`)
+                  navigate(`/rankings/regatta/${entry.raceID}/${entry.pos}`)
                 }}
                 fill={alternate ? colors[(offset + Math.floor(index % 2)) % colors.length] : color ? color : eventToColor[entry.raceID.split('/')[0] + '/' + entry.raceID.split('/')[1]]}
               />

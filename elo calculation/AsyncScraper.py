@@ -21,25 +21,22 @@ def getRaceNums(oldNums, scoresLen):
                 newNums.append(int(num[0]))
     return newNums
 
-def makeRaceSeries(score, team, raceNum, division, name, link, gradYear, position, partner, venue, regatta, teams, date, teamlink):
+def makeRaceSeries(score, team, raceNum, division, name, link, gradYear, position, partner, venue, regatta, date, teamlink, scoring):
     raceSeries = pd.Series()
-    raceSeries['raceID'] = "" + regatta + "/" + str(raceNum) + division
-    if isinstance(score, int):
-        raceSeries["Score"] = score
-    else:
-        raceSeries["Score"] = len(teams) + 1
-    raceSeries["Date"] = date
+    raceSeries["Score"] = score
     raceSeries["Div"] = division
     raceSeries["Sailor"] = name
     raceSeries["Link"] = link
     raceSeries["GradYear"] = gradYear
     raceSeries["Position"] = position
     raceSeries["Partner"] = partner
-    raceSeries["Team"] = team
-    raceSeries["Teamlink"] = teamlink
     raceSeries["Venue"] = venue
     raceSeries["Regatta"] = regatta
-    raceSeries["Teams"] = teams
+    raceSeries["Scoring"] = scoring
+    raceSeries['raceID'] = "" + regatta + "/" + str(raceNum) + division
+    raceSeries["Date"] = date
+    raceSeries["Team"] = team
+    raceSeries["Teamlink"] = teamlink
     return raceSeries
 
 async def cleanup_semaphore(semaphore):
@@ -94,7 +91,7 @@ async def fetchData(client, semaphore,regattaID, link, scoring):
                 await cleanup_semaphore(semaphore)
                 return None
         await cleanup_semaphore(semaphore)
-    return {'regattaID': regattaID, 'fullScores': fullScores, "sailors": sailors, 'scoring':regattaID}
+    return {'regattaID': regattaID, 'fullScores': fullScores, "sailors": sailors, 'scoring':scoring}
 
 # need to deal with redress
 def parseScore(scoreString):
@@ -270,7 +267,7 @@ def processData(soup):
             for i, score in enumerate(teamScores[skipper['div']]):
                 if i + 1 in skipper['races']:
                     partner = partners[skipper['races'].index(i + 1)] if skipper['races'].index(i + 1) < len(partners) else "Unknown"
-                    finalRaces.append(makeRaceSeries(score, teamHome, i + 1, skipper['div'], skipper['name'], skipper['link'],skipper['year'], "Skipper", partner, host,regatta,[t for t in teamHomes], date, teamLink))
+                    finalRaces.append(makeRaceSeries(score, teamHome, i + 1, skipper['div'], skipper['name'], skipper['link'],skipper['year'], "Skipper", partner, host,regatta, date, teamLink, scoring))
         
         for crew in crews:
             partners = [skipper['name'] for race in crew['races'] for skipper in skippers if skipper['div'] == crew['div'] and race in skipper['races']]
@@ -279,7 +276,7 @@ def processData(soup):
             for i, score in enumerate(teamScores[crew['div']]):
                 if i + 1 in crew['races']:
                     partner = partners[crew['races'].index(i + 1)] if crew['races'].index(i + 1) < len(partners) else "Unknown"
-                    finalRaces.append(makeRaceSeries(score, teamHome, i + 1, crew['div'], crew['name'],crew['link'], crew['year'], "Crew", partner, host,regatta,[t for t in teamHomes],date, teamLink))
+                    finalRaces.append(makeRaceSeries(score, teamHome, i + 1, crew['div'], crew['name'],crew['link'], crew['year'], "Crew", partner, host,regatta, date, teamLink, scoring))
 
         skippers = []
         crews = []
@@ -348,7 +345,7 @@ if __name__ == "__main__":
         df_races = pd.read_json("racest.json")
         print("read from file")
     except:
-        df_races = pd.DataFrame(columns=["Score", "Div", "Sailor","Link", "GradYear", "Position", "Partner", "Venue", "Regatta", "Teams"])
+        df_races = pd.DataFrame(columns=["Score", "Div", "Sailor","Link", "GradYear", "Position", "Partner", "Venue", "Regatta", "Scoring", "raceID", "Date", "Team", "Teamlink"])
 
     racesRegattas = df_races['Regatta'].unique()
     regattas = {}

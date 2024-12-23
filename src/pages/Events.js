@@ -46,7 +46,7 @@ export default function Events() {
         {Object.keys(team).length > 0 ? (
           <>
             <div className='contentBox flexRowContainer'>
-              <Link to={`/crowsnest/team/${team?.teamName}`}>
+              <Link to={`/team/${team?.teamName}`}>
                 <span className='text-title text-titlecase'>{team?.teamName}</span>
               </Link>
             </div>
@@ -54,7 +54,7 @@ export default function Events() {
               <div className='flexRowContainer'>
                 <h3>Future Events</h3>
                 <button>
-                  <Link to='/crowsnest/event/create'>Create</Link>
+                  <Link to='/event/create'>Create</Link>
                 </button>
               </div>
               <ul className='noStyleList'>
@@ -64,7 +64,7 @@ export default function Events() {
                     return a?.data?.endDate?.toDate() - b?.data?.endDate?.toDate()
                   })
                   .map((event) => (
-                    <Link to={`/crowsnest/event/${event.id}`} key={event.id}>
+                    <Link to={`/event/${event.id}`} key={event.id}>
                       <li key={event.id} className='contentBox eventBox'>
                         <strong>{event.data.name}</strong>
                         {' ' + event.data.startDate.toDate().toDateString()}
@@ -84,7 +84,7 @@ export default function Events() {
                     return a?.data?.endDate?.toDate() - b?.data?.endDate?.toDate()
                   })
                   .map((event) => (
-                    <Link to={`/crowsnest/event/${event.id}`} key={event.id}>
+                    <Link to={`/event/${event.id}`} key={event.id}>
                       <li key={event.id} className='contentBox eventBox'>
                         <strong>{event.data.name}</strong>
                         {' ' + event.data.startDate.toDate().toDateString()}
@@ -180,7 +180,7 @@ function TeamControls({ team, teamID, teamName, setMemeberNames }) {
                     await deleteTeam(teamID)
                     toast.dismiss(t.id)
                     toast.success('Team deleted!')
-                    navigate('/crowsnest/teams')
+                    navigate('/teams')
                   }}
                   className='text-danger'>
                   Delete!

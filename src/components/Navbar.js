@@ -1,5 +1,5 @@
 import '../main.css'
-import { Link, NavLink } from 'react-router-dom'
+import { Link, NavLink, useLocation } from 'react-router-dom'
 import { useContext, useEffect, useState } from 'react'
 import { UserContext } from '../lib/context'
 import SignOutButton from './login/SignOutButton'
@@ -11,12 +11,13 @@ export default function Navbar() {
   const { user, userVals } = useContext(UserContext)
 
   const [theme, setThemeVal] = useState(localStorage.getItem('theme'))
+  const location = useLocation()
 
   return (
     <nav className='navbar'>
       <ul>
         <li>
-          <Link to='/crowsnest/' className='text-title'>
+          <Link to='/' className='text-title'>
             CrowsNest
           </Link>
         </li>
@@ -30,29 +31,49 @@ export default function Navbar() {
               <RenderThemeBtn />
             </button>
           </li>
-          {!user && (
-            <li>
-              <Link to='/crowsnest/enter'>
-                <button>Sign In</button>
-              </Link>
-            </li>
-          )}
           {/* {userVals.username && ( */}
-          <AuthCheckLite>
+          <>
             <li>
-              <Link to='/crowsnest/teams'>
-                <button>Teams</button>
+              <Link to='/rankings/'>
+                <button>Rankings</button>
               </Link>
             </li>
-            <li>
-              <SignOutButton />
-            </li>
-            <li>
-              <Link to={`/crowsnest/profile/${userVals?.username}`}>
-                <img src={user?.photoURL} alt={userVals?.username} referrerPolicy='no-referrer' className='btn' />
-              </Link>
-            </li>
-          </AuthCheckLite>
+            {!user && (
+              <>
+                <li>
+                  <Link to='/enter'>
+                    <button>Sign In</button>
+                  </Link>
+                </li>
+              </>
+            )}
+            <AuthCheckLite>
+              {!location.pathname.includes('rankings') ? (
+                <li>
+                  <Link to='/teams'>
+                    <button>Teams</button>
+                  </Link>
+                </li>
+              ) : (
+                <>
+                  <li>
+                    <Link to={`/rankings/team/`}>
+                      <button>Teams</button>
+                    </Link>
+                  </li>
+                </>
+              )}
+              <li>
+                <SignOutButton />
+              </li>
+              <li>
+                <Link to={`/profile/${userVals?.username}`}>
+                  <img src={user?.photoURL} alt={userVals?.username} referrerPolicy='no-referrer' className='btn' />
+                </Link>
+              </li>
+            </AuthCheckLite>
+          </>
+
           {/*)} */}
         </ul>
       </ul>

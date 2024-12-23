@@ -7,11 +7,10 @@ export default function Name({ name, index }) {
   return (
     <Draggable draggableId={'draggable2-' + index} index={index} key={index}>
       {(provided, snapshot) => (
-        <button ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps} className='name' onClick={handleClick} data-boatdisplay='true'>
+        <button ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps} className='name' data-boatdisplay='true'>
           {name}
         </button>
       )}
     </Draggable>
   )
 }
-function handleClick() {}

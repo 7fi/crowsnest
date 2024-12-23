@@ -4,7 +4,7 @@
   --component-bg: #eaeaea;
   --border: #d1d1d1;
   --veryLight: #f4f4f4;
-  --highlight1: #12a5b1;
+  --highlight1: #ffcd1b;
   --highlight2: #203960;
   --highlight3: #aaa;
   --text: #000;
@@ -51,13 +51,16 @@
 body {
   margin: 0;
   padding: 0;
-  margin-top: 80px;
+  margin-top: 55px;
   font-family: var(--font), sans-serif;
   background-color: var(--bg);
   color: var(--text);
 }
 main {
   padding: 1rem;
+  min-height: 100vh; /* Ensure body takes full height */
+  display: flex;
+  flex-direction: column;
 }
 
 a {
@@ -155,10 +158,11 @@ select {
   top: 0;
   padding: 1rem;
   width: 100%;
-  height: 75px;
-  background-color: var(--component-bg);
-  border-bottom: 0.2rem solid var(--border);
+  height: 55px;
+  background-color: var(--bg);
+  /* border-bottom: 0.2rem solid var(--border); */
   z-index: 10;
+  box-shadow: 0px 0px 5px#00000044;
 }
 
 .navbar ul {
@@ -504,6 +508,11 @@ td {
   text-align: left;
   border-bottom: 1px solid var(--border);
 }
+
+tr:hover td {
+  background-color: var(--component-bg);
+}
+
 .tdRightBorder {
   border-right: 1px solid var(--border);
 }
@@ -535,12 +544,71 @@ tbody tr:nth-child(even) {
 .filterOption {
   padding: 0.4rem;
   border-radius: var(--radius);
-  width: fit-content;
+  width: 75px;
+  text-align: center;
   background-color: var(--highlight1);
+  font-weight: 500;
+  color: #000;
 }
 .filterInactive {
-  background-color: #ccc;
+  background-color: var(--border);
 }
 .tabButton {
   border: var(--border) 0.2rem solid;
+}
+.filterHeader {
+  width: 100%;
+  height: 60px;
+  padding: 15px;
+  top: 55px;
+  position: sticky;
+  /* z-index: 9; */
+  background-color: var(--bg);
+}
+
+.teamsTable {
+  /* margin-top: 45px; */
+  /* padding: 15px; */
+  z-index: 8;
+  /* position: relative; */
+}
+.teamTableContainer {
+  max-height: calc(100vh - 55px - 60px); /* Full viewport height minus navbar and filter height */
+  overflow-y: auto;
+}
+.teamsTable thead {
+  /* position: fixed; */
+  z-index: 2;
+}
+
+/* Tooltip text */
+.tooltip .tooltiptext {
+  visibility: hidden;
+  /* width: 100%; */
+  background-color: rgba(0, 0, 0, 0.3);
+  color: #fff;
+  text-align: left;
+  font-size: 0.85rem;
+  border-radius: var(--radius);
+  padding: 5px;
+
+  position: absolute;
+  top: 100%;
+  left: 0;
+}
+
+/* Show the tooltip text when you mouse over the tooltip container */
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+}
+
+.sailorNameRow {
+  align-items: center;
+}
+
+.chartTooltip {
+  font-size: 0.8rem;
+  padding: 5px;
+  background-color: var(--bg);
+  box-shadow: 0px 0px 5px #0000005e;
 }

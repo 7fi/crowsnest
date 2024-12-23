@@ -5,12 +5,15 @@ import PosNegBarChart from '../components/PosNegBarChart'
 import EloLineChart from '../components/EloLineChart'
 import Loader from '../components/loader'
 import VenueResults from '../components/rankings/VenueResults'
-import RaceByRace from '../components/rankings/RaceByRace'
+import RaceByRace from '../components/rankings/SailorPage/RaceByRace'
+import PremiumCheck, { PremiumCheckLite } from '../components/rankings/PremiumCheck'
+import useTeamCodes from '../lib/teamCodes'
 
 export default function Rankings() {
   const { sailor } = useParams()
   const [ratingSkipper, setRatingSkipper] = useState(0)
   const [globalSkipper, setGlobalSkipper] = useState(0)
+  const [gradYear, setGradYear] = useState(0)
   const [ratingCrew, setRatingCrew] = useState(0)
   const [globalCrew, setGlobalCrew] = useState(0)
   const [links, setLinks] = useState([])
@@ -19,20 +22,20 @@ export default function Rankings() {
   const [hasOtherPos, setHasOtherPos] = useState(false)
   const [loaded, setLoaded] = useState(false)
   const navigate = useNavigate()
+  const teamCodes = useTeamCodes()
 
   useEffect(() => {
     getSailorElo(sailor).then((tempSailor) => {
       setRatingCrew(0)
       setRatingSkipper(0)
+      setGradYear(0)
       setGlobalCrew(0)
       setGlobalSkipper(0)
       setTeamNames([])
       setSailorRaces([])
       setLinks([])
-      console.log(sailorRaces.length)
       tempSailor?.docs.forEach((sailor) => {
         if (sailor != undefined) {
-          console.log(sailor.data())
           setSailorRaces((sailorRaces) => [...sailorRaces, ...sailor?.data().races])
           sailor?.data().Teams.forEach((team) => {
             setTeamNames((prevTeamNames) => {
@@ -42,6 +45,7 @@ export default function Rankings() {
               return prevTeamNames
             })
           })
+          setGradYear(sailor.data().Year)
 
           setLinks((prevLinks) => {
             console.log(sailor?.data().Link)
@@ -65,14 +69,15 @@ export default function Rankings() {
     })
   }, [sailor])
 
-  const RaceResults = ({ races }) => {
+  const PartnerResults = ({ races }) => {
     // Step 1: Calculate total change and count for each partner
     const partnerStats = races.reduce((acc, race) => {
       if (!acc[race.partner]) {
-        acc[race.partner] = { change: 0, count: 0 }
+        acc[race.partner] = { change: 0, count: 0, ratio: 0 }
       }
       acc[race.partner].change += race.change
       acc[race.partner].count += 1
+      acc[race.partner].ratio += race.ratio
       return acc
     }, {})
 
@@ -82,8 +87,9 @@ export default function Rankings() {
         name: partner,
         change: partnerStats[partner].change,
         count: partnerStats[partner].count,
+        ratio: partnerStats[partner].ratio / partnerStats[partner].count,
       }))
-      .sort((a, b) => b.change - a.change) // Sort by change in descending order
+      .sort((a, b) => b.ratio - a.ratio) // Sort by change in descending order
 
     // Step 3: Map to <span> elements with rank and total change
     return (
@@ -93,17 +99,25 @@ export default function Rankings() {
           <th>Partner</th>
           <th>Races</th>
           <th>Rating Change</th>
+          <th>Percentage</th>
         </thead>
         <tbody>
           {sortedPartners.map((partner, index) =>
             partner.name != 'Unknown' ? (
-              <tr className='clickable' style={{ margin: '5px' }} onClick={() => navigate(`/crowsnest/rankings/${partner.name}`)}>
+              <tr className='clickable' style={{ margin: '5px' }} onClick={() => navigate(`/rankings/${partner.name}`)}>
                 <td className='tdRightBorder tableColFit secondaryText'>{index + 1}</td>
                 <td>{partner.name}</td>
                 <td>{partner.count} races</td>
                 <td style={{ color: partner.change > 0 ? 'green' : 'red' }}>
                   {partner.change > 0 ? '+' : ''}
                   {partner.change.toFixed(0)}
+                </td>
+                <td style={{ textAlign: 'center' }}>
+                  <div className='ratioBarBg'>
+                    <div className='ratioBar' style={{ width: partner.ratio * 100 }}>
+                      <span>{(partner.ratio * 100).toFixed(1)}%</span>
+                    </div>
+                  </div>
                 </td>
               </tr>
             ) : (
@@ -115,15 +129,42 @@ export default function Rankings() {
     )
   }
 
+  const RankObj = ({ rank, pos }) => {
+    return (
+      <PremiumCheckLite feature='ranks'>
+        Rank:
+        {rank != 0 ? (
+          <span>
+            {' '}
+            #{rank} for{' '}
+            <Link style={{ textDecoration: 'underline' }} to={`/rankings/${pos}`}>
+              {pos}s
+            </Link>
+            *
+          </span>
+        ) : (
+          <span> (did not crew in f24)</span>
+        )}
+      </PremiumCheckLite>
+    )
+  }
+
   return (
-    <div style={{ padding: 15 }}>
-      {loaded == true && sailorRaces.length > 0 ? (
+    <div style={{ padding: 30 }}>
+      {loaded && sailorRaces.length > 0 ? (
         <div>
-          <h2>
-            Current rating for{' '}
-            <a href={`https://scores.collegesailing.org/sailors/${links[0]}/`} target='1'>
-              {sailor}
-            </a>
+          <div className='flexRowContainer sailorNameRow'>
+            <img style={{ display: 'inline', maxHeight: '3rem' }} src={`https://scores.collegesailing.org/inc/img/schools/${teamCodes[teamNames[teamNames.length - 1]]}.png`} />
+            <h1 style={{ display: 'inline-block' }}>{sailor}</h1>
+          </div>
+          <div>
+            20{gradYear} |{' '}
+            {teamNames.map((teamName, i) => (
+              <Link style={{ textDecoration: 'underline' }} key={i} to={`/rankings/team/${teamName}`}>
+                {i != 0 ? ', ' : ''} {teamName}
+              </Link>
+            ))}{' '}
+            |{' '}
             {links.map((link, index) => (
               <span className='secondaryText' key={index} style={{ fontSize: '1rem' }}>
                 <a href={`https://scores.collegesailing.org/sailors/${link}/`} target='1'>
@@ -132,118 +173,49 @@ export default function Rankings() {
                 </a>
               </span>
             ))}
-          </h2>
-          {ratingSkipper != 0 ? (
-            <div>
-              Skipper {ratingSkipper} elo{' '}
-              {globalSkipper != 0 ? (
-                <span>
-                  globally ranked: #{globalSkipper} for{' '}
-                  <Link style={{ textDecoration: 'underline' }} to={`/crowsnest/rankings/skipper`}>
-                    skippers
-                  </Link>
-                  *
-                </span>
-              ) : (
-                <span> (did not skipper in f24)</span>
-              )}
-            </div>
-          ) : undefined}
-          {ratingCrew != 0 ? (
-            <>
-              Crew: {ratingCrew} elo
-              {globalCrew != 0 ? (
-                <span>
-                  {' '}
-                  globally ranked: #{globalCrew} for{' '}
-                  <Link style={{ textDecoration: 'underline' }} to={`/crowsnest/rankings/crew`}>
-                    crews
-                  </Link>
-                  *
-                </span>
-              ) : (
-                <span> (did not crew in f24)</span>
-              )}
-            </>
-          ) : undefined}
-          <span style={{ color: '#ccc', position: 'absolute', right: 10 }}> * in f24</span>
-          <div>
-            Team{teamNames.length > 1 ? 's' : ''}:{' '}
-            {teamNames.map((teamName, i) => (
-              <Link style={{ textDecoration: 'underline' }} key={i} to={`/crowsnest/rankings/team/${teamName}`}>
-                {i != 0 ? ', ' : ''} {teamName}
-              </Link>
-            ))}{' '}
           </div>
-          <h2>Ranking changes by race</h2>
-          <PosNegBarChart
-            showLabels={true}
-            data={sailorRaces.slice(0).sort((a, b) => {
-              let datea = new Date(a.date.seconds * 1000)
-              let dateb = new Date(b.date.seconds * 1000)
-              if (datea.getFullYear() != dateb.getFullYear()) {
-                return datea.getFullYear() - dateb.getFullYear()
-              }
-              if (datea.getMonth() != dateb.getMonth()) {
-                return datea.getMonth() - dateb.getMonth()
-              }
-              if (datea.getDate() != dateb.getDate()) {
-                return datea.getDate() - dateb.getDate()
-              }
-              let raceNumA = a.raceID.split('/')[2].slice(0, -1)
-              let raceNumB = b.raceID.split('/')[2].slice(0, -1)
-              return raceNumA - raceNumB
-            })}
-            dataKey='change'
-          />
-          <h2>Ranking change over time </h2>
-          {ratingSkipper != 0 ? (
-            <>
-              (Skipper)
-              <EloLineChart data={sailorRaces.filter((race) => race.pos == 'Skipper')} />
-            </>
-          ) : undefined}
-          {ratingCrew != 0 ? (
-            <>
-              (Crew)
-              <EloLineChart data={sailorRaces.filter((race) => race.pos == 'Crew')} />
-            </>
-          ) : undefined}
+          <br />
+          {/* Elos and Rankings */}
+          <div className='flexRowContainer' style={{ justifyContent: 'space-between', width: '50%' }}>
+            {ratingSkipper != 0 ? (
+              <div>
+                <div>Skipper: {ratingSkipper} elo</div>
+                <RankObj rank={globalSkipper} pos='skipper' />
+              </div>
+            ) : undefined}
+            {ratingCrew != 0 ? (
+              <div>
+                <div>Crew: {ratingCrew} elo</div>
+                <RankObj rank={globalCrew} pos='crew' />
+              </div>
+            ) : undefined}
+          </div>
+          <span style={{ color: '#ccc', position: 'absolute', left: 30 }}> * in f24</span>
+
+          {/* Graphs */}
+          <h2>Rating change over time </h2>
+
+          <EloLineChart data={sailorRaces} />
+
           <h2>
             Race by race breakdown: <span className='secondaryText'>(scroll for more)</span>
           </h2>
-          <RaceByRace
-            races={sailorRaces.slice(0).sort((a, b) => {
-              let datea = new Date(a.date.seconds * 1000)
-              let dateb = new Date(b.date.seconds * 1000)
-              if (datea.getFullYear() != dateb.getFullYear()) {
-                return datea.getFullYear() - dateb.getFullYear()
-              }
-              if (datea.getMonth() != dateb.getMonth()) {
-                return datea.getMonth() - dateb.getMonth()
-              }
-              if (datea.getDate() != dateb.getDate()) {
-                return datea.getDate() - dateb.getDate()
-              }
-              let raceNumA = a.raceID.split('/')[2].slice(0, -1)
-              let raceNumB = b.raceID.split('/')[2].slice(0, -1)
-              return raceNumA - raceNumB
-            })}
-          />
+          <RaceByRace races={sailorRaces} />
           <div className='flexRowContainer'>
             <div className='flexGrowChild'>
-              <h2>Elo changes by partner (higher is better)</h2>
+              <h2>Rating changes by partner (higher is better)</h2>
               (keep in mind that these values are skewed due to earlier races being highly influential)
-              <RaceResults races={sailorRaces} />
+              <PartnerResults races={sailorRaces} />
             </div>
             <div className='flexGrowChild'>
-              <h2>Elo changes by Venue (higher is better)</h2>
+              <h2>Rating changes by Venue (higher is better)</h2>
               (keep in mind that these values are skewed due to earlier races being highly influential)
               <VenueResults races={sailorRaces} />
             </div>
           </div>
-          <h2>Scores (lower is better) and Ratio* (higher is better) by race</h2>
-          <span>*(essentially percentage of fleet beaten) (is slightly broken for combined division)</span>
+          <h2>Rating changes by race</h2>
+          <h2>Scores (lower is better) and Percentage (higher is better) by race</h2>
+          <PosNegBarChart showLabels={false} data={sailorRaces} dataKey='change' syncID='ranking' />
           <PosNegBarChart showLabels={false} data={sailorRaces} dataKey='score' syncID='ranking' />
           {/* <h2>Ratio by race (higher is better)</h2> */}
           <PosNegBarChart
@@ -265,7 +237,7 @@ export default function Rankings() {
             <li>Capitalization must be correct (ie first letter of each name capitalized)</li>
             <li>Check that the position is correct (skipper/crew)</li>
           </ul>
-          <Link to={`/crowsnest/rankings`}>
+          <Link to={`/rankings`}>
             <button>Back to homepage</button>
           </Link>
         </div>

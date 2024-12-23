@@ -2,6 +2,7 @@ import { getTeamElos } from '../lib/firebase'
 import { useEffect, useState } from 'react'
 import { Link, useParams, useNavigate } from 'react-router-dom'
 import Loader from '../components/loader'
+import useTeamCodes from '../lib/teamCodes'
 
 export default function TeamRankings() {
   const { teamName } = useParams()
@@ -16,6 +17,8 @@ export default function TeamRankings() {
 
   const [activeSeasons, setActiveSeasons] = useState([])
   const [allSeasons, setAllSeasons] = useState([])
+
+  const teamCodes = useTeamCodes()
 
   useEffect(() => {
     getTeamElos(teamName).then((tempTeam) => {
@@ -47,7 +50,7 @@ export default function TeamRankings() {
   const TeamMember = ({ index, member }) => {
     const navigate = useNavigate()
     return (
-      <tr className='clickable' onClick={() => navigate(`/crowsnest/rankings/${member.name}`)}>
+      <tr className='clickable' onClick={() => navigate(`/rankings/${member.name}`)}>
         <td className='tdRightBorder tableColFit'>{index + 1}</td>
         <td>{member.name}</td>
         <td className='secondaryText'>{member.pos}</td>
@@ -112,16 +115,19 @@ export default function TeamRankings() {
       {loaded ? (
         <div>
           <div className='contentBox' style={{ marginTop: 80 }}>
-            <h2>
-              Team:{' '}
-              <a href={teamLink} target={1}>
-                {teamName}
-              </a>
-            </h2>{' '}
+            <div className='flexRowContainer sailorNameRow'>
+              <img style={{ display: 'inline', maxHeight: '3rem' }} src={`https://scores.collegesailing.org/inc/img/schools/${teamCodes[teamName]}.png`} />
+              <h1 style={{ display: 'inline-block' }}>
+                <a href={teamLink} target={1}>
+                  {teamName}
+                </a>
+              </h1>
+            </div>
+
             <span>
               ({teamRegion}) (avg rating:{rating.toFixed(0)})
             </span>
-            <Link to={'/crowsnest/rankings/team'} style={{ position: 'absolute', right: 20, top: 90 }}>
+            <Link to={'/rankings/team'} style={{ position: 'absolute', right: 20, top: 90 }}>
               <button>all teams</button>
             </Link>
           </div>

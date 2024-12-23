@@ -100,7 +100,7 @@ function UsernameForm() {
     batch.set(usernameDoc, { uid: user.uid })
 
     await batch.commit()
-    navigate(`/crowsnest/profile/${usernameValue}`)
+    navigate(`/profile/${usernameValue}`)
   }
 
   return (

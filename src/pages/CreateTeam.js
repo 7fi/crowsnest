@@ -85,7 +85,7 @@ function TeamNameForm() {
     await batch.commit()
     let d = doc(db, `users/${user?.uid}`)
     await updateDoc(d, { teams: arrayUnion(teamnameValue) })
-    navigate(`/crowsnest/team/${teamnameValue}`)
+    navigate(`/team/${teamnameValue}`)
   }
 
   return (

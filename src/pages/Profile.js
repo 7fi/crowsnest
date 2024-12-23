@@ -33,7 +33,7 @@ export default function Profile() {
         <ul className='contentBox teamsBox'>
           {pageUser?.teams?.map((team) => (
             <li key={team}>
-              <Link to={`/crowsnest/team/${team}`} className='text-titlecase'>
+              <Link to={`/team/${team}`} className='text-titlecase'>
                 {team}
               </Link>
             </li>

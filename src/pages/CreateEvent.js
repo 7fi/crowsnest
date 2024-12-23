@@ -133,7 +133,7 @@ function EventNameForm() {
     console.log(eventObj)
 
     const eventDoc = await addDoc(collection(db, 'events'), eventObj)
-    navigate(`/crowsnest/event/${eventDoc.id}`)
+    navigate(`/event/${eventDoc.id}`)
     console.log('uploaded!')
   }
 

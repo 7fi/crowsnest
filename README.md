@@ -10,7 +10,7 @@ For now it is focused on college sailing, as it is an area that is lacking in pr
 
 All scores from techscore in 2016 onward have been scraped to our database and analyzed with our modified elo ranking system to create a system for ranking college sailors.
 
-[All teams ranking](https://7fi.github.io/crowsnest/rankings/team)
+[All teams ranking](https://crowsnest.club/rankings/team)
 
 There are several pages that can be explored including rankings for the top 100 skippers and crews, rankings for sailors within teams, and individual pages for each sailor.
 
@@ -31,12 +31,3 @@ Users will be able to create events for their sport, and enter in scores / data 
 ### Stats:
 
 Users will be able to view statistics about their individual/team perfromance based on the scores entered into the system.
-
----
-
-### TO-DO:
-
-bugs!!! oh no:
-
-- [_] womens acc finals race 15a two people got 3rd
-- [_] womens acc finals race 14a two people got 3rd

@@ -32,6 +32,8 @@ export default function App() {
   const userData = useUserData()
   checkTheme()
 
+  const isProduction = process.env.NODE_ENV === 'production'
+
   function ScrollToTop() {
     const { pathname } = useLocation()
 
@@ -45,37 +47,42 @@ export default function App() {
   return (
     <>
       <UserContext.Provider value={userData}>
-        <ScrollToTop />
-        <Navbar />
-        <Routes>
-          <Route path='' element={<Home />} />
-          <Route path='/' element={<Home />} />
-          <Route path='/crowsnest/' element={<Home />} />
-          <Route path='/crowsnest/enter' element={<Enter />} />
-          <Route path='/crowsnest/profile/:profileName' element={<Profile />} />
-          {/* <Route path="/crowsnest/profile" element={<Navigate to={`/crowsnest/profile/${userData.username}`} />} /> */}
-          <Route path='/crowsnest/team/:teamName' element={<Team />} />
-          <Route path='/crowsnest/team/:teamName/events' element={<Events />} />
-          <Route path='/crowsnest/teams' element={<Teams />} />
-          <Route path='/crowsnest/event/create' element={<CreateEvent />} />
-          <Route path='/crowsnest/event/:eventID' element={<Event />} />
-          <Route path='/crowsnest/createteam' element={<CreateTeam />} />
-          <Route path='/crowsnest/team/:teamName/pairs' element={<Pairs />} />
-          <Route path='/crowsnest/scores' element={<Scores />} />
-          <Route path='/crowsnest/rankings/' element={<RankingsHome />} />
-          <Route path='/crowsnest/rankings/skipper' element={<GlobalRankings pos={'Skipper'} />} />
-          <Route path='/crowsnest/rankings/crew' element={<GlobalRankings pos='Crew' />} />
-          <Route path='/crowsnest/rankings/:sailor' element={<Rankings />} />
-          <Route path='/crowsnest/rankings/:sailorAName/vs/:sailorBName' element={<VersusRanking />} />
-          <Route path='/crowsnest/rankings/team' element={<EloTeams />} />
-          <Route path='/crowsnest/rankings/team/:teamName' element={<TeamRankings />} />
-          <Route path='/crowsnest/rankings/regatta/:season/:regattaName' element={<RegattaRankings />} />
-          <Route path='/crowsnest/rankings/regatta/:season/:regattaName/:raceNum' element={<RegattaRankings />} />
-          <Route path='/crowsnest/rankings/regatta/:season/:regattaName/:raceNum/:pos' element={<RegattaRankings />} />
-          <Route path='/crowsnest/drag' element={<TestDrag />} />
-          <Route path='/crowsnest/:text' element={<NotFound />} />
-        </Routes>
-        <Toaster position='top-center' reverseOrder={false} />
+        {!isProduction ? (
+          <>
+            <ScrollToTop />
+            <Navbar />
+            <Routes>
+              <Route path='/' element={<RankingsHome />} />
+              <Route path='/enter' element={<Enter />} />
+              <Route path='/profile/:profileName' element={<Profile />} />
+              {/* <Route path="/profile" element={<Navigate to={`/profile/${userData.username}`} />} /> */}
+              <Route path='/team/:teamName' element={<Team />} />
+              <Route path='/team/:teamName/events' element={<Events />} />
+              <Route path='/teams' element={<Teams />} />
+              <Route path='/event/create' element={<CreateEvent />} />
+              <Route path='/event/:eventID' element={<Event />} />
+              <Route path='/createteam' element={<CreateTeam />} />
+              <Route path='/team/:teamName/pairs' element={<Pairs />} />
+              <Route path='/scores' element={<Scores />} />
+              {/* Rankings */}
+              <Route path='/rankings/' element={<RankingsHome />} />
+              <Route path='/rankings/skipper' element={<GlobalRankings pos={'Skipper'} />} />
+              <Route path='/rankings/crew' element={<GlobalRankings pos='Crew' />} />
+              <Route path='/rankings/:sailor' element={<Rankings />} />
+              <Route path='/rankings/:sailorAName/vs/:sailorBName' element={<VersusRanking />} />
+              <Route path='/rankings/team' element={<EloTeams />} />
+              <Route path='/rankings/team/:teamName' element={<TeamRankings />} />
+              <Route path='/rankings/regatta/:season/:regattaName' element={<RegattaRankings />} />
+              <Route path='/rankings/regatta/:season/:regattaName/:raceNum' element={<RegattaRankings />} />
+              <Route path='/rankings/regatta/:season/:regattaName/:raceNum/:pos' element={<RegattaRankings />} />
+              <Route path='/drag' element={<TestDrag />} />
+              <Route path='/:text' element={<NotFound />} />
+            </Routes>
+            <Toaster position='top-center' reverseOrder={false} />
+          </>
+        ) : (
+          <span>Crowsnest is under construction... </span>
+        )}
       </UserContext.Provider>
     </>
   )

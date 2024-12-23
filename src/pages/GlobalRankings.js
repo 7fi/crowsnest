@@ -1,20 +1,27 @@
 import { useEffect, useState } from 'react'
 import { getTop100Crews, getTop100Skippers } from '../lib/firebase'
 import { Link, useNavigate, useParams } from 'react-router-dom'
+import Loader from '../components/loader'
 
 export default function GlobalRankings({ pos }) {
   const [people, setPeople] = useState([])
+  const [loaded, setLoaded] = useState(false)
 
   useEffect(() => {
+    setLoaded(false)
     console.log(pos)
     if (pos == 'Skipper') {
-      getTop100Skippers().then((people) => {
-        setPeople(people.data.sailors)
-      })
+      getTop100Skippers()
+        .then((people) => {
+          setPeople(people.data.sailors)
+        })
+        .then(() => setLoaded(true))
     } else if (pos == 'Crew') {
-      getTop100Crews().then((people) => {
-        setPeople(people.data.sailors)
-      })
+      getTop100Crews()
+        .then((people) => {
+          setPeople(people.data.sailors)
+        })
+        .then(() => setLoaded(true))
     }
   }, [pos])
 
@@ -23,7 +30,7 @@ export default function GlobalRankings({ pos }) {
   const Person = ({ member }) => {
     return (
       <>
-        <tr className='contentBox clickable' onClick={() => nav(`/crowsnest/rankings/${member.name}`)}>
+        <tr className='contentBox clickable' onClick={() => nav(`/rankings/${member.name}`)}>
           <td className='tdRightBorder tableColFit secondaryText' style={{ color: '#aaa' }}>
             {member.rank}{' '}
           </td>
@@ -39,24 +46,28 @@ export default function GlobalRankings({ pos }) {
     <>
       <div className='contentBox' style={{ marginTop: 80 }}>
         <h2>Top 100 {pos}s in Fall 24</h2>
-        <Link to={`/crowsnest/rankings/${pos == 'Skipper' ? 'crew' : 'skipper'}`}>See {pos == 'Skipper' ? 'Crews' : 'Skippers'}</Link>
+        <Link to={`/rankings/${pos == 'Skipper' ? 'crew' : 'skipper'}`}>See {pos == 'Skipper' ? 'Crews' : 'Skippers'}</Link>
       </div>
-      <table className='raceByRaceTable'>
-        <thead>
-          <th></th>
-          <th>Name</th>
-          <th>Team</th>
-          <th>Pos</th>
-          <th style={{ textAlign: 'right' }}>Rating</th>
-        </thead>
-        <tbody>
-          {people
-            .filter((member) => member.seasons.includes('f24'))
-            .map((person) => (
-              <Person member={person} />
-            ))}
-        </tbody>
-      </table>
+      {loaded ? (
+        <table className='raceByRaceTable'>
+          <thead>
+            <th></th>
+            <th>Name</th>
+            <th>Team</th>
+            <th>Pos</th>
+            <th style={{ textAlign: 'right' }}>Rating</th>
+          </thead>
+          <tbody>
+            {people
+              .filter((member) => member.seasons.includes('f24'))
+              .map((person) => (
+                <Person member={person} />
+              ))}
+          </tbody>
+        </table>
+      ) : (
+        <Loader show={!loaded} />
+      )}
     </>
   )
 }

@@ -58,7 +58,7 @@ export default function Event() {
             <span>
               <strong>Sport:</strong> {pageEvent?.sport}
             </span>
-            <Link to={`/crowsnest/team/${team}`} className='text-titlecase'>
+            <Link to={`/team/${team}`} className='text-titlecase'>
               <span>
                 <strong>Team:</strong>{' '}
               </span>
@@ -99,7 +99,7 @@ export default function Event() {
           <h4>Going:</h4>
           <ul className='noStyleList'>
             {going.map((member) => (
-              <Link to={`/crowsnest/profile/${member.username}`}>
+              <Link to={`/profile/${member.username}`}>
                 <li key={member.userId} className={(member.needsRide ? 'text-sucess' : '') + ' eventBox contentBox'}>
                   {member.displayName}
                 </li>
@@ -109,7 +109,7 @@ export default function Event() {
           <h4>Maybe:</h4>
           <ul className='noStyleList'>
             {maybe.map((member) => (
-              <Link to={`/crowsnest/profile/${member.username}`}>
+              <Link to={`/profile/${member.username}`}>
                 <li key={member.userId} className='eventBox contentBox'>
                   {member.displayName}
                 </li>
@@ -119,7 +119,7 @@ export default function Event() {
           <h4>Not Going:</h4>
           <ul className='noStyleList'>
             {ngoing.map((member) => (
-              <Link to={`/crowsnest/profile/${member.username}`}>
+              <Link to={`/profile/${member.username}`}>
                 <li key={member.userId} className='eventBox contentBox'>
                   {member.displayName}
                 </li>
@@ -131,7 +131,7 @@ export default function Event() {
               <h3>Rides</h3> <button onClick={() => addRide(pageEvent, pageEventId, user, team, rides, setRides)}>Add Car</button>
             </div>
             <ul className='noStyleList'>
-              {rides.map((ride) => (
+              {rides?.map((ride) => (
                 <li className='eventBox contentBox'>
                   <label>
                     <strong>
@@ -140,7 +140,7 @@ export default function Event() {
                   </label>
                   <div className='contentBox'>
                     <ul className='noStyleList'>
-                      {ride.riders.map((rider) => (
+                      {ride?.riders.map((rider) => (
                         <li className='eventBox contentBox'>{rider.displayName}</li>
                       ))}
                     </ul>

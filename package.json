@@ -1,58 +1,58 @@
 {
-    "name": "crowsnest",
-    "version": "0.1.0",
-    "private": true,
-    "homepage": "http://7fi.github.io/crowsnest/",
-    "dependencies": {
-        "@hello-pangea/dnd": "^16.3.0",
-        "@testing-library/jest-dom": "^5.16.5",
-        "@testing-library/react": "^13.4.0",
-        "@testing-library/user-event": "^13.5.0",
-        "axios": "^1.2.2",
-        "chart.js": "^4.1.2",
-        "cheerio": "^1.0.0-rc.12",
-        "firebase": "^9.15.0",
-        "lodash.debounce": "^4.0.8",
-        "react": "^18.2.0",
-        "react-beautiful-dnd": "^13.1.1",
-        "react-chartjs-2": "^5.2.0",
-        "react-dom": "^18.2.0",
-        "react-firebase-hooks": "^5.1.1",
-        "react-hot-toast": "^2.4.0",
-        "react-icons": "^4.7.1",
-        "react-router-dom": "^6.6.1",
-        "react-scripts": "^5.0.1",
-        "recharts": "^2.14.1",
-        "web-vitals": "^2.1.4"
-    },
-    "scripts": {
-        "start": "react-scripts start",
-        "predeploy": "npm run build",
-        "deploy": "gh-pages -d build",
-        "build": "react-scripts build && shx cp build/index.html build/404.html",
-        "test": "react-scripts test",
-        "eject": "react-scripts eject"
-    },
-    "eslintConfig": {
-        "extends": [
-            "react-app",
-            "react-app/jest"
-        ]
-    },
-    "browserslist": {
-        "production": [
-            ">0.2%",
-            "not dead",
-            "not op_mini all"
-        ],
-        "development": [
-            "last 1 chrome version",
-            "last 1 firefox version",
-            "last 1 safari version"
-        ]
-    },
-    "devDependencies": {
-        "gh-pages": "^4.0.0",
-        "shx": "^0.3.4"
-    }
+  "name": "crowsnest",
+  "version": "0.1.0",
+  "private": true,
+  "homepage": "http://7fi.github.io/",
+  "dependencies": {
+    "@hello-pangea/dnd": "^16.3.0",
+    "@testing-library/jest-dom": "^5.16.5",
+    "@testing-library/react": "^13.4.0",
+    "@testing-library/user-event": "^13.5.0",
+    "axios": "^1.2.2",
+    "chart.js": "^4.1.2",
+    "cheerio": "^1.0.0-rc.12",
+    "firebase": "^9.15.0",
+    "lodash.debounce": "^4.0.8",
+    "react": "^18.2.0",
+    "react-beautiful-dnd": "^13.1.1",
+    "react-chartjs-2": "^5.2.0",
+    "react-dom": "^18.2.0",
+    "react-firebase-hooks": "^5.1.1",
+    "react-hot-toast": "^2.4.0",
+    "react-icons": "^4.7.1",
+    "react-router-dom": "^6.6.1",
+    "react-scripts": "^5.0.1",
+    "recharts": "^2.14.1",
+    "web-vitals": "^2.1.4"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build",
+    "build": "react-scripts build && shx cp build/index.html build/404.html",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "gh-pages": "^4.0.0",
+    "shx": "^0.3.4"
+  }
 }

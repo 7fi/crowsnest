@@ -4,6 +4,7 @@ import { Link, useParams } from 'react-router-dom'
 import VenueVS from '../components/rankings/VenueVS'
 import Loader from '../components/loader'
 import VSblock from '../components/rankings/VSblock'
+import PremiumCheck from '../components/rankings/PremiumCheck'
 
 export default function VersusRanking() {
   const { sailorAName, sailorBName } = useParams()
@@ -41,14 +42,16 @@ export default function VersusRanking() {
   return (
     <div style={{ padding: 15 }}>
       {loaded ? (
-        <div>
-          <h2>
-            {sailorAName} vs {sailorBName}
-          </h2>
-          <VSblock sailorsA={sailorA} sailorsB={sailorB} />
-          <h2>Avg ratio by venue</h2>
-          <VenueVS racesA={aRaces} racesB={bRaces} sailorAName={sailorAName} sailorBName={sailorBName} />
-        </div>
+        <PremiumCheck>
+          <div>
+            <h2>
+              {sailorAName} vs {sailorBName}
+            </h2>
+            <VSblock sailorsA={sailorA} sailorsB={sailorB} />
+            <h2>Avg ratio by venue</h2>
+            <VenueVS racesA={aRaces} racesB={bRaces} sailorAName={sailorAName} sailorBName={sailorBName} />
+          </div>
+        </PremiumCheck>
       ) : (
         <Loader show={!loaded} />
       )}
