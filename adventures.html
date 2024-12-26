@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 0;
+      margin: 0;
+      overflow-x: hidden;
+    }
+
+    #canvas-container {
+      position: relative;
+      overflow: hidden;
+      width: 100%;
+      height: 100vh;
+      margin: 0;
+      cursor: grab;
+      background-color: #f4f0f7;
+      overflow-x: hidden;
+    }
+
+    #canvas {
+      position: absolute;
+      transform-origin: center center;
+      background-color: #333;
+      /* transition: 0.05s; */
+    }
+
+    .blog-card {
+      position: absolute;
+      width: 200px;
+      /* min-height: 150px; */
+      background: #f8f8f8;
+      /* box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); */
+      padding: 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      color: #333;
+      user-select: none;
+      -webkit-user-drag: none;
+    }
+
+    .blog-card:hover {
+      transform: scale(1.05);
+    }
+
+    .blog-card img {
+      width: 100%;
+      height: auto;
+      border-radius: 8px;
+    }
+
+    .blog-card h3 {
+      font-size: 18px;
+      margin-top: 10px;
+      margin-bottom: 5px;
+      color: #333;
+    }
+    .navbar {
+      background-color: #fff;
+      position: absolute;
+      width: 100%;
+      height: 50px;
+      margin: 0;
+      padding: 15px;
+      top: 0;
+      left: 0;
+      z-index: 100;
+      color: #333;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+    }
+    .title {
+      top: 30px;
+    }
+
+    #zoomOutButton,
+    #zoomInButton,
+    #recenterButton {
+      width: 40px;
+      height: 40px;
+      position: absolute;
+      text-align: center;
+      right: 15px;
+      background-color: #d2d2d2;
+      z-index: 10;
+      /* padding: 15px; */
+      border-radius: 50%;
+      display: block;
+      border: none;
+      cursor: pointer;
+    }
+  </style>
+  <body ondragstart="return false;" ondrop="return false;" onload="recenter()">
+    <div class="navbar">
+      <strong class="title"><span style="text-decoration: underline">THREEDAYS</span> -> ADVENTURES</strong>
+    </div>
+    <div id="canvas-container">
+      <div id="canvas">
+        <!-- Example Blog Cards -->
+        <a href="https://threedays.co/adventures/threedays-oslo" target="_self">
+          <div class="blog-card" style="top: 100px; left: 100px">
+            <img src="https://images.squarespace-cdn.com/content/v1/62f5d4a71145611db3efb69a/92aacfa7-ff84-46b9-a49b-5676feafda3b/oslo-weekend-guide.png?format=1000w" alt="Post Image" />
+            <h3>A weekend in Oslo</h3>
+          </div>
+        </a>
+        <a href="https://threedays.co/adventures/go-sailing" target="_self">
+          <div class="blog-card" style="top: 200px; left: 350px; width: 300px">
+            <img src="https://images.squarespace-cdn.com/content/v1/62f5d4a71145611db3efb69a/1728250481794-16DWCOIAQ7Q4RQL7UVPB/thumb.jpg?format=1000w" alt="Post Image" />
+            <h3>Go Sailing</h3>
+          </div>
+        </a>
+        <a href="https://threedays.co/adventures/threedays-basque" target="_self">
+          <div class="blog-card" style="top: 320px; left: 20px">
+            <img src="https://images.squarespace-cdn.com/content/v1/62f5d4a71145611db3efb69a/1727631453845-L5KJJ5CD4B3WKP6RH4MU/northernspain-month.png?format=1000w" alt="Post Image" />
+            <h3>threedays / eus</h3>
+          </div>
+        </a>
+        <!-- Add more blog cards here -->
+      </div>
+    </div>
+    <button id="recenterButton" style="bottom: 105px" onclick="recenter()">[ ]</button>
+    <button id="zoomInButton" style="bottom: 60px" onclick="zoomIn()">+</button>
+    <button id="zoomOutButton" style="bottom: 15px" onclick="zoomOut()">-</button>
+  </body>
+  <script>
+    let canvas = document.getElementById('canvas')
+    let canvasContainer = document.getElementById('canvas-container')
+    let zoomOutButton = document.getElementById('zoomOutButton')
+    let zoomInButton = document.getElementById('zoomInButton')
+    let recenterButton = document.getElementById('recenterButton')
+
+    let isDragging = false
+    let lastMouseX = 0
+    let lastMouseY = 0
+    let offsetX = 0
+    let offsetY = 82
+    let scale = 1
+    const zoomFactor = 0.01
+    const maxZoom = 1.5
+
+    // The canvas is technically 0 size so we define a size here
+    let canvasWidth = 350
+    let canvasHeight = 500
+
+    const recenter = () => {
+      // Calculate the new scale, clamp it between 0.5 and 3
+      scale = 1
+      offsetX = 0
+      offsetY = 82
+      // Apply the transform
+      canvas.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale})`
+    }
+    const zoomIn = () => {
+      let delta = -10
+
+      // Calculate the new scale, clamp it between 0.5 and 3
+      scale = Math.max(0.5, Math.min(maxZoom, scale - delta * zoomFactor))
+      // Apply the transform
+      canvas.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale})`
+    }
+    const zoomOut = () => {
+      let delta = 10
+
+      // Calculate the new scale, clamp it between 0.5 and maxZoom
+      scale = Math.max(0.5, Math.min(maxZoom, scale - delta * zoomFactor))
+      // Apply the transform
+      canvas.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale})`
+    }
+
+    const limit = (num, min, max) => {
+      return Math.min(max, Math.max(min, num))
+    }
+    function mapRange(value, inMin, inMax, outMin, outMax) {
+      return ((value - inMin) * (outMax - outMin)) / (inMax - inMin) + outMin
+    }
+
+    // Zoom functionality
+    canvasContainer.addEventListener('wheel', (e) => {
+      e.preventDefault()
+
+      // Adjust zoom speed (larger number = slower zoom)
+      let delta = e.deltaY
+      console.log(delta)
+
+      let prevScale = scale
+      // Calculate the new scale, clamp it between 0.5 and maxZoom
+      scale = Math.max(0.5, Math.min(maxZoom, scale - delta * zoomFactor))
+
+      if (prevScale != scale) {
+        // Get mouse position relative to the canvas container
+        let mouseX = e.clientX - canvasContainer.getBoundingClientRect().left
+        let mouseY = e.clientY - canvasContainer.getBoundingClientRect().top
+
+        // Adjust the canvas position to keep the mouse in the same spot
+        let scaleDiff = scale / (scale + delta * zoomFactor)
+
+        // offsetX = limit(mouseX - (mouseX - offsetX) * scaleDiff, 0, 1500)
+        // offsetY = limit(mouseY - (mouseY - offsetY) * scaleDiff, 0, 1500)
+        offsetX = mouseX - (mouseX - offsetX) * scaleDiff
+        offsetY = mouseY - (mouseY - offsetY) * scaleDiff
+      }
+
+      // Apply the transform
+      canvas.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale})`
+    })
+
+    // Panning functionality
+    canvasContainer.addEventListener('mousedown', (e) => {
+      isDragging = true
+      lastMouseX = e.clientX
+      lastMouseY = e.clientY
+      canvasContainer.style.cursor = 'grabbing'
+    })
+
+    canvasContainer.addEventListener('mousemove', (e) => {
+      if (isDragging) {
+        let dx = e.clientX - lastMouseX
+        let dy = e.clientY - lastMouseY
+
+        let cw = canvasContainer.getBoundingClientRect().width
+
+        let yLimit = (canvasContainer.getBoundingClientRect().height - canvasHeight) * (scale + 0.5)
+        console.log(mapRange(scale, 0.5, maxZoom, 40, -40))
+
+        // offsetX = limit(offsetX + dx, 0, cw - canvasWidth)
+        offsetX = offsetX + dx
+        console.log('offsetx:' + offsetX)
+        // offsetY = limit(offsetY + dy, mapRange(scale, 0.5, maxZoom, 80, 90), 800)
+        offsetY = offsetY + dy
+        console.log('offsety:' + offsetY)
+
+        canvas.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale})`
+
+        lastMouseX = e.clientX
+        lastMouseY = e.clientY
+      }
+    })
+
+    canvasContainer.addEventListener('mouseup', () => {
+      isDragging = false
+      canvasContainer.style.cursor = 'grab'
+    })
+
+    canvasContainer.addEventListener('mouseleave', () => {
+      isDragging = false
+      canvasContainer.style.cursor = 'grab'
+    })
+  </script>
+</html>
