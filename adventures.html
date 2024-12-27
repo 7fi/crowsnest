@@ -81,6 +81,24 @@
     .title {
       top: 30px;
     }
+    .disabled {
+      filter: blur(1px) grayscale(100%);
+      opacity: 0.6;
+    }
+    .filterButton {
+      padding: 10px;
+    }
+    .filters {
+      display: flex;
+      position: absolute;
+      top: 80px;
+      z-index: 10;
+      border-radius: 0px 0px 5px 5px;
+      background-color: #fff;
+      cursor: pointer;
+      left: 30px;
+      gap: 10px;
+    }
 
     #zoomOutButton,
     #zoomInButton,
@@ -103,11 +121,16 @@
     <div class="navbar">
       <strong class="title"><span style="text-decoration: underline">THREEDAYS</span> -> ADVENTURES</strong>
     </div>
+    <div class="filters">
+      <div class="filterButton" onclick="toggleRegion('norway')">norway</div>
+      <div class="filterButton" onclick="toggleRegion('spain')">spain</div>
+      <div class="filterButton" onclick="toggleRegion('guide')">guides</div>
+    </div>
     <div id="canvas-container">
       <div id="canvas">
         <!-- Example Blog Cards -->
         <a href="https://threedays.co/adventures/threedays-oslo" target="_self">
-          <div class="blog-card" style="top: 100px; left: 100px">
+          <div class="blog-card norway guide" style="top: 100px; left: 100px">
             <img src="https://images.squarespace-cdn.com/content/v1/62f5d4a71145611db3efb69a/92aacfa7-ff84-46b9-a49b-5676feafda3b/oslo-weekend-guide.png?format=1000w" alt="Post Image" />
             <h3>A weekend in Oslo</h3>
           </div>
@@ -119,12 +142,11 @@
           </div>
         </a>
         <a href="https://threedays.co/adventures/threedays-basque" target="_self">
-          <div class="blog-card" style="top: 320px; left: 20px">
+          <div class="blog-card france spain guide" style="top: 320px; left: 20px; width: 280px">
             <img src="https://images.squarespace-cdn.com/content/v1/62f5d4a71145611db3efb69a/1727631453845-L5KJJ5CD4B3WKP6RH4MU/northernspain-month.png?format=1000w" alt="Post Image" />
             <h3>threedays / eus</h3>
           </div>
         </a>
-        <!-- Add more blog cards here -->
       </div>
     </div>
     <button id="recenterButton" style="bottom: 105px" onclick="recenter()">[ ]</button>
@@ -137,6 +159,7 @@
     let zoomOutButton = document.getElementById('zoomOutButton')
     let zoomInButton = document.getElementById('zoomInButton')
     let recenterButton = document.getElementById('recenterButton')
+    let enabled = { guide: true, norway: true, spain: true }
 
     let isDragging = false
     let lastMouseX = 0
@@ -151,8 +174,35 @@
     let canvasWidth = 350
     let canvasHeight = 500
 
+    const enableAll = () => {
+      while (document.getElementsByClassName('disabled').length > 0) {
+        let regionEls = document.getElementsByClassName('disabled')
+        console.log(regionEls.length)
+        for (let item of regionEls) {
+          item.classList.remove('disabled')
+        }
+      }
+      Object.keys(enabled).forEach((element) => {
+        enabled[element] = true
+      })
+      console.log(enabled)
+    }
+
+    const toggleRegion = (region) => {
+      let regionEls = document.getElementsByClassName(region)
+      enabled[region] = !enabled[region]
+      for (let item of regionEls) {
+        if (enabled[region]) {
+          item.classList.remove('disabled')
+        } else {
+          item.classList.add('disabled')
+        }
+      }
+      console.log(enabled)
+    }
+
     const recenter = () => {
-      // Calculate the new scale, clamp it between 0.5 and 3
+      enableAll()
       scale = 1
       offsetX = 0
       offsetY = 82
