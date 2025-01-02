@@ -16,10 +16,14 @@ export default function Navbar() {
   return (
     <nav className='navbar'>
       <ul>
-        <li>
+        <li style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <Link to='/' className='text-title'>
             CrowsNest
           </Link>
+          <span style={{ marginTop: 3 }} className='secondaryText'>
+            {' '}
+            [Alpha]
+          </span>
         </li>
         <ul className='navRight'>
           <li>
@@ -57,8 +61,13 @@ export default function Navbar() {
               ) : (
                 <>
                   <li>
-                    <Link to={`/rankings/team/`}>
+                    <Link to={`/rankings/team`}>
                       <button>Teams</button>
+                    </Link>
+                  </li>
+                  <li>
+                    <Link to={`/rankings/search`}>
+                      <button>Sailors</button>
                     </Link>
                   </li>
                 </>

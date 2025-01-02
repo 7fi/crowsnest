@@ -25,7 +25,7 @@ export default function RankingsHome() {
             <strong>ELO (rating):</strong> This is an arbitrary number that changes based on performance each race. This system was originally invented for chess, but has been used in many other systems where it is necessary to rate individual participants (such as video games or tennis)
           </li>
           <li>
-            <strong>Ratio (percentage):</strong> This is the percentage of the fleet that was beat in each race. If you placed last, you get 0%. If you place first, you should get 100% (the calculation is currently a little off and you actually get 1 spot less usually around 95%) Sometimes the ratio will be displayed as a decimal value (such as .521) which is the same number / 100
+            <strong>Ratio (percentage):</strong> This is the percentage of the fleet that was beat in each race. If you placed last, you get 0%. If you place first, you should get 100% Sometimes the ratio will be displayed as a decimal value (such as .521) which is the same number divided by 100
           </li>
           <li>
             <strong>Score:</strong> This is the finishing place in the fleet. First place is a score of 1. Tenth is a score of 10.

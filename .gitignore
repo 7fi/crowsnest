@@ -25,4 +25,6 @@ yarn-error.log*
 elo calculation/thecrowsnestapp-creds.json
 elo calculation/EloScript.py.lprof
 *.json
-*.html
+/elo calculation/pages/
+/elo calculation/__pycache__/
+adventures.html

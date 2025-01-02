@@ -11,11 +11,11 @@ export default function EloLineChart({ data }) {
     if (currentEvent !== previousEvent) {
       return (
         <text
+          fill='var(--text)'
           x={x}
           y={y + 10} // Adjust vertical position for better alignment
-          textAnchor='start'
           transform={`rotate(45, ${x}, ${y + 10})`} // Rotate text at the tick position
-          fontSize={12}>
+          className='chartLabel'>
           {currentEvent}
         </text>
       )
@@ -68,11 +68,9 @@ export default function EloLineChart({ data }) {
       race.index = index
       if (race.pos == 'Crew') {
         race.crewElo = race.newRating
-        // if (index == 0) race.skipperElo = 1500
         return race
       } else if (race.pos == 'Skipper') {
         race.skipperElo = race.newRating
-        // if (index == 0) race.crewElo = 1500
         return race
       }
     })
@@ -115,12 +113,20 @@ export default function EloLineChart({ data }) {
               }}
             />
             {/* Custom label with color */}
-            <span style={{ color: entry.payload.stroke, fontWeight: 'bold' }}>{entry.value == 'crewElo' ? 'Crew Rating' : entry.value == 'skipperElo' ? 'Skipper Rating' : 'Regatta Average'}</span>
+            <span style={{ color: entry.payload.stroke, fontWeight: 'bold' }}>{entry.value == 'crewElo' ? 'Crew' : entry.value == 'skipperElo' ? 'Skipper' : 'Regatta Average'}</span>
           </div>
         ))}
       </div>
     )
   }
+
+  let uniqueRegattas = new Set()
+  mappedRaces.forEach((race) => {
+    const [season, raceName] = race.raceID.split('/') // Split the string into [season, raceName, raceNumber]
+    const uniqueKey = `${season}/${raceName}` // Create a unique key by combining season and raceName
+    uniqueRegattas.add(uniqueKey) // Add the unique key to the Set
+  })
+  uniqueRegattas = Array.from(uniqueRegattas)
 
   return (
     <ResponsiveContainer width='100%' height={480}>
@@ -129,16 +135,38 @@ export default function EloLineChart({ data }) {
         margin={{
           top: 5,
           right: 5,
-          left: 5,
+          left: 10,
           bottom: 130,
         }}>
         <CartesianGrid strokeDasharray='3 3' verticalCoordinatesGenerator={(props) => createRange(65, props.width, (props.width + 40) / 10)} />
         <XAxis dataKey='raceID' tick={<CustomTick />} height={60} interval={0} />
-        <YAxis />
+        <YAxis label={{ value: 'Rating', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle' }, offset: 0 }} />
         <Tooltip content={<CustomTooltip />} isAnimationActive={false} />
         <Line strokeWidth={2} type='monotone' dataKey='crewElo' connectNulls={true} stroke='#fda' dot={false} />
         <Line strokeWidth={2} type='monotone' dataKey='skipperElo' connectNulls={true} stroke='#faa' dot={false} />
+        {/* {uniqueRegattas.map((regatta) => (
+          <Line
+            strokeWidth={2}
+            type='monotone'
+            dataKey='regAvg'
+            stroke='#aaf'
+            dot={false}
+            data={mappedRaces
+              .filter((race) => {
+                const [season, raceName] = race.raceID.split('/')
+                const uniqueKey = `${season}/${raceName}`
+                return uniqueKey == regatta
+              })
+              .map((race) => {
+                return {
+                  raceID: race.raceID,
+                  regAvg: race.regAvg,
+                }
+              })}
+          />
+        ))} */}
         <Line strokeWidth={2} type='monotone' dataKey='regAvg' stroke='#aaf' dot={false} />
+
         <Legend content={<CustomLegend />} verticalAlign='top' height={36} />
       </LineChart>
     </ResponsiveContainer>

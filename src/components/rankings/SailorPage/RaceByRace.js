@@ -67,7 +67,7 @@ export default function RaceByRace({ races, position }) {
                   </td>
                   <td style={{ textAlign: 'center' }}>
                     <div className='ratioBarBg'>
-                      <div className='ratioBar' style={{ width: race.ratio * 100 }}>
+                      <div className='ratioBar' style={{ width: race.ratio * 95 }}>
                         <span>{(race.ratio * 100).toFixed(1)}%</span>
                       </div>
                     </div>

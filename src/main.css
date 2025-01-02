@@ -112,9 +112,10 @@ select {
 }
 
 .contentBox {
-  border: var(--border) 0.2rem solid;
+  /* border: var(--border) 0.2rem solid; */
   border-radius: var(--radius);
-  background-color: var(--component-bg);
+  /* background-color: var(--component-bg); */
+  box-shadow: 0px 0px 5px #0000001a;
   padding: 1rem;
   margin: 0.5rem;
 }
@@ -507,10 +508,12 @@ td {
   padding: 0.3rem;
   text-align: left;
   border-bottom: 1px solid var(--border);
+  transition: 0.2s;
 }
 
 tr:hover td {
   background-color: var(--component-bg);
+  min-width: fit-content;
 }
 
 .tdRightBorder {
@@ -536,6 +539,7 @@ tbody tr:nth-child(even) {
   text-align: left;
   background-color: var(--border);
   border-radius: 3px 0 0 3px;
+  /* max-width: 90px; */
 }
 
 .flexGrowChild {
@@ -544,14 +548,26 @@ tbody tr:nth-child(even) {
 .filterOption {
   padding: 0.4rem;
   border-radius: var(--radius);
-  width: 75px;
+  min-width: fit-content;
   text-align: center;
   background-color: var(--highlight1);
   font-weight: 500;
-  color: #000;
+  color: #ffffff;
+  transition: 0.1s;
 }
 .filterInactive {
   background-color: var(--border);
+}
+.filterOption:hover {
+  background-color: var(--border);
+  transform: scale(1.1);
+}
+tr .filterOption:hover {
+  background-color: var(--border);
+  transform: scale(1);
+}
+.filterInactive:hover {
+  background-color: var(--highlight1);
 }
 .tabButton {
   border: var(--border) 0.2rem solid;
@@ -572,6 +588,7 @@ tbody tr:nth-child(even) {
   z-index: 8;
   /* position: relative; */
 }
+
 .teamTableContainer {
   max-height: calc(100vh - 55px - 60px); /* Full viewport height minus navbar and filter height */
   overflow-y: auto;
@@ -611,4 +628,13 @@ tbody tr:nth-child(even) {
   padding: 5px;
   background-color: var(--bg);
   box-shadow: 0px 0px 5px #0000005e;
+}
+
+.chartLabel {
+  text-anchor: start;
+  font-size: 12px;
+}
+
+.teamPageHeader {
+  padding-bottom: 15px;
 }

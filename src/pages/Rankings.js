@@ -6,7 +6,7 @@ import EloLineChart from '../components/EloLineChart'
 import Loader from '../components/loader'
 import VenueResults from '../components/rankings/VenueResults'
 import RaceByRace from '../components/rankings/SailorPage/RaceByRace'
-import PremiumCheck, { PremiumCheckLite } from '../components/rankings/PremiumCheck'
+import { ProCheck, ProCheckLite } from '../components/rankings/ProCheck'
 import useTeamCodes from '../lib/teamCodes'
 
 export default function Rankings() {
@@ -131,7 +131,7 @@ export default function Rankings() {
 
   const RankObj = ({ rank, pos }) => {
     return (
-      <PremiumCheckLite feature='ranks'>
+      <ProCheckLite feature='ranks'>
         Rank:
         {rank != 0 ? (
           <span>
@@ -145,9 +145,20 @@ export default function Rankings() {
         ) : (
           <span> (did not crew in f24)</span>
         )}
-      </PremiumCheckLite>
+      </ProCheckLite>
     )
   }
+
+  const skipperChange = sailorRaces
+    .filter((race) => race.pos == 'Skipper')
+    .slice(-5)
+    .reduce((sum, race) => sum + race.change, 0)
+    .toFixed(0)
+  const crewChange = sailorRaces
+    .filter((race) => race.pos == 'Crew')
+    .slice(-5)
+    .reduce((sum, race) => sum + race.change, 0)
+    .toFixed(0)
 
   return (
     <div style={{ padding: 30 }}>
@@ -176,16 +187,36 @@ export default function Rankings() {
           </div>
           <br />
           {/* Elos and Rankings */}
-          <div className='flexRowContainer' style={{ justifyContent: 'space-between', width: '50%' }}>
+          <div className='flexRowContainer' style={{ justifyContent: 'space-between', width: '75%' }}>
             {ratingSkipper != 0 ? (
               <div>
-                <div>Skipper: {ratingSkipper} elo</div>
+                <div>
+                  Skipper: {ratingSkipper} elo (
+                  <span
+                    style={{
+                      color: skipperChange > 0 ? 'green' : 'red',
+                    }}>
+                    {skipperChange > 0 ? '+' : ''}
+                    {skipperChange}
+                  </span>{' '}
+                  in the last 5 skipper races)
+                </div>
                 <RankObj rank={globalSkipper} pos='skipper' />
               </div>
             ) : undefined}
             {ratingCrew != 0 ? (
               <div>
-                <div>Crew: {ratingCrew} elo</div>
+                <div>
+                  Crew: {ratingCrew} elo (
+                  <span
+                    style={{
+                      color: crewChange > 0 ? 'green' : 'red',
+                    }}>
+                    {crewChange > 0 ? '+' : ''}
+                    {crewChange}
+                  </span>{' '}
+                  in the last 5 crew races)
+                </div>
                 <RankObj rank={globalCrew} pos='crew' />
               </div>
             ) : undefined}
@@ -204,21 +235,20 @@ export default function Rankings() {
           <div className='flexRowContainer'>
             <div className='flexGrowChild'>
               <h2>Rating changes by partner (higher is better)</h2>
-              (keep in mind that these values are skewed due to earlier races being highly influential)
               <PartnerResults races={sailorRaces} />
             </div>
             <div className='flexGrowChild'>
               <h2>Rating changes by Venue (higher is better)</h2>
-              (keep in mind that these values are skewed due to earlier races being highly influential)
               <VenueResults races={sailorRaces} />
             </div>
           </div>
           <h2>Rating changes by race</h2>
           <h2>Scores (lower is better) and Percentage (higher is better) by race</h2>
-          <PosNegBarChart showLabels={false} data={sailorRaces} dataKey='change' syncID='ranking' />
-          <PosNegBarChart showLabels={false} data={sailorRaces} dataKey='score' syncID='ranking' />
+          <PosNegBarChart showLabels={false} data={sailorRaces} dataKey='change' syncID='ranking' title='Change' />
+          <PosNegBarChart showLabels={false} data={sailorRaces} dataKey='score' syncID='ranking' title='Score' />
           {/* <h2>Ratio by race (higher is better)</h2> */}
           <PosNegBarChart
+            title='Percentage'
             showLabels={true}
             data={sailorRaces.map((race) => {
               if (race.ratio < 0) {

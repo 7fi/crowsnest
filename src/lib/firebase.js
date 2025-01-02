@@ -165,4 +165,34 @@ const getRegattaElos = async (regattaName) => {
   }
 }
 
-export { app, getUserWithUsername, getTeamWithName, getTeamWithID, getTeamList, scrapeTeamListToDb, getEventWithID, getEventsForTeam, getUserWithID, getSailorElo, getAllTeams, getTeamElos, getTop100Skippers, getTop100Crews, getRegattaElos }
+const CACHE_KEY = 'allPeople'
+const CACHE_EXPIRY_KEY = 'allPeopleExpiry'
+const CACHE_DURATION = 24 * 60 * 60 * 1000 // 24 hours
+
+const getAllSailors = async () => {
+  const cachedIndex = localStorage.getItem(CACHE_KEY)
+  const expiry = localStorage.getItem(CACHE_EXPIRY_KEY)
+
+  if (cachedIndex && expiry && Date.now() < expiry) {
+    console.log('loaded from cache!')
+    return JSON.parse(cachedIndex)
+  }
+
+  const thisDoc = await getDoc(doc(db, 'vars', 'allSailors'))
+
+  console.log('reads: %d', 1)
+  if (thisDoc != undefined) {
+    // Cache the result
+    localStorage.setItem(CACHE_KEY, thisDoc.data()?.allSailors)
+    localStorage.setItem(CACHE_EXPIRY_KEY, Date.now() + CACHE_DURATION)
+
+    return JSON.parse(thisDoc.data()?.allSailors)
+  } else {
+    // Cache the result
+    localStorage.setItem(CACHE_KEY, JSON.stringify({}))
+    localStorage.setItem(CACHE_EXPIRY_KEY, Date.now() + CACHE_DURATION)
+    return undefined
+  }
+}
+
+export { app, getUserWithUsername, getTeamWithName, getTeamWithID, getTeamList, scrapeTeamListToDb, getEventWithID, getEventsForTeam, getUserWithID, getSailorElo, getAllTeams, getTeamElos, getTop100Skippers, getTop100Crews, getRegattaElos, getAllSailors }

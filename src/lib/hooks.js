@@ -19,12 +19,12 @@ export function useUserData() {
       // let docSnap = await getDoc(docRef)
       unsubscribe = onSnapshot(docRef, (snapshot) => {
         // console.log(snapshot.data())
-        setUserVals({ username: snapshot.data()?.username, displayName: snapshot.data()?.displayName, premium: snapshot.data()?.premium })
+        setUserVals({ username: snapshot.data()?.username, displayName: snapshot.data()?.displayName, pro: snapshot.data()?.pro })
         // setUsername(snapshot.data()?.username)
         // setDisplayName(snapshot.data()?.displayName)
       })
     } else {
-      setUserVals({ username: null, displayName: null })
+      setUserVals({ username: null, displayName: null, pro: null })
     }
 
     return unsubscribe

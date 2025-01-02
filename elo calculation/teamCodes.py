@@ -21,11 +21,7 @@ with sync_playwright() as p:
         # Go to the page
         page.goto(url)
         time.sleep(2)
-
-        # Wait for a specific element that indicates the page is fully loaded (adjust to match your page)
-        # page.wait_for_selector('.page-info-value', timeout=10000)  # Wait for an element to appear
-        # page.wait_for_selector('.page-info-value', timeout=10000)  # Wait for 3rd element in the list to appear
-
+        
         # Now that the page is fully loaded, get the content of the second element of the class
         element = page.query_selector_all('.page-info-value')[1]  # Select the 2nd element with the class
 
@@ -36,22 +32,7 @@ with sync_playwright() as p:
 
         # Now that the page is fully loaded, get the page content
         content = page.content()
-
-        # Now you can parse the dynamic content
-        # print(soup.prettify())
-            
-        # teamPage = BeautifulSoup(page.content(), 'html.parser')
-        
-        # try:
-        #     region = teamPage.find('span', class_="page-info-value").contents[0].contents[0]
-        #     teamCode = teamPage.find_all('span', class_="page-info-key")
-        # except:
-        #     print(url)
-        #     continue
-        
-        # print(teamCode)
     
-
     # Close the browser
     browser.close()
     

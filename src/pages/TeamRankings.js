@@ -9,20 +9,31 @@ export default function TeamRankings() {
   const [rating, setRating] = useState(1500)
   const [teamSkippers, setTeamSkippers] = useState([])
   const [teamCrews, setTeamCrews] = useState([])
+  const [teamMembers, setTeamMembers] = useState([])
   const [teamLink, setTeamLink] = useState('')
   const [teamRegion, setTeamRegion] = useState('')
   const [loaded, setLoaded] = useState(false)
 
   const [sortByRatio, setSortByRatio] = useState(false)
-
   const [activeSeasons, setActiveSeasons] = useState([])
   const [allSeasons, setAllSeasons] = useState([])
-
   const teamCodes = useTeamCodes()
+
+  const RegionColors = {
+    PCCSC: '#ed841a',
+    NEISA: '#244a7d',
+    NWICSA: '#4A90E2',
+    SEISA: '#B8E986',
+    MCSA: '#D0021B',
+    SAISA: '#edbc1a',
+    MAISA: '#32b8ad',
+    GUEST: '#d45dba',
+  }
 
   useEffect(() => {
     getTeamElos(teamName).then((tempTeam) => {
       const members = tempTeam.data.members.filter((member) => member.teams[member.teams.length - 1] == teamName)
+      setTeamMembers(members)
       const skippers = members.filter((member) => member.pos.toLowerCase() === 'skipper')
       const crews = members.filter((member) => member.pos.toLowerCase() === 'crew')
       setTeamSkippers(skippers)
@@ -31,7 +42,7 @@ export default function TeamRankings() {
       setTeamLink(tempTeam.data.link)
       setTeamRegion(tempTeam.data.region)
 
-      const allSeasons = members.flatMap((member) => member.seasons)
+      const allSeasons = members.flatMap((member) => [...member?.skipperSeasons, ...member?.crewSeasons])
       const uniqueSeasons = [...new Set(allSeasons)].sort((a, b) => {
         if (parseInt(a.slice(1, 3)) - parseInt(b.slice(1, 3)) != 0) {
           return parseInt(a.slice(1, 3)) - parseInt(b.slice(1, 3))
@@ -43,6 +54,7 @@ export default function TeamRankings() {
       })
       setActiveSeasons([uniqueSeasons[uniqueSeasons.length - 1]])
       setAllSeasons(uniqueSeasons)
+      document.querySelector(':root').style.setProperty('--highlight1', RegionColors[tempTeam.data.region])
       setLoaded(true)
     })
   }, [teamName])
@@ -50,7 +62,7 @@ export default function TeamRankings() {
   const TeamMember = ({ index, member }) => {
     const navigate = useNavigate()
     return (
-      <tr className='clickable' onClick={() => navigate(`/rankings/${member.name}`)}>
+      <tr key={index} className='clickable' onClick={() => navigate(`/rankings/${member.name}`)}>
         <td className='tdRightBorder tableColFit'>{index + 1}</td>
         <td>{member.name}</td>
         <td className='secondaryText'>{member.pos}</td>
@@ -76,7 +88,8 @@ export default function TeamRankings() {
     }
   }
 
-  const PosList = ({ members }) => {
+  const PosList = ({ members, pos }) => {
+    const newMembers = members.filter((member) => member.pos.toLowerCase() === pos)
     return (
       <div className='flexGrowChild'>
         <table className='raceByRaceTable'>
@@ -93,8 +106,15 @@ export default function TeamRankings() {
             </th>
           </thead>
           <tbody>
-            {members
-              .filter((member) => member.seasons.some((season) => activeSeasons.includes(season)))
+            {newMembers
+              .filter((member) => {
+                // console.log(member?.skipperSeasons)
+                if (pos == 'skipper') {
+                  return member?.skipperSeasons?.some((season) => activeSeasons.includes(season))
+                } else {
+                  return member?.crewSeasons?.some((season) => activeSeasons.includes(season))
+                }
+              })
               .sort((a, b) => {
                 if (sortByRatio) {
                   return b.avgRatio - a.avgRatio
@@ -113,8 +133,11 @@ export default function TeamRankings() {
   return (
     <div>
       {loaded ? (
-        <div>
-          <div className='contentBox' style={{ marginTop: 80 }}>
+        <div style={{ padding: 15 }}>
+          <div className='teamPageHeader'>
+            <Link to={'/rankings/team'} className='secondaryText'>
+              {'<'} Back
+            </Link>
             <div className='flexRowContainer sailorNameRow'>
               <img style={{ display: 'inline', maxHeight: '3rem' }} src={`https://scores.collegesailing.org/inc/img/schools/${teamCodes[teamName]}.png`} />
               <h1 style={{ display: 'inline-block' }}>
@@ -124,12 +147,12 @@ export default function TeamRankings() {
               </h1>
             </div>
 
-            <span>
-              ({teamRegion}) (avg rating:{rating.toFixed(0)})
-            </span>
-            <Link to={'/rankings/team'} style={{ position: 'absolute', right: 20, top: 90 }}>
-              <button>all teams</button>
-            </Link>
+            <div>
+              <span className='filterOption' style={{ backgroundColor: RegionColors[teamRegion] }}>
+                {teamRegion}
+              </span>{' '}
+              avg rating: {rating.toFixed(0)}
+            </div>
           </div>
           <div className='flexRowContainer' style={{ marginLeft: 15 }}>
             {allSeasons
@@ -142,9 +165,9 @@ export default function TeamRankings() {
                   return 1
                 }
               })
-              .map((season) => (
-                <button className={`filterOption ${activeSeasons.indexOf(season) != -1 ? '' : 'filterInactive'}`} onClick={() => toggleFilter(season)}>
-                  {season.toUpperCase()}
+              .map((season, index) => (
+                <button key={index} className={`filterOption ${activeSeasons.indexOf(season) != -1 ? '' : 'filterInactive'}`} onClick={() => toggleFilter(season)}>
+                  {season?.toUpperCase()}
                 </button>
               ))}
             <button className='filterOption' onClick={() => setActiveSeasons(allSeasons)}>
@@ -155,8 +178,8 @@ export default function TeamRankings() {
             </button>
           </div>
           <div className='flexRowContainer' style={{ padding: 15 }}>
-            <PosList members={teamSkippers} />
-            <PosList members={teamCrews} />
+            <PosList members={teamMembers} pos={'skipper'} />
+            <PosList members={teamMembers} pos='crew' />
           </div>
         </div>
       ) : (

@@ -13,18 +13,19 @@ export default function EloTeams() {
   const [reverse, setReverse] = useState(false)
   const [byRatio, setByRatio] = useState(false)
   const [byMembers, setByMembers] = useState(false)
+  const [byRating, setByRating] = useState(false)
   const [loaded, setLoaded] = useState(false)
   const teamCodes = useTeamCodes()
-  const RegionColors = [
-    '#4A90E2', // Sky Blue
-    '#50E3C2', // Teal
-    '#F5A623', // Orange
-    '#D0021B', // Red
-    '#B8E986', // Lime Green
-    '#F8E71C', // Yellow
-    '#9013FE', // Purple
-    '#FF2D95', // Hot Pink
-  ]
+  const RegionColors = {
+    PCCSC: '#ed841a',
+    NEISA: '#244a7d',
+    NWICSA: '#4A90E2',
+    SEISA: '#82b84b',
+    MCSA: '#d12e44',
+    SAISA: '#edbc1a',
+    MAISA: '#32b8ad',
+    GUEST: '#ff7996',
+  }
   useEffect(() => {
     setLoaded(false)
     getAllTeams()
@@ -57,7 +58,7 @@ export default function EloTeams() {
         <input className='flexGrowChild' placeholder='Ex: MIT' onChange={filter} />
         <div className='flexRowContainer'>
           {allRegions.map((region, i) => (
-            <button style={{ backgroundColor: activeRegions.indexOf(region) != -1 ? RegionColors[allRegions.indexOf(region)] : '' }} className={`filterOption ${activeRegions.indexOf(region) != -1 ? '' : 'filterInactive'}`} onClick={() => toggleFilter(region)}>
+            <button style={{ backgroundColor: activeRegions.indexOf(region) != -1 ? RegionColors[region] : '' }} className={`filterOption ${activeRegions.indexOf(region) != -1 ? '' : 'filterInactive'}`} onClick={() => toggleFilter(region)}>
               {region}
             </button>
           ))}
@@ -85,6 +86,7 @@ export default function EloTeams() {
                   }
                   setByRatio(false)
                   setByMembers(true)
+                  setByRating(false)
                 }}>
                 Members
                 <span class='tooltiptext'>removes teams with less than 6 active members</span>
@@ -98,6 +100,7 @@ export default function EloTeams() {
                   }
                   setByRatio(true)
                   setByMembers(false)
+                  setByRating(false)
                 }}>
                 Percentage
                 <span class='tooltiptext'>removes teams with less than 6 active members</span>
@@ -111,10 +114,25 @@ export default function EloTeams() {
                   }
                   setByRatio(false)
                   setByMembers(false)
+                  setByRating(true)
                 }}>
                 Avg Rating
-                {!byRatio && !byMembers ? reverse ? <FaArrowUp /> : <FaArrowDown /> : <></>}
+                {byRating ? reverse ? <FaArrowUp /> : <FaArrowDown /> : <></>}
               </th>
+              <th
+                className='tableColFit'
+                onClick={() => {
+                  if (!byMembers && !byRatio) {
+                    setReverse(!reverse)
+                  }
+                  setByRatio(false)
+                  setByMembers(false)
+                  setByRating(false)
+                }}>
+                Top Avg Rating
+                {!byRatio && !byMembers && !byRating ? reverse ? <FaArrowUp /> : <FaArrowDown /> : <></>}
+              </th>
+
               <th></th>
             </thead>
             <tbody className='teamsTable'>
@@ -136,7 +154,8 @@ export default function EloTeams() {
                   if (reverse) [a, b] = [b, a]
                   if (byRatio) return b.avgRatio - a.avgRatio
                   else if (byMembers) return b.memberCount - a.memberCount
-                  else return b.avg - a.avg
+                  else if (byRating) return b.avg - a.avg
+                  else return b.topRating - a.topRating
                 })
                 .map((team, index) => (
                   <tr className='clickable' onClick={() => navigate(`/rankings/team/${team.name}`)}>
@@ -148,7 +167,7 @@ export default function EloTeams() {
                     </td>
                     <td className='tableColFit'>{team.name}</td>
                     <td className='tableColFit'>
-                      <div className='filterOption' style={{ backgroundColor: RegionColors[allRegions.indexOf(team.region)] }}>
+                      <div className='filterOption' style={{ backgroundColor: RegionColors[team.region] }}>
                         {team.region}
                       </div>
                     </td>
@@ -157,6 +176,7 @@ export default function EloTeams() {
                     </td>
                     <td style={{ textAlign: 'right' }}>{(team.avgRatio * 100).toFixed(1)}</td>
                     <td style={{ textAlign: 'right' }}>{team.avg.toLocaleString().split('.')[0]}</td>
+                    <td style={{ textAlign: 'right' }}>{team.topRating.toLocaleString().split('.')[0]}</td>
                     <td></td>
                   </tr>
                 ))}

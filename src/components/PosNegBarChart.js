@@ -1,7 +1,7 @@
 import { BarChart, Bar, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ReferenceLine, ResponsiveContainer } from 'recharts'
 import { useNavigate } from 'react-router-dom'
 
-export default function PosNegBarChart({ data, dataKey, showLabels, color, alternate, syncID }) {
+export default function PosNegBarChart({ data, dataKey, showLabels, color, alternate, syncID, title }) {
   const colors = ['#ffc658', '#82ca9d', '#8884d8', '#ff8042', '#8dd1e1']
   const eventToColor = {}
   const navigate = useNavigate()
@@ -24,10 +24,11 @@ export default function PosNegBarChart({ data, dataKey, showLabels, color, alter
     if (currentEvent !== previousEvent && showLabels) {
       return (
         <text
+          fill='var(--text)'
           x={x}
           y={y + 10} // Adjust vertical position for better alignment
           textAnchor='start'
-          transform={`rotate(45, ${x}, ${y + 10})`} // Rotate text at the tick position
+          transform={`rotate(90, ${x}, ${y + 5})`} // Rotate text at the tick position
           fontSize={12}>
           {currentEvent}
         </text>
@@ -67,10 +68,10 @@ export default function PosNegBarChart({ data, dataKey, showLabels, color, alter
 
   let offset = Math.floor(Math.random() * colors.length + 1)
   return (
-    <ResponsiveContainer width='100%' height={showLabels ? 400 : 120}>
-      <BarChart margin={{ top: 10, bottom: showLabels ? 100 : 0 }} data={data} syncId={syncID}>
+    <ResponsiveContainer width='100%' height={showLabels ? 420 : 120}>
+      <BarChart margin={{ left: 5, top: 10, bottom: showLabels ? 130 : 0 }} data={data} syncId={syncID}>
         <XAxis type='category' dataKey='raceID' tick={<CustomTick />} height={showLabels ? 60 : 0} interval={0} />
-        <YAxis type='number' />
+        <YAxis label={{ value: title, angle: -90, position: 'insideLeft', style: { textAnchor: 'middle' } }} type='number' />
         <Tooltip content={<CustomTooltip />} />
         <Bar dataKey={dataKey} fill='#fff'>
           {data.map((entry, index) => {

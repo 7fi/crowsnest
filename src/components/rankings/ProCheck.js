@@ -2,20 +2,20 @@ import { useContext } from 'react'
 import { UserContext } from '../../lib/context'
 
 // Component's children only shown to logged-in users
-export default function PremiumCheck(props) {
+export default function ProCheck(props) {
   const { userVals } = useContext(UserContext)
 
   console.log(userVals)
 
   // return true
   return userVals.username ? (
-    userVals.premium ? (
+    userVals.pro ? (
       props.children
     ) : (
       <div className='contentBox'>
-        You must have premium to view this content!
+        You must have Pro to view this content!
         <br />
-        Premium is not available yet.
+        Pro is not available yet.
       </div>
     )
   ) : (
@@ -30,8 +30,8 @@ export default function PremiumCheck(props) {
     )
   )
 }
-export function PremiumCheckLite(props) {
+export function ProCheckLite(props) {
   const { userVals } = useContext(UserContext)
-  return userVals.premium ? props.children : <span className='secondaryText'>(you need premium for {props.feature ? props.feature : 'this feautre'})</span>
+  return userVals.pro ? props.children : <span className='secondaryText'>(you need Pro for {props.feature ? props.feature : 'this feautre'})</span>
   return true ? props.children : null
 }
