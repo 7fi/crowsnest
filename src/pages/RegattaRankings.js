@@ -19,13 +19,6 @@ export default function RegattaRankings() {
         setSailors(sailors?.data?.sailors)
         setRaceIDs(sailors?.data?.raceIDs)
         setActiveTab(sailors?.data?.raceIDs[0].split('/')[2])
-        raceIDs.forEach((id) => {
-          if (id.slice(-1) == 'C') {
-            setDivs(['A', 'B', 'C'])
-            console.log(divisions)
-          }
-        })
-
         if (raceNum) {
           setActiveTab(raceNum)
         }
@@ -39,6 +32,15 @@ export default function RegattaRankings() {
       })
       .then(() => setLoaded(true))
   }, [season, regattaName])
+
+  useEffect(() => {
+    raceIDs.some((id) => {
+      if (id.slice(-1) == 'C') {
+        setDivs(['A', 'B', 'C'])
+        return true
+      }
+    })
+  }, [activeTab])
 
   const navigate = useNavigate()
 
@@ -64,7 +66,7 @@ export default function RegattaRankings() {
 
     // Step 2: Generate race elements based on the sorted list
     const raceElements = sortedPeople.map((sailor, index) => (
-      <tr className='clickable' onClick={() => navigate(`/rankings/${sailor.name}`)}>
+      <tr key={index} className='clickable' onClick={() => navigate(`/rankings/${sailor.name}`)}>
         <td>{sailor.name}</td>
         <td>{sailor.team}</td>
         <td style={{ color: sailor.score < sailor.predicted ? 'green' : sailor.score > sailor.predicted ? 'red' : '' }}>
@@ -86,12 +88,14 @@ export default function RegattaRankings() {
     return (
       <table className='raceByRaceTable'>
         <thead className=''>
-          <th>Name</th>
-          <th>Team</th>
-          <th>Score</th>
-          <th>Predicted</th>
-          <th>Rating</th>
-          <th style={{ textAlign: 'right' }}>Rating Change</th>
+          <tr>
+            <th>Name</th>
+            <th>Team</th>
+            <th>Score</th>
+            <th>Predicted</th>
+            <th>Rating</th>
+            <th style={{ textAlign: 'right' }}>Rating Change</th>
+          </tr>
         </thead>
         <tbody className=''>{raceElements}</tbody>
       </table>
@@ -174,9 +178,9 @@ export default function RegattaRankings() {
             Crews
           </button>
         </Link>
-        {divisions.map((div) => (
-          <Link to={`/rankings/regatta/${season}/${regattaName}/${activeTab.slice(0, -1) + div}/${position}`}>
-            <button className='tabButton' onClick={() => setActiveTab(activeTab.replace(/.$/, div))}>
+        {divisions.map((div, index) => (
+          <Link key={index} to={`/rankings/regatta/${season}/${regattaName}/${activeTab.slice(0, -1) + div}/${position}`}>
+            <button className='tabButton' style={{ backgroundColor: activeTab.slice(-1) == div ? 'var(--border)' : '' }} onClick={() => setActiveTab(activeTab.replace(/.$/, div))}>
               {div}
             </button>
           </Link>

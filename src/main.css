@@ -550,24 +550,22 @@ tbody tr:nth-child(even) {
   border-radius: var(--radius);
   min-width: fit-content;
   text-align: center;
-  background-color: var(--highlight1);
+  background-color: var(--border);
   font-weight: 500;
   color: #ffffff;
   transition: 0.1s;
 }
-.filterInactive {
-  background-color: var(--border);
+.filterHighlight {
+  background-color: var(--highlight1);
 }
 .filterOption:hover {
-  background-color: var(--border);
+  background-color: var(--highlight1);
+  opacity: 50%;
+
   transform: scale(1.1);
 }
 tr .filterOption:hover {
-  background-color: var(--border);
   transform: scale(1);
-}
-.filterInactive:hover {
-  background-color: var(--highlight1);
 }
 .tabButton {
   border: var(--border) 0.2rem solid;

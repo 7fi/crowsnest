@@ -80,12 +80,15 @@ export default function TeamRankings() {
     )
   }
 
-  const toggleFilter = (season) => {
+  const toggleFilter = (season, element) => {
     if (activeSeasons.indexOf(season) != -1) {
       setActiveSeasons(activeSeasons.filter((reg) => reg != season))
+      // element.classList.add('filterInactive')
     } else {
       setActiveSeasons((activeSeasons) => [...activeSeasons, season])
+      // element.classList.remove('filterInactive')
     }
+    // console.log(element.classList)
   }
 
   const PosList = ({ members, pos }) => {
@@ -166,9 +169,9 @@ export default function TeamRankings() {
                 }
               })
               .map((season, index) => (
-                <button key={index} className={`filterOption ${activeSeasons.indexOf(season) != -1 ? '' : 'filterInactive'}`} onClick={() => toggleFilter(season)}>
+                <div key={index} className={`filterOption`} style={{ backgroundColor: activeSeasons.includes(season) ? 'var(--highlight1)' : '' }} onClick={(e) => toggleFilter(season, e.target)}>
                   {season?.toUpperCase()}
-                </button>
+                </div>
               ))}
             <button className='filterOption' onClick={() => setActiveSeasons(allSeasons)}>
               Enable all
