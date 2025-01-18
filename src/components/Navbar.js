@@ -17,8 +17,9 @@ export default function Navbar() {
     <nav className='navbar'>
       <ul>
         <li style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <Link to='/' className='text-title'>
-            CrowsNest
+          <Link to='/' className='text-title' style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <img style={{ margin: 5 }} src={theme == 'dark' ? `/Logo_Dark.png` : `/Logo_Light.png`} />
+            <span>CrowsNest</span>
           </Link>
           <span style={{ marginTop: 3 }} className='secondaryText'>
             {' '}

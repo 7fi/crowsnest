@@ -34,15 +34,15 @@ export default function TeamRankings() {
     getTeamElos(teamName).then((tempTeam) => {
       const members = tempTeam.data.members.filter((member) => member.teams[member.teams.length - 1] == teamName)
       setTeamMembers(members)
-      const skippers = members.filter((member) => member.pos.toLowerCase() === 'skipper')
-      const crews = members.filter((member) => member.pos.toLowerCase() === 'crew')
+      const skippers = members.filter((member) => member.seasons['skipper'].length > 0)
+      const crews = members.filter((member) => member.seasons['crew'].length > 0)
       setTeamSkippers(skippers)
       setTeamCrews(crews)
       setRating(tempTeam.data.avg)
       setTeamLink(tempTeam.data.link)
       setTeamRegion(tempTeam.data.region)
 
-      const allSeasons = members.flatMap((member) => [...member?.skipperSeasons, ...member?.crewSeasons])
+      const allSeasons = members.flatMap((member) => [...member?.seasons.skipper, ...member?.seasons.crew])
       const uniqueSeasons = [...new Set(allSeasons)].sort((a, b) => {
         if (parseInt(a.slice(1, 3)) - parseInt(b.slice(1, 3)) != 0) {
           return parseInt(a.slice(1, 3)) - parseInt(b.slice(1, 3))
@@ -59,10 +59,11 @@ export default function TeamRankings() {
     })
   }, [teamName])
 
-  const TeamMember = ({ index, member }) => {
+  const TeamMember = ({ index, member, pos }) => {
     const navigate = useNavigate()
+    console.log(member)
     return (
-      <tr key={index} className='clickable' onClick={() => navigate(`/rankings/${member.name}`)}>
+      <tr key={index} className='clickable' onClick={() => navigate(`/rankings/${member.key}`)}>
         <td className='tdRightBorder tableColFit'>{index + 1}</td>
         <td>{member.name}</td>
         <td className='secondaryText'>{member.pos}</td>
@@ -74,8 +75,8 @@ export default function TeamRankings() {
             return total // If the season is not in the seasonRaces object, we ignore it
           }, 0)}
         </td>
-        <td>{member.avgRatio.toFixed(3)}</td>
-        <td>{member.rating.toFixed(0)}</td>
+        <td>{pos == 'skipper' ? member.avgSkipperRatio.toFixed(3) : member.avgCrewRatio.toFixed(3)}</td>
+        <td>{pos == 'skipper' ? member.skipperRating.toFixed(0) : member.crewRating.toFixed(0)}</td>
       </tr>
     )
   }
@@ -92,40 +93,41 @@ export default function TeamRankings() {
   }
 
   const PosList = ({ members, pos }) => {
-    const newMembers = members.filter((member) => member.pos.toLowerCase() === pos)
+    const newMembers = members.filter((member) => member.seasons[pos].length > 0)
     return (
       <div className='flexGrowChild'>
         <table className='raceByRaceTable'>
           <thead>
-            <th></th>
-            <th>Name</th>
-            <th>Position</th>
-            <th>Num Races</th>
-            <th className='clickable' style={{ textDecoration: sortByRatio ? 'underline' : '' }} onClick={() => setSortByRatio(true)}>
-              Avg Ratio
-            </th>
-            <th className='clickable' style={{ textDecoration: sortByRatio ? '' : 'underline' }} onClick={() => setSortByRatio(false)}>
-              Rating
-            </th>
+            <tr>
+              <th></th>
+              <th>Name</th>
+              <th>Position</th>
+              <th>Num Races</th>
+              <th className='clickable' style={{ textDecoration: sortByRatio ? 'underline' : '' }} onClick={() => setSortByRatio(true)}>
+                Avg Ratio
+              </th>
+              <th className='clickable' style={{ textDecoration: sortByRatio ? '' : 'underline' }} onClick={() => setSortByRatio(false)}>
+                Rating
+              </th>
+            </tr>
           </thead>
           <tbody>
             {newMembers
               .filter((member) => {
-                // console.log(member?.skipperSeasons)
-                if (pos == 'skipper') {
-                  return member?.skipperSeasons?.some((season) => activeSeasons.includes(season))
-                } else {
-                  return member?.crewSeasons?.some((season) => activeSeasons.includes(season))
-                }
+                return member?.seasons[pos]?.some((season) => activeSeasons.includes(season))
               })
               .sort((a, b) => {
                 if (sortByRatio) {
                   return b.avgRatio - a.avgRatio
                 }
-                return b.rating - a.rating
+                if (pos == 'skipper') {
+                  return b.skipperRating - a.skipperRating
+                } else {
+                  return b.crewRating - a.crewRating
+                }
               })
               .map((member, index) => (
-                <TeamMember index={index} key={member.name + member.pos} member={member} />
+                <TeamMember index={index} key={member.name + member.pos} member={member} pos={pos} />
               ))}
           </tbody>
         </table>

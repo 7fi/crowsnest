@@ -26,11 +26,13 @@ export default function VenueResults({ races }) {
   return (
     <table className='raceByRaceTable'>
       <thead>
-        <th></th>
-        <th>Venue (host)</th>
-        <th>Races</th>
-        <th>Rating Change</th>
-        <th>Percentage</th>
+        <tr>
+          <th></th>
+          <th>Venue (host)</th>
+          <th>Races</th>
+          <th>Rating Change</th>
+          <th>Percentage</th>
+        </tr>
       </thead>
       <tbody>
         {sortedVenues.map((venue, index) =>

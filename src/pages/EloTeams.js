@@ -1,9 +1,10 @@
 import { getAllTeams } from '../lib/firebase'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link, useParams, useNavigate } from 'react-router-dom'
 import Loader from '../components/loader'
 import { FaArrowDown, FaArrowUp } from 'react-icons/fa'
 import useTeamCodes from '../lib/teamCodes'
+import ScrollButton from '../components/ScrollToTop'
 
 export default function EloTeams() {
   const [teams, setTeams] = useState([])
@@ -15,6 +16,9 @@ export default function EloTeams() {
   const [byMembers, setByMembers] = useState(false)
   const [byRating, setByRating] = useState(false)
   const [loaded, setLoaded] = useState(false)
+
+  const temp = useRef(null)
+
   const teamCodes = useTeamCodes()
   const RegionColors = {
     PCCSC: '#ed841a',
@@ -30,7 +34,6 @@ export default function EloTeams() {
     setLoaded(false)
     getAllTeams()
       .then((tempTeams) => {
-        console.log(tempTeams)
         let teams = tempTeams.data.teams
         setTeams(teams)
         let regions = tempTeams.data.teams.map((team) => team.region).filter((value, index, self) => self.indexOf(value) === index)
@@ -52,13 +55,20 @@ export default function EloTeams() {
     setFilterText(e.target.value)
   }
 
+  const scrollToTop = () => {
+    console.log('bruh')
+    if (temp.current) {
+      temp.current.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' })
+    }
+  }
+
   return (
     <div>
       <div className='flexRowContainer filterHeader'>
         <input className='flexGrowChild' placeholder='Ex: MIT' onChange={filter} />
         <div className='flexRowContainer'>
           {allRegions.map((region, i) => (
-            <button style={{ backgroundColor: activeRegions.indexOf(region) != -1 ? RegionColors[region] : '' }} className={`filterOption ${activeRegions.indexOf(region) != -1 ? '' : 'filterInactive'}`} onClick={() => toggleFilter(region)}>
+            <button key={i} style={{ backgroundColor: activeRegions.indexOf(region) != -1 ? RegionColors[region] : '' }} className={`filterOption ${activeRegions.indexOf(region) != -1 ? '' : 'filterInactive'}`} onClick={() => toggleFilter(region)}>
               {region}
             </button>
           ))}
@@ -72,68 +82,72 @@ export default function EloTeams() {
       </div>
       {loaded ? (
         <div className='teamTableContainer'>
-          <table className='raceByRaceTable teamsTable'>
+          <table className='raceByRaceTable teamsTable' ref={temp}>
             <thead>
-              <th></th>
-              <th style={{ minWidth: 50 }}> </th>
-              <th>Name</th>
-              <th>Region</th>
-              <th
-                className='tableColFit tooltip'
-                onClick={() => {
-                  if (byMembers) {
-                    setReverse(!reverse)
-                  }
-                  setByRatio(false)
-                  setByMembers(true)
-                  setByRating(false)
-                }}>
-                Members
-                <span class='tooltiptext'>removes teams with less than 6 active members</span>
-                {byMembers ? reverse ? <FaArrowUp /> : <FaArrowDown /> : <></>}
-              </th>
-              <th
-                className='tableColFit tooltip'
-                onClick={() => {
-                  if (byRatio) {
-                    setReverse(!reverse)
-                  }
-                  setByRatio(true)
-                  setByMembers(false)
-                  setByRating(false)
-                }}>
-                Percentage
-                <span class='tooltiptext'>removes teams with less than 6 active members</span>
-                {byRatio ? reverse ? <FaArrowUp /> : <FaArrowDown /> : <></>}
-              </th>
-              <th
-                className='tableColFit tooltip'
-                onClick={() => {
-                  if (!byMembers && !byRatio) {
-                    setReverse(!reverse)
-                  }
-                  setByRatio(false)
-                  setByMembers(false)
-                  setByRating(true)
-                }}>
-                Avg Rating
-                {byRating ? reverse ? <FaArrowUp /> : <FaArrowDown /> : <></>}
-              </th>
-              <th
-                className='tableColFit'
-                onClick={() => {
-                  if (!byMembers && !byRatio) {
-                    setReverse(!reverse)
-                  }
-                  setByRatio(false)
-                  setByMembers(false)
-                  setByRating(false)
-                }}>
-                Top Avg Rating
-                {!byRatio && !byMembers && !byRating ? reverse ? <FaArrowUp /> : <FaArrowDown /> : <></>}
-              </th>
+              <tr>
+                <th></th>
+                <th style={{ minWidth: 50 }}> </th>
+                <th>Name</th>
+                <th>Region</th>
+                <th
+                  className='tableColFit tooltip'
+                  onClick={() => {
+                    if (byMembers) {
+                      setReverse(!reverse)
+                    }
+                    setByRatio(false)
+                    setByMembers(true)
+                    setByRating(false)
+                  }}>
+                  Members
+                  <span className='tooltiptext'>removes teams with less than 6 active members</span>
+                  {byMembers ? reverse ? <FaArrowUp /> : <FaArrowDown /> : <></>}
+                </th>
+                <th
+                  className='tableColFit tooltip'
+                  onClick={() => {
+                    if (byRatio) {
+                      setReverse(!reverse)
+                    }
+                    setByRatio(true)
+                    setByMembers(false)
+                    setByRating(false)
+                  }}>
+                  Percentage
+                  <span className='tooltiptext'>removes teams with less than 6 active members</span>
+                  {byRatio ? reverse ? <FaArrowUp /> : <FaArrowDown /> : <></>}
+                </th>
+                <th
+                  className='tableColFit tooltip'
+                  onClick={() => {
+                    if (byRating) {
+                      setReverse(!reverse)
+                    }
+                    setByRatio(false)
+                    setByMembers(false)
+                    setByRating(true)
+                  }}>
+                  <span className='tooltiptext'>Avg Rating of all sailors</span>
+                  Avg Rating
+                  {byRating ? reverse ? <FaArrowUp /> : <FaArrowDown /> : <></>}
+                </th>
+                <th
+                  className='tableColFit tooltip'
+                  onClick={() => {
+                    if (!byMembers && !byRatio && !byRating) {
+                      setReverse(!reverse)
+                    }
+                    setByRatio(false)
+                    setByMembers(false)
+                    setByRating(false)
+                  }}>
+                  Top Avg Rating
+                  <span className='tooltiptext'>Takes avg the top 4 from each pos</span>
+                  {!byRatio && !byMembers && !byRating ? reverse ? <FaArrowUp /> : <FaArrowDown /> : <></>}
+                </th>
 
-              <th></th>
+                <th></th>
+              </tr>
             </thead>
             <tbody className='teamsTable'>
               {teams
@@ -158,7 +172,7 @@ export default function EloTeams() {
                   else return b.topRating - a.topRating
                 })
                 .map((team, index) => (
-                  <tr className='clickable' onClick={() => navigate(`/rankings/team/${team.name}`)}>
+                  <tr key={index} className='clickable' onClick={() => navigate(`/rankings/team/${team.name}`)}>
                     <td className='tableColFit tdRightBorder'>{index + 1}</td>
                     <td className='tableColFit'>
                       <div className='flexRowContainer sailorNameRow'>
@@ -182,6 +196,14 @@ export default function EloTeams() {
                 ))}
             </tbody>
           </table>
+          <button
+            className='scrollButton'
+            onClick={() => {
+              scrollToTop()
+            }}>
+            Back to top
+          </button>
+          {/* <ScrollButton element={temp} /> */}
         </div>
       ) : (
         <Loader show={!loaded} />

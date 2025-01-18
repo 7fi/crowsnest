@@ -14,6 +14,22 @@ export default function PosNegBarChart({ data, dataKey, showLabels, color, alter
       eventToColor[event] = colors[Object.keys(eventToColor).length % colors.length]
     }
   })
+  data = data.sort((a, b) => {
+    let datea = new Date(a.date.seconds * 1000)
+    let dateb = new Date(b.date.seconds * 1000)
+    if (datea.getFullYear() != dateb.getFullYear()) {
+      return datea.getFullYear() - dateb.getFullYear()
+    }
+    if (datea.getMonth() != dateb.getMonth()) {
+      return datea.getMonth() - dateb.getMonth()
+    }
+    if (datea.getDate() != dateb.getDate()) {
+      return datea.getDate() - dateb.getDate()
+    }
+    let raceNumA = parseInt(a.raceID.split('/')[2].slice(0, -1))
+    let raceNumB = parseInt(b.raceID.split('/')[2].slice(0, -1))
+    return raceNumA - raceNumB
+  })
 
   // Custom Tick Component
   const CustomTick = ({ x, y, index }) => {
@@ -42,21 +58,21 @@ export default function PosNegBarChart({ data, dataKey, showLabels, color, alter
       // console.log(payload[0]?.payload)
       return (
         <>
-          <div className='contentBox' style={{ padding: 4, fontSize: '0.8rem' }}>
-            Sailor: {payload[0]?.payload.sailor}
-            <br />
+          <div className='contentBox' style={{ padding: 4, fontSize: '0.8rem', backgroundColor: 'var(--bg)' }}>
+            {/* Sailor: {payload[0]?.payload.sailor}
+            <br /> */}
             Position: {payload[0]?.payload.pos}
             <br />
             Rating Change: {payload[0]?.payload.change.toFixed(2)}
             <br />
             Race Score : {payload[0]?.payload.score}
             <br />
-            Predicted Score : {payload[0]?.payload.predicted}
-            <br />
+            {/* Predicted Score : {payload[0]?.payload.predicted}
+            <br /> */}
             Race Ratio: {payload[0]?.payload.ratio.toFixed(2)}
             <br />
-            Partner: {payload[0]?.payload.partner}
-            <br />
+            {/* Partner: {payload[0]?.payload.partner}
+            <br /> */}
             Race ID: {payload[0]?.payload?.raceID.split('/')[1]}/{payload[0]?.payload?.raceID.split('/')[2]}
           </div>
         </>

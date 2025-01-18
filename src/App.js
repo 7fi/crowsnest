@@ -28,12 +28,15 @@ import RankingsHome from './pages/RankingsHome'
 import { useEffect } from 'react'
 import VersusRanking from './pages/VersusRanking'
 import EloSearch from './pages/EloSearch'
+import ScrollToTop from './components/ScrollToTop'
+import ScrollButton from './components/ScrollToTop'
 
 export default function App() {
   const userData = useUserData()
   checkTheme()
 
-  const isProduction = process.env.NODE_ENV === 'production'
+  // const isProduction = process.env.NODE_ENV === 'production'
+  const isProduction = false // Force render
 
   function ScrollToTop() {
     const { pathname } = useLocation()
@@ -48,43 +51,47 @@ export default function App() {
   return (
     <>
       <UserContext.Provider value={userData}>
-        {/* {!isProduction ? ( */}
-        <>
-          <ScrollToTop />
-          <Navbar />
-          <Routes>
-            <Route path='/' element={<RankingsHome />} />
-            <Route path='/enter' element={<Enter />} />
-            <Route path='/profile/:profileName' element={<Profile />} />
-            {/* <Route path="/profile" element={<Navigate to={`/profile/${userData.username}`} />} /> */}
-            <Route path='/team/:teamName' element={<Team />} />
-            <Route path='/team/:teamName/events' element={<Events />} />
-            <Route path='/teams' element={<Teams />} />
-            <Route path='/event/create' element={<CreateEvent />} />
-            <Route path='/event/:eventID' element={<Event />} />
-            <Route path='/createteam' element={<CreateTeam />} />
-            <Route path='/team/:teamName/pairs' element={<Pairs />} />
-            <Route path='/scores' element={<Scores />} />
-            {/* Rankings */}
-            <Route path='/rankings/' element={<RankingsHome />} />
-            <Route path='/rankings/skipper' element={<GlobalRankings pos={'Skipper'} />} />
-            <Route path='/rankings/crew' element={<GlobalRankings pos='Crew' />} />
-            <Route path='/rankings/:sailor' element={<Rankings />} />
-            <Route path='/rankings/search' element={<EloSearch />} />
-            <Route path='/rankings/:sailorAName/vs/:sailorBName' element={<VersusRanking />} />
-            <Route path='/rankings/team' element={<EloTeams />} />
-            <Route path='/rankings/team/:teamName' element={<TeamRankings />} />
-            <Route path='/rankings/regatta/:season/:regattaName' element={<RegattaRankings />} />
-            <Route path='/rankings/regatta/:season/:regattaName/:raceNum' element={<RegattaRankings />} />
-            <Route path='/rankings/regatta/:season/:regattaName/:raceNum/:pos' element={<RegattaRankings />} />
-            <Route path='/drag' element={<TestDrag />} />
-            <Route path='/:text' element={<NotFound />} />
-          </Routes>
-          <Toaster position='top-center' reverseOrder={false} />
-        </>
-        {/* ) : (
+        {!isProduction ? (
+          <>
+            <ScrollToTop />
+            <Navbar />
+            <Routes>
+              <Route path='/' element={<RankingsHome />} />
+              <Route path='/enter' element={<Enter />} />
+              <Route path='/profile/:profileName' element={<Profile />} />
+              {/* <Route path="/profile" element={<Navigate to={`/profile/${userData.username}`} />} /> */}
+              <Route path='/team/:teamName' element={<Team />} />
+              <Route path='/team/:teamName/events' element={<Events />} />
+              <Route path='/teams' element={<Teams />} />
+              <Route path='/event/create' element={<CreateEvent />} />
+              <Route path='/event/:eventID' element={<Event />} />
+              <Route path='/createteam' element={<CreateTeam />} />
+              <Route path='/team/:teamName/pairs' element={<Pairs />} />
+              <Route path='/scores' element={<Scores />} />
+              {/* Rankings */}
+              <Route path='/rankings/' element={<RankingsHome />} />
+              <Route path='/rankings/skipper' element={<GlobalRankings pos={'Skipper'} />} />
+              <Route path='/rankings/crew' element={<GlobalRankings pos='Crew' />} />
+              <Route path='/rankings/:key' element={<Rankings />} />
+              <Route path='/rankings/search' element={<EloSearch />} />
+              <Route path='/rankings/:sailorAName/vs/:sailorBName' element={<VersusRanking />} />
+              <Route path='/rankings/team' element={<EloTeams />} />
+              <Route path='/rankings/team/:teamName' element={<TeamRankings />} />
+              <Route path='/rankings/regatta/:season/:regattaName' element={<RegattaRankings />} />
+              <Route path='/rankings/regatta/:season/:regattaName/:raceNum' element={<RegattaRankings />} />
+              <Route path='/rankings/regatta/:season/:regattaName/:raceNum/:pos' element={<RegattaRankings />} />
+              <Route path='/drag' element={<TestDrag />} />
+              <Route path='/:text' element={<NotFound />} />
+            </Routes>
+            <Toaster position='top-center' reverseOrder={false} />
+            <ScrollButton />
+            {/* <div onClick={() => window.scrollTo(0, 0)} style={{ position: 'sticky', bottom: -20, right: 0, visibility: window.scrollX > 20 ? 'visible' : 'visible' }}>
+              top
+            </div> */}
+          </>
+        ) : (
           <span>Crowsnest is under construction... </span>
-        )} */}
+        )}
       </UserContext.Provider>
     </>
   )

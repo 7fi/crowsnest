@@ -99,8 +99,8 @@ const scrapeTeamListToDb = async (district, seasons) => {
   scrToDb({ seasons: seasons })
 }
 
-const getSailorElo = async (sailorname) => {
-  const q = query(collection(db, 'sailorsElo'), where('Name', '==', sailorname))
+const getSailorElo = async (sailorkey) => {
+  const q = query(collection(db, 'sailorsElo'), where('key', '==', sailorkey))
   const docs = await getDocs(q)
   console.log('reads: ' + docs.docs.length)
   // const doc = docs.docs[0]
@@ -169,11 +169,11 @@ const CACHE_KEY = 'allPeople'
 const CACHE_EXPIRY_KEY = 'allPeopleExpiry'
 const CACHE_DURATION = 24 * 60 * 60 * 1000 // 24 hours
 
-const getAllSailors = async () => {
+const getAllSailors = async ({ useCache }) => {
   const cachedIndex = localStorage.getItem(CACHE_KEY)
   const expiry = localStorage.getItem(CACHE_EXPIRY_KEY)
 
-  if (cachedIndex && expiry && Date.now() < expiry) {
+  if (useCache && cachedIndex && expiry && Date.now() < expiry) {
     console.log('loaded from cache!')
     return JSON.parse(cachedIndex)
   }
@@ -185,7 +185,6 @@ const getAllSailors = async () => {
     // Cache the result
     localStorage.setItem(CACHE_KEY, thisDoc.data()?.allSailors)
     localStorage.setItem(CACHE_EXPIRY_KEY, Date.now() + CACHE_DURATION)
-
     return JSON.parse(thisDoc.data()?.allSailors)
   } else {
     // Cache the result

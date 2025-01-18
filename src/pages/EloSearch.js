@@ -14,10 +14,11 @@ export default function EloSearch() {
   }
 
   useEffect(() => {
-    getAllSailors().then((sailors) => {
+    getAllSailors(false).then((sailors) => {
       setSailors(sailors)
     })
   }, [])
+
   const nav = useNavigate()
 
   return (
@@ -59,7 +60,7 @@ export default function EloSearch() {
                 ) : (
                   <></>
                 )}
-                <td>{sailor}</td>
+                <td>{sailors[sailor].name}</td>
                 <td>{sailors[sailor].team}</td>
                 <td>{sailors[sailor].year}</td>
               </tr>

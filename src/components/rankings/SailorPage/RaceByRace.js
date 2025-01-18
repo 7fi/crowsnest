@@ -15,6 +15,7 @@ export default function RaceByRace({ races, position }) {
             <th>Predicted</th>
             <th>Percentage</th>
             <th>Rating</th>
+            <th>Change</th>
             <th></th>
           </tr>
         </thead>
@@ -53,7 +54,7 @@ export default function RaceByRace({ races, position }) {
 
                   <td className='tableColFit'>{race.pos}</td>
                   <td className='tableColFit' onClick={() => navigate(`/rankings/${race.partner}`)}>
-                    <Link to={`/rankings/${race.partner}`}>{race.partner}</Link>
+                    <Link to={`/rankings/${race.partner['link']}`}>{race.partner['name']}</Link>
                   </td>
                   <td style={{ textAlign: 'center', color: race.score < race.predicted ? 'green' : race.score > race.predicted ? 'red' : '' }}>
                     {race.score < 10 ? '  ' : ' '}
@@ -72,11 +73,12 @@ export default function RaceByRace({ races, position }) {
                       </div>
                     </div>
                   </td>
-                  <td>{(race.newRating - race.change).toFixed(0)}</td>
+                  <td>{((race.pos == 'Skipper' ? race.skipperRating : race.crewRating) - race.change).toFixed(0)}</td>
                   <td style={{ color: race.change > 0 ? 'green' : 'red' }}>
                     {race.change > 0 ? ' +' : ' '}
                     {race.change.toFixed(0)}
                   </td>
+                  <td>{race.skipperSigma}</td>
                 </tr>
               )
             })}

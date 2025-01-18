@@ -636,3 +636,72 @@ tr .filterOption:hover {
 .teamPageHeader {
   padding-bottom: 15px;
 }
+
+.scrollButton {
+  position: fixed;
+  bottom: 10px;
+  padding: 5px;
+
+  right: 2vw;
+  background-color: var(--bg);
+}
+
+.heroTitle {
+  font-size: 4rem;
+  /* left: 35vw; */
+  /* top: 30vh; */
+  color: #fff;
+  width: 100%;
+  margin: 0;
+  text-align: center;
+}
+.heroSubtitle {
+  /* position: absolute; */
+  font-size: 1.7rem;
+  /* top: 45vh; */
+  color: #ccc;
+  /* left: 15vw; */
+  text-align: center;
+  width: 100%;
+  margin: 0;
+}
+
+.fullContentBox {
+  position: absolute;
+  background-color: var(--bg);
+  /* margin-top: 80px; */
+  padding: 15px;
+  width: 100%;
+  min-height: 50%;
+}
+.heroBlock {
+  position: absolute;
+  top: 25%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.heroImg {
+  /* height: 500px; */
+}
+.heroExclaim {
+  color: #fff;
+  position: absolute;
+  transform: translate(175px) rotate(20deg);
+  animation: exclaim 3s ease-in-out infinite;
+}
+@keyframes exclaim {
+  0% {
+    /* transform: translate(175px) rotate(10deg); */
+    transform: translate(175px) rotate(20deg) scale(1);
+  }
+  50% {
+    /* transform: scale(1.2) translate(175px) rotate(30deg); */
+    transform: translate(175px) rotate(20deg) scale(1.2);
+  }
+  100% {
+    /* transform: translate(175px) rotate(10deg); */
+    transform: translate(175px) rotate(20deg) scale(1);
+  }
+}

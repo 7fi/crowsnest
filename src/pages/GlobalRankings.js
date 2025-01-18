@@ -30,12 +30,12 @@ export default function GlobalRankings({ pos }) {
   const Person = ({ member }) => {
     return (
       <>
-        <tr className='contentBox clickable' onClick={() => nav(`/rankings/${member.name}`)}>
+        <tr className='contentBox clickable' onClick={() => nav(`/rankings/${member.key}`)}>
           <td className='tdRightBorder tableColFit secondaryText' style={{ color: '#aaa' }}>
             {member.rank}{' '}
           </td>
-          <td>{member.name}</td> <td>{member.team[member.team.length - 1]}</td>
-          <td style={{ color: '#aaa' }}> {member.pos}</td>
+          <td className='tableColFit'>{member.name}</td>
+          <td>{member.team[member.team.length - 1]}</td>
           <td style={{ textAlign: 'right' }}>{member.rating.toFixed(2)}</td>
         </tr>
       </>
@@ -51,15 +51,16 @@ export default function GlobalRankings({ pos }) {
       {loaded ? (
         <table className='raceByRaceTable'>
           <thead>
-            <th></th>
-            <th>Name</th>
-            <th>Team</th>
-            <th>Pos</th>
-            <th style={{ textAlign: 'right' }}>Rating</th>
+            <tr>
+              <th></th>
+              <th>Name</th>
+              <th>Team</th>
+              <th style={{ textAlign: 'right' }}>Rating</th>
+            </tr>
           </thead>
           <tbody>
             {people
-              .filter((member) => member.seasons.includes('f24'))
+              // .filter((member) => member.seasons[pos.toLowerCase()].includes('f24'))
               .map((person) => (
                 <Person member={person} />
               ))}

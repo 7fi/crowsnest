@@ -3,9 +3,9 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsi
 export default function EloLineChart({ data }) {
   // Custom Tick Component
   const CustomTick = ({ x, y, payload, index }) => {
-    if (index == data.length) return null
-    const currentEvent = data[index]?.raceID.split('/')[0] + '/' + data[index]?.raceID.split('/')[1]
-    const previousEvent = index > 0 ? data[index - 1]?.raceID.split('/')[0] + '/' + data[index - 1]?.raceID.split('/')[1] : null
+    if (index == mappedRaces.length) return null
+    const currentEvent = mappedRaces[index]?.raceID.split('/')[0] + '/' + mappedRaces[index]?.raceID.split('/')[1]
+    const previousEvent = index > 0 ? mappedRaces[index - 1]?.raceID.split('/')[0] + '/' + mappedRaces[index - 1]?.raceID.split('/')[1] : null
 
     // Only render the label if the event is different from the previous one
     if (currentEvent !== previousEvent) {
@@ -28,7 +28,11 @@ export default function EloLineChart({ data }) {
         return (
           <>
             <div className='chartTooltip'>
-              Sailor Rating: {payload[0]?.payload?.newRating?.toFixed(2)}
+              Skipper Rating: {payload[0]?.payload?.skipperRating?.toFixed(2)}
+              <br />
+              Skipper Sigma: {payload[0]?.payload?.skipperSigma?.toFixed(2)}
+              <br />
+              Crew Rating: {payload[0]?.payload?.crewRating?.toFixed(2)}
               <br />
               Average Regatta Rating: {payload[0]?.payload?.regAvg?.toFixed(2)}
               <br />
@@ -37,6 +41,8 @@ export default function EloLineChart({ data }) {
               <span className='text-titlecase'>
                 Race: {payload[0]?.payload?.raceID?.split('/')[1].replace(/-/g, ' ')} {payload[0]?.payload?.raceID?.split('/')[2]}
               </span>
+              <br />
+              {/* <span>{new Date(payload[0]?.payload?.date.seconds * 1000).toDateString()}</span> */}
             </div>
           </>
         )
@@ -66,31 +72,34 @@ export default function EloLineChart({ data }) {
     })
     .map((race, index) => {
       race.index = index
-      if (race.pos == 'Crew') {
-        race.crewElo = race.newRating
-        return race
-      } else if (race.pos == 'Skipper') {
-        race.skipperElo = race.newRating
-        return race
+      // if (race.pos == 'Crew') {
+      //   race.crewElo = race.newRating
+      //   return race
+      // } else if (race.pos == 'Skipper') {
+      //   race.skipperElo = race.newRating
+      //   return race
+      // }
+      if (race.skipperRating == 1000) {
+        race.skipperRating = null
       }
+      if (race.crewRating == 1000) {
+        race.crewRating = null
+      }
+      return race
     })
 
   const extendData = (data) => {
     // Find the first and last valid points
-    const firstValids = data.find((d) => d['skipperElo'] != null)
-    const lastValids = [...data].reverse().find((d) => d['skipperElo'] != null)
-    const firstValidc = data.find((d) => d['crewElo'] != null)
-    const lastValidc = [...data].reverse().find((d) => d['crewElo'] != null)
-
+    const firstValids = data.find((d) => d['skipperRating'] != null)
+    const lastValids = [...data].reverse().find((d) => d['skipperRating'] != null)
+    const firstValidc = data.find((d) => d['crewRating'] != null)
+    const lastValidc = [...data].reverse().find((d) => d['crewRating'] != null)
     if (!firstValids || !lastValids) return data
     if (!firstValidc || !lastValidc) return data
-
-    let start = { raceID: '/Start/', skipperElo: 1500, crewElo: 1500 }
-    let end = { raceID: '/END/', skipperElo: lastValids.skipperElo, crewElo: lastValidc.crewElo }
-
+    let start = { raceID: '/Start/', skipperRating: 1000, crewRating: 1000 }
+    let end = { raceID: '/END/', skipperRating: lastValids.skipperRating, crewRating: lastValidc.crewRating }
     const extendedData = [start, ...data, end]
     console.log(extendedData[extendedData.length - 1])
-
     return extendedData
   }
 
@@ -113,7 +122,7 @@ export default function EloLineChart({ data }) {
               }}
             />
             {/* Custom label with color */}
-            <span style={{ color: entry.payload.stroke, fontWeight: 'bold' }}>{entry.value == 'crewElo' ? 'Crew' : entry.value == 'skipperElo' ? 'Skipper' : 'Regatta Average'}</span>
+            <span style={{ color: entry.payload.stroke, fontWeight: 'bold' }}>{entry.value == 'crewRating' ? 'Crew' : entry.value == 'skipperRating' ? 'Skipper' : 'Regatta Average'}</span>
           </div>
         ))}
       </div>
@@ -122,9 +131,11 @@ export default function EloLineChart({ data }) {
 
   let uniqueRegattas = new Set()
   mappedRaces.forEach((race) => {
-    const [season, raceName] = race.raceID.split('/') // Split the string into [season, raceName, raceNumber]
-    const uniqueKey = `${season}/${raceName}` // Create a unique key by combining season and raceName
-    uniqueRegattas.add(uniqueKey) // Add the unique key to the Set
+    if (race != undefined) {
+      const [season, raceName] = race?.raceID.split('/') // Split the string into [season, raceName, raceNumber]
+      const uniqueKey = `${season}/${raceName}` // Create a unique key by combining season and raceName
+      uniqueRegattas.add(uniqueKey) // Add the unique key to the Set
+    }
   })
   uniqueRegattas = Array.from(uniqueRegattas)
 
@@ -142,8 +153,8 @@ export default function EloLineChart({ data }) {
         <XAxis dataKey='raceID' tick={<CustomTick />} height={60} interval={0} />
         <YAxis label={{ value: 'Rating', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle' }, offset: 0 }} />
         <Tooltip content={<CustomTooltip />} isAnimationActive={false} />
-        <Line strokeWidth={2} type='monotone' dataKey='crewElo' connectNulls={true} stroke='#fda' dot={false} />
-        <Line strokeWidth={2} type='monotone' dataKey='skipperElo' connectNulls={true} stroke='#faa' dot={false} />
+        <Line strokeWidth={2} type='monotone' dataKey='crewRating' connectNulls={true} stroke='#fda' dot={false} />
+        <Line strokeWidth={2} type='monotone' dataKey='skipperRating' connectNulls={true} stroke='#faa' dot={false} />
         {/* {uniqueRegattas.map((regatta) => (
           <Line
             strokeWidth={2}

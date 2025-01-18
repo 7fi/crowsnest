@@ -8,24 +8,28 @@ import VenueResults from '../components/rankings/VenueResults'
 import RaceByRace from '../components/rankings/SailorPage/RaceByRace'
 import { ProCheck, ProCheckLite } from '../components/rankings/ProCheck'
 import useTeamCodes from '../lib/teamCodes'
+import Rivals from '../components/rankings/Rivals'
 
 export default function Rankings() {
-  const { sailor } = useParams()
+  const { key } = useParams()
   const [ratingSkipper, setRatingSkipper] = useState(0)
   const [globalSkipper, setGlobalSkipper] = useState(0)
+  const [sailorName, setSailorName] = useState('')
   const [gradYear, setGradYear] = useState(0)
   const [ratingCrew, setRatingCrew] = useState(0)
   const [globalCrew, setGlobalCrew] = useState(0)
   const [links, setLinks] = useState([])
   const [teamNames, setTeamNames] = useState([])
   const [sailorRaces, setSailorRaces] = useState([])
+  const [sailorRivals, setSailorRivals] = useState({})
   const [hasOtherPos, setHasOtherPos] = useState(false)
   const [loaded, setLoaded] = useState(false)
   const navigate = useNavigate()
   const teamCodes = useTeamCodes()
 
   useEffect(() => {
-    getSailorElo(sailor).then((tempSailor) => {
+    getSailorElo(key).then((tempSailor) => {
+      setSailorName('')
       setRatingCrew(0)
       setRatingSkipper(0)
       setGradYear(0)
@@ -36,6 +40,7 @@ export default function Rankings() {
       setLinks([])
       tempSailor?.docs.forEach((sailor) => {
         if (sailor != undefined) {
+          console.log(sailor?.data())
           setSailorRaces((sailorRaces) => [...sailorRaces, ...sailor?.data().races])
           sailor?.data().Teams.forEach((team) => {
             setTeamNames((prevTeamNames) => {
@@ -46,65 +51,70 @@ export default function Rankings() {
             })
           })
           setGradYear(sailor.data().Year)
+          setSailorName(sailor.data().Name)
 
           setLinks((prevLinks) => {
-            console.log(sailor?.data().Link)
+            // console.log(sailor?.data().Link)
             if (!prevLinks.includes(sailor?.data().Link)) {
               return [...prevLinks, sailor?.data().Link]
             }
             return prevLinks
           })
 
-          if (sailor.data().Position == 'Skipper') {
-            setGlobalSkipper(sailor?.data().GlobalRank)
-            setRatingSkipper(sailor?.data().Rating.toFixed(0))
-          }
-          if (sailor.data().Position == 'Crew') {
-            setGlobalCrew(sailor?.data().GlobalRank)
-            setRatingCrew(sailor?.data().Rating.toFixed(0))
-          }
+          setGlobalSkipper(sailor?.data().SkipperRank)
+          setRatingSkipper(sailor?.data().SkipperRating)
+          setGlobalCrew(sailor?.data().CrewRank)
+          setRatingCrew(sailor?.data().CrewRating)
+
+          setSailorRivals(sailor?.data().Rivals)
         }
       })
       setLoaded(true)
     })
-  }, [sailor])
+  }, [key])
 
   const PartnerResults = ({ races }) => {
     // Step 1: Calculate total change and count for each partner
+    console.log(races)
     const partnerStats = races.reduce((acc, race) => {
-      if (!acc[race.partner]) {
-        acc[race.partner] = { change: 0, count: 0, ratio: 0 }
+      let key = race.partner['link']
+      if (!acc[key]) {
+        acc[key] = { key: race.partner['link'], name: race.partner['name'], change: 0, count: 0, ratio: 0 }
       }
-      acc[race.partner].change += race.change
-      acc[race.partner].count += 1
-      acc[race.partner].ratio += race.ratio
+      acc[key].change += race.change
+      acc[key].count += 1
+      acc[key].ratio += race.ratio
       return acc
     }, {})
 
     // Step 2: Sort the partners by the total change in descending order
     const sortedPartners = Object.keys(partnerStats)
       .map((partner) => ({
-        name: partner,
+        key: partner,
+        name: partnerStats[partner].name,
         change: partnerStats[partner].change,
         count: partnerStats[partner].count,
         ratio: partnerStats[partner].ratio / partnerStats[partner].count,
       }))
       .sort((a, b) => b.ratio - a.ratio) // Sort by change in descending order
 
+    console.log(sortedPartners)
     // Step 3: Map to <span> elements with rank and total change
     return (
       <table className='raceByRaceTable'>
         <thead>
-          <th></th>
-          <th>Partner</th>
-          <th>Races</th>
-          <th>Rating Change</th>
-          <th>Percentage</th>
+          <tr>
+            <th></th>
+            <th>Partner</th>
+            <th>Races</th>
+            <th>Rating Change</th>
+            <th>Percentage</th>
+          </tr>
         </thead>
         <tbody>
           {sortedPartners.map((partner, index) =>
-            partner.name != 'Unknown' ? (
-              <tr className='clickable' style={{ margin: '5px' }} onClick={() => navigate(`/rankings/${partner.name}`)}>
+            partner.key != 'Unknown' ? (
+              <tr key={index} className='clickable' style={{ margin: '5px' }} onClick={() => navigate(`/rankings/${partner.key}`)}>
                 <td className='tdRightBorder tableColFit secondaryText'>{index + 1}</td>
                 <td>{partner.name}</td>
                 <td>{partner.count} races</td>
@@ -143,7 +153,7 @@ export default function Rankings() {
             *
           </span>
         ) : (
-          <span> (did not crew in f24)</span>
+          <span> (did not {pos} in f24)</span>
         )}
       </ProCheckLite>
     )
@@ -166,7 +176,7 @@ export default function Rankings() {
         <div>
           <div className='flexRowContainer sailorNameRow'>
             <img style={{ display: 'inline', maxHeight: '3rem' }} src={`https://scores.collegesailing.org/inc/img/schools/${teamCodes[teamNames[teamNames.length - 1]]}.png`} />
-            <h1 style={{ display: 'inline-block' }}>{sailor}</h1>
+            <h1 style={{ display: 'inline-block' }}>{sailorName}</h1>
           </div>
           <div>
             20{gradYear} |{' '}
@@ -188,7 +198,7 @@ export default function Rankings() {
           <br />
           {/* Elos and Rankings */}
           <div className='flexRowContainer' style={{ justifyContent: 'space-between', width: '75%' }}>
-            {ratingSkipper != 0 ? (
+            {ratingSkipper != 1000 ? (
               <div>
                 <div>
                   Skipper: {ratingSkipper} elo (
@@ -204,7 +214,7 @@ export default function Rankings() {
                 <RankObj rank={globalSkipper} pos='skipper' />
               </div>
             ) : undefined}
-            {ratingCrew != 0 ? (
+            {ratingCrew != 1000 ? (
               <div>
                 <div>
                   Crew: {ratingCrew} elo (
@@ -242,6 +252,11 @@ export default function Rankings() {
               <VenueResults races={sailorRaces} />
             </div>
           </div>
+          <div className='flexRowContainer'>
+            <Rivals rivals={sailorRivals} pos={'Skipper'} />
+            <Rivals rivals={sailorRivals} pos={'Crew'} />
+          </div>
+
           <h2>Rating changes by race</h2>
           <h2>Scores (lower is better) and Percentage (higher is better) by race</h2>
           <PosNegBarChart showLabels={false} data={sailorRaces} dataKey='change' syncID='ranking' title='Change' />
@@ -262,10 +277,10 @@ export default function Rankings() {
         </div>
       ) : loaded ? (
         <div>
-          Sailor {sailor} not found... <br /> Keep these in mind
+          Sailor {key} not found... <br /> Keep these in mind
           <ul>
             <li>Capitalization must be correct (ie first letter of each name capitalized)</li>
-            <li>Check that the position is correct (skipper/crew)</li>
+            <li>Link should match techscore link (ex: 'rankings/first-last')</li>
           </ul>
           <Link to={`/rankings`}>
             <button>Back to homepage</button>
