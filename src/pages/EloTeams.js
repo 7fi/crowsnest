@@ -15,6 +15,7 @@ export default function EloTeams() {
   const [byRatio, setByRatio] = useState(false)
   const [byMembers, setByMembers] = useState(false)
   const [byRating, setByRating] = useState(false)
+  const [byWomen, setByWomen] = useState(false)
   const [loaded, setLoaded] = useState(false)
 
   const temp = useRef(null)
@@ -64,25 +65,25 @@ export default function EloTeams() {
 
   return (
     <div>
-      <div className='flexRowContainer filterHeader'>
-        <input className='flexGrowChild' placeholder='Ex: MIT' onChange={filter} />
-        <div className='flexRowContainer'>
+      <div className="flexRowContainer filterHeader">
+        <input className="flexGrowChild" placeholder="Ex: MIT" onChange={filter} />
+        <div className="flexRowContainer">
           {allRegions.map((region, i) => (
             <button key={i} style={{ backgroundColor: activeRegions.indexOf(region) != -1 ? RegionColors[region] : '' }} className={`filterOption ${activeRegions.indexOf(region) != -1 ? '' : 'filterInactive'}`} onClick={() => toggleFilter(region)}>
               {region}
             </button>
           ))}
-          <button className='filterOption filterInactive' onClick={() => setActiveRegions(allRegions)}>
+          <button className="filterOption filterInactive" onClick={() => setActiveRegions(allRegions)}>
             Enable all
           </button>
-          <button className='filterOption filterInactive' onClick={() => setActiveRegions([])}>
+          <button className="filterOption filterInactive" onClick={() => setActiveRegions([])}>
             Disable all
           </button>
         </div>
       </div>
       {loaded ? (
-        <div className='teamTableContainer'>
-          <table className='raceByRaceTable teamsTable' ref={temp}>
+        <div className="teamTableContainer">
+          <table className="raceByRaceTable teamsTable" ref={temp}>
             <thead>
               <tr>
                 <th></th>
@@ -90,66 +91,85 @@ export default function EloTeams() {
                 <th>Name</th>
                 <th>Region</th>
                 <th
-                  className='tableColFit tooltip'
+                  className="tableColFit tooltip"
                   onClick={() => {
                     if (byMembers) {
                       setReverse(!reverse)
                     }
+                    setByWomen(false)
                     setByRatio(false)
                     setByMembers(true)
                     setByRating(false)
                   }}>
                   Members
-                  <span className='tooltiptext'>removes teams with less than 6 active members</span>
+                  <span className="tooltiptext">removes teams with less than 6 active members</span>
                   {byMembers ? reverse ? <FaArrowUp /> : <FaArrowDown /> : <></>}
                 </th>
                 <th
-                  className='tableColFit tooltip'
+                  className="tableColFit tooltip"
                   onClick={() => {
                     if (byRatio) {
                       setReverse(!reverse)
                     }
+                    setByWomen(false)
                     setByRatio(true)
                     setByMembers(false)
                     setByRating(false)
                   }}>
                   Percentage
-                  <span className='tooltiptext'>removes teams with less than 6 active members</span>
+                  <span className="tooltiptext">removes teams with less than 6 active members</span>
                   {byRatio ? reverse ? <FaArrowUp /> : <FaArrowDown /> : <></>}
                 </th>
                 <th
-                  className='tableColFit tooltip'
+                  className="tableColFit tooltip"
                   onClick={() => {
                     if (byRating) {
                       setReverse(!reverse)
                     }
+                    setByWomen(false)
                     setByRatio(false)
                     setByMembers(false)
                     setByRating(true)
                   }}>
-                  <span className='tooltiptext'>Avg Rating of all sailors</span>
+                  <span className="tooltiptext">Avg Rating of all sailors</span>
                   Avg Rating
                   {byRating ? reverse ? <FaArrowUp /> : <FaArrowDown /> : <></>}
                 </th>
                 <th
-                  className='tableColFit tooltip'
+                  className="tableColFit tooltip"
                   onClick={() => {
-                    if (!byMembers && !byRatio && !byRating) {
+                    if (!byMembers && !byRatio && !byRating && !byWomen) {
                       setReverse(!reverse)
                     }
+                    setByWomen(false)
                     setByRatio(false)
                     setByMembers(false)
                     setByRating(false)
                   }}>
                   Top Avg Rating
-                  <span className='tooltiptext'>Takes avg the top 4 from each pos</span>
-                  {!byRatio && !byMembers && !byRating ? reverse ? <FaArrowUp /> : <FaArrowDown /> : <></>}
+                  <span className="tooltiptext">Takes avg the top 6 from each pos</span>
+                  {!byRatio && !byMembers && !byRating && !byWomen ? reverse ? <FaArrowUp /> : <FaArrowDown /> : <></>}
+                </th>
+                <th
+                  className="tableColFit tooltip"
+                  onClick={() => {
+                    if (byWomen) {
+                      setReverse(!reverse)
+                    }
+                    setByWomen(true)
+                    setByRatio(false)
+                    setByMembers(false)
+                    setByRating(false)
+                  }}>
+                  Top Women's Rating
+                  <span className="tooltiptext">Takes avg the top 2 from each pos</span>
+                  {byWomen ? reverse ? <FaArrowUp /> : <FaArrowDown /> : <></>}
                 </th>
 
                 <th></th>
               </tr>
             </thead>
-            <tbody className='teamsTable'>
+            <tbody className="teamsTable">
               {teams
                 .filter((team) => {
                   if (filterText != '') {
@@ -169,35 +189,37 @@ export default function EloTeams() {
                   if (byRatio) return b.avgRatio - a.avgRatio
                   else if (byMembers) return b.memberCount - a.memberCount
                   else if (byRating) return b.avg - a.avg
+                  else if (byWomen) return b.topWomenRating - a.topWomenRating
                   else return b.topRating - a.topRating
                 })
                 .map((team, index) => (
-                  <tr key={index} className='clickable' onClick={() => navigate(`/rankings/team/${team.name}`)}>
-                    <td className='tableColFit tdRightBorder'>{index + 1}</td>
-                    <td className='tableColFit'>
-                      <div className='flexRowContainer sailorNameRow'>
+                  <tr key={index} className="clickable" onClick={() => navigate(`/rankings/team/${team.name}`)}>
+                    <td className="tableColFit tdRightBorder">{index + 1}</td>
+                    <td className="tableColFit">
+                      <div className="flexRowContainer sailorNameRow">
                         <img style={{ display: 'inline', maxHeight: '3rem' }} src={`https://scores.collegesailing.org/inc/img/schools/${teamCodes[team.name]}.png`} />
                       </div>
                     </td>
-                    <td className='tableColFit'>{team.name}</td>
-                    <td className='tableColFit'>
-                      <div className='filterOption' style={{ backgroundColor: RegionColors[team.region] }}>
+                    <td className="tableColFit">{team.name}</td>
+                    <td className="tableColFit">
+                      <div className="filterOption" style={{ backgroundColor: RegionColors[team.region] }}>
                         {team.region}
                       </div>
                     </td>
-                    <td className='' style={{ textAlign: 'right' }}>
+                    <td className="" style={{ textAlign: 'right' }}>
                       {team.memberCount}
                     </td>
                     <td style={{ textAlign: 'right' }}>{(team.avgRatio * 100).toFixed(1)}</td>
                     <td style={{ textAlign: 'right' }}>{team.avg.toLocaleString().split('.')[0]}</td>
                     <td style={{ textAlign: 'right' }}>{team.topRating.toLocaleString().split('.')[0]}</td>
+                    <td style={{ textAlign: 'right' }}>{team.topWomenRating.toLocaleString().split('.')[0]}</td>
                     <td></td>
                   </tr>
                 ))}
             </tbody>
           </table>
           <button
-            className='scrollButton'
+            className="scrollButton"
             onClick={() => {
               scrollToTop()
             }}>

@@ -63,10 +63,10 @@ export default function TeamRankings() {
     const navigate = useNavigate()
     console.log(member)
     return (
-      <tr key={index} className='clickable' onClick={() => navigate(`/rankings/${member.key}`)}>
-        <td className='tdRightBorder tableColFit'>{index + 1}</td>
+      <tr key={index} className="clickable" onClick={() => navigate(`/rankings/${member.key}`)}>
+        <td className="tdRightBorder tableColFit">{index + 1}</td>
         <td>{member.name}</td>
-        <td className='secondaryText'>{member.pos}</td>
+        <td className="secondaryText">{member.gender == 'F' ? 'W' : ''}</td>
         <td>
           {activeSeasons.reduce((total, season) => {
             if (member.raceCount[season] !== undefined) {
@@ -95,18 +95,18 @@ export default function TeamRankings() {
   const PosList = ({ members, pos }) => {
     const newMembers = members.filter((member) => member.seasons[pos].length > 0)
     return (
-      <div className='flexGrowChild'>
-        <table className='raceByRaceTable'>
+      <div className="flexGrowChild">
+        <table className="raceByRaceTable">
           <thead>
             <tr>
               <th></th>
               <th>Name</th>
-              <th>Position</th>
+              <th></th>
               <th>Num Races</th>
-              <th className='clickable' style={{ textDecoration: sortByRatio ? 'underline' : '' }} onClick={() => setSortByRatio(true)}>
+              <th className="clickable" style={{ textDecoration: sortByRatio ? 'underline' : '' }} onClick={() => setSortByRatio(true)}>
                 Avg Ratio
               </th>
-              <th className='clickable' style={{ textDecoration: sortByRatio ? '' : 'underline' }} onClick={() => setSortByRatio(false)}>
+              <th className="clickable" style={{ textDecoration: sortByRatio ? '' : 'underline' }} onClick={() => setSortByRatio(false)}>
                 Rating
               </th>
             </tr>
@@ -139,11 +139,11 @@ export default function TeamRankings() {
     <div>
       {loaded ? (
         <div style={{ padding: 15 }}>
-          <div className='teamPageHeader'>
-            <Link to={'/rankings/team'} className='secondaryText'>
+          <div className="teamPageHeader">
+            <Link to={'/rankings/team'} className="secondaryText">
               {'<'} Back
             </Link>
-            <div className='flexRowContainer sailorNameRow'>
+            <div className="flexRowContainer sailorNameRow">
               <img style={{ display: 'inline', maxHeight: '3rem' }} src={`https://scores.collegesailing.org/inc/img/schools/${teamCodes[teamName]}.png`} />
               <h1 style={{ display: 'inline-block' }}>
                 <a href={teamLink} target={1}>
@@ -153,13 +153,13 @@ export default function TeamRankings() {
             </div>
 
             <div>
-              <span className='filterOption' style={{ backgroundColor: RegionColors[teamRegion] }}>
+              <span className="filterOption" style={{ backgroundColor: RegionColors[teamRegion] }}>
                 {teamRegion}
               </span>{' '}
               avg rating: {rating.toFixed(0)}
             </div>
           </div>
-          <div className='flexRowContainer' style={{ marginLeft: 15 }}>
+          <div className="flexRowContainer" style={{ marginLeft: 15 }}>
             {allSeasons
               .sort((a, b) => {
                 if (parseInt(a.slice(1, 3)) - parseInt(b.slice(1, 3)) != 0) {
@@ -175,16 +175,16 @@ export default function TeamRankings() {
                   {season?.toUpperCase()}
                 </div>
               ))}
-            <button className='filterOption' onClick={() => setActiveSeasons(allSeasons)}>
+            <button className="filterOption" onClick={() => setActiveSeasons(allSeasons)}>
               Enable all
             </button>
-            <button className='filterOption' onClick={() => setActiveSeasons([])}>
+            <button className="filterOption" onClick={() => setActiveSeasons([])}>
               Disable all
             </button>
           </div>
-          <div className='flexRowContainer' style={{ padding: 15 }}>
+          <div className="flexRowContainer" style={{ padding: 15 }}>
             <PosList members={teamMembers} pos={'skipper'} />
-            <PosList members={teamMembers} pos='crew' />
+            <PosList members={teamMembers} pos="crew" />
           </div>
         </div>
       ) : (

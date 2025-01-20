@@ -121,18 +121,8 @@ const getAllTeams = async () => {
   }
 }
 
-const getTop100Skippers = async () => {
-  const thisDoc = await getDoc(doc(db, 'vars', 'topSkippers'))
-  console.log('reads: %d', 1)
-  if (thisDoc != undefined) {
-    return { data: thisDoc.data(), id: thisDoc.id }
-  } else {
-    return undefined
-  }
-}
-
-const getTop100Crews = async () => {
-  const thisDoc = await getDoc(doc(db, 'vars', 'topCrews'))
+const getTop100 = async (type, pos) => {
+  const thisDoc = await getDoc(doc(db, 'vars', pos == 'Skipper' ? (type == 'women' ? 'topWomenSkippers' : 'topSkippers') : type == 'women' ? 'topWomenCrews' : 'topCrews'))
   console.log('reads: %d', 1)
   if (thisDoc != undefined) {
     return { data: thisDoc.data(), id: thisDoc.id }
@@ -194,4 +184,4 @@ const getAllSailors = async ({ useCache }) => {
   }
 }
 
-export { app, getUserWithUsername, getTeamWithName, getTeamWithID, getTeamList, scrapeTeamListToDb, getEventWithID, getEventsForTeam, getUserWithID, getSailorElo, getAllTeams, getTeamElos, getTop100Skippers, getTop100Crews, getRegattaElos, getAllSailors }
+export { app, getUserWithUsername, getTeamWithName, getTeamWithID, getTeamList, scrapeTeamListToDb, getEventWithID, getEventsForTeam, getUserWithID, getSailorElo, getAllTeams, getTeamElos, getTop100, getRegattaElos, getAllSailors }

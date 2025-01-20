@@ -56,34 +56,36 @@ export default function App() {
             <ScrollToTop />
             <Navbar />
             <Routes>
-              <Route path='/' element={<RankingsHome />} />
-              <Route path='/enter' element={<Enter />} />
-              <Route path='/profile/:profileName' element={<Profile />} />
+              <Route path="/" element={<RankingsHome />} />
+              <Route path="/enter" element={<Enter />} />
+              <Route path="/profile/:profileName" element={<Profile />} />
               {/* <Route path="/profile" element={<Navigate to={`/profile/${userData.username}`} />} /> */}
-              <Route path='/team/:teamName' element={<Team />} />
-              <Route path='/team/:teamName/events' element={<Events />} />
-              <Route path='/teams' element={<Teams />} />
-              <Route path='/event/create' element={<CreateEvent />} />
-              <Route path='/event/:eventID' element={<Event />} />
-              <Route path='/createteam' element={<CreateTeam />} />
-              <Route path='/team/:teamName/pairs' element={<Pairs />} />
-              <Route path='/scores' element={<Scores />} />
+              <Route path="/team/:teamName" element={<Team />} />
+              <Route path="/team/:teamName/events" element={<Events />} />
+              <Route path="/teams" element={<Teams />} />
+              <Route path="/event/create" element={<CreateEvent />} />
+              <Route path="/event/:eventID" element={<Event />} />
+              <Route path="/createteam" element={<CreateTeam />} />
+              <Route path="/team/:teamName/pairs" element={<Pairs />} />
+              <Route path="/scores" element={<Scores />} />
               {/* Rankings */}
-              <Route path='/rankings/' element={<RankingsHome />} />
-              <Route path='/rankings/skipper' element={<GlobalRankings pos={'Skipper'} />} />
-              <Route path='/rankings/crew' element={<GlobalRankings pos='Crew' />} />
-              <Route path='/rankings/:key' element={<Rankings />} />
-              <Route path='/rankings/search' element={<EloSearch />} />
-              <Route path='/rankings/:sailorAName/vs/:sailorBName' element={<VersusRanking />} />
-              <Route path='/rankings/team' element={<EloTeams />} />
-              <Route path='/rankings/team/:teamName' element={<TeamRankings />} />
-              <Route path='/rankings/regatta/:season/:regattaName' element={<RegattaRankings />} />
-              <Route path='/rankings/regatta/:season/:regattaName/:raceNum' element={<RegattaRankings />} />
-              <Route path='/rankings/regatta/:season/:regattaName/:raceNum/:pos' element={<RegattaRankings />} />
-              <Route path='/drag' element={<TestDrag />} />
-              <Route path='/:text' element={<NotFound />} />
+              <Route path="/rankings/" element={<RankingsHome />} />
+              <Route path="/rankings/skipper" element={<GlobalRankings pos={'Skipper'} type={'open'} />} />
+              <Route path="/rankings/crew" element={<GlobalRankings pos="Crew" type={'open'} />} />
+              <Route path="/rankings/skipper/women" element={<GlobalRankings pos={'Skipper'} type={'women'} />} />
+              <Route path="/rankings/crew/women" element={<GlobalRankings pos="Crew" type={'women'} />} />
+              <Route path="/rankings/:key" element={<Rankings />} />
+              <Route path="/rankings/search" element={<EloSearch />} />
+              <Route path="/rankings/:sailorAName/vs/:sailorBName" element={<VersusRanking />} />
+              <Route path="/rankings/team" element={<EloTeams />} />
+              <Route path="/rankings/team/:teamName" element={<TeamRankings />} />
+              <Route path="/rankings/regatta/:season/:regattaName" element={<RegattaRankings />} />
+              <Route path="/rankings/regatta/:season/:regattaName/:raceNum" element={<RegattaRankings />} />
+              <Route path="/rankings/regatta/:season/:regattaName/:raceNum/:pos" element={<RegattaRankings />} />
+              <Route path="/drag" element={<TestDrag />} />
+              <Route path="/:text" element={<NotFound />} />
             </Routes>
-            <Toaster position='top-center' reverseOrder={false} />
+            <Toaster position="top-center" reverseOrder={false} />
             <ScrollButton />
             {/* <div onClick={() => window.scrollTo(0, 0)} style={{ position: 'sticky', bottom: -20, right: 0, visibility: window.scrollX > 20 ? 'visible' : 'visible' }}>
               top

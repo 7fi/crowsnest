@@ -3,12 +3,13 @@ import { Link, useParams, useNavigate } from 'react-router-dom'
 export default function RaceByRace({ races, position }) {
   const navigate = useNavigate()
   return (
-    <div className='raceByRaceBox'>
-      <table className='raceByRaceTable'>
+    <div className="raceByRaceBox">
+      <table className="raceByRaceTable">
         <thead>
           <tr>
             <th>Date</th>
             <th>Race</th>
+            <th></th>
             <th>Position</th>
             <th>Partner</th>
             <th>Score</th>
@@ -46,14 +47,15 @@ export default function RaceByRace({ races, position }) {
                   onClick={() => {
                     navigate(`/rankings/regatta/${race.raceID}/${race.pos}`)
                   }}
-                  className='clickable'>
-                  <td className='secondaryText tableColFit tdRightBorder'>{date.toLocaleDateString()}</td>
-                  <td className='' style={{ textTransform: 'capitalize' }}>
+                  className="clickable">
+                  <td className="secondaryText tableColFit tdRightBorder">{date.toLocaleDateString()}</td>
+                  <td className="" style={{ textTransform: 'capitalize' }}>
                     {race.raceID.split('/')[1].split('-').join(' ')} - {race.raceID.split('/')[2]}{' '}
                   </td>
 
-                  <td className='tableColFit'>{race.pos}</td>
-                  <td className='tableColFit' onClick={() => navigate(`/rankings/${race.partner}`)}>
+                  <td className="tableColFit secondaryText">{race.womens ? 'W' : ''}</td>
+                  <td className="tableColFit">{race.pos}</td>
+                  <td className="tableColFit" onClick={() => navigate(`/rankings/${race.partner}`)}>
                     <Link to={`/rankings/${race.partner['link']}`}>{race.partner['name']}</Link>
                   </td>
                   <td style={{ textAlign: 'center', color: race.score < race.predicted ? 'green' : race.score > race.predicted ? 'red' : '' }}>
@@ -67,8 +69,8 @@ export default function RaceByRace({ races, position }) {
                     {race.predicted == 1 ? 'st' : race.predicted == 2 ? 'nd' : race.predicted == 3 ? 'rd' : 'th'}
                   </td>
                   <td style={{ textAlign: 'center' }}>
-                    <div className='ratioBarBg'>
-                      <div className='ratioBar' style={{ width: race.ratio * 95 }}>
+                    <div className="ratioBarBg">
+                      <div className="ratioBar" style={{ width: race.ratio * 95 }}>
                         <span>{(race.ratio * 100).toFixed(1)}%</span>
                       </div>
                     </div>
