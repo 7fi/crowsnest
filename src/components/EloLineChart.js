@@ -1,10 +1,35 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 
 export default function EloLineChart({ data }) {
-  const [activeLines, setActiveLines] = useState(['crewRating', 'skipperRating', 'womenSkipperRating', 'womenCrewRating', 'regAvg'])
+  const [activeLines, setActiveLines] = useState(['regAvg']) // 'crewRating', 'skipperRating', 'womenSkipperRating', 'womenCrewRating', 
 
-  // Custom Tick Component
+  const updateActiveLines = () => {
+    // Create a temporary list to collect the new values
+    const newLines = [];
+  
+    mappedRaces.forEach((race) => {
+      if (race.skipperRating != null && !newLines.includes('skipperRating')) {
+        newLines.push('skipperRating');
+      }
+      if (race.crewRating != null && !newLines.includes('crewRating')) {
+        newLines.push('crewRating');
+      }
+      if (race.womenSkipperRating != null && !newLines.includes('womenSkipperRating')) {
+        newLines.push('womenSkipperRating');
+      }
+      if (race.womenCrewRating != null && !newLines.includes('womenCrewRating')) {
+        newLines.push('womenCrewRating');
+      }
+    });
+  
+    // Update the state with the new list
+    setActiveLines((prev) => [...newLines, 'regAvg']);
+    console.log(newLines)
+  }
+  useEffect(() => updateActiveLines, [data])
+
+  // Custom Tick Component 
   const CustomTick = ({ x, y, payload, index }) => {
     if (index == mappedRaces.length) return null
     const currentEvent = mappedRaces[index]?.raceID.split('/')[0] + '/' + mappedRaces[index]?.raceID.split('/')[1]
@@ -58,7 +83,6 @@ export default function EloLineChart({ data }) {
 
     return null
   }
-  console.log(data)
 
   const mappedRaces = data
     .slice(0)
@@ -101,6 +125,13 @@ export default function EloLineChart({ data }) {
       }
       return race
     })
+    
+  // mappedRaces.forEach((race) => {
+  //   if(race.skipperRating != null && !activeLines.includes('skipperRating')) setActiveLines((prev) => [...prev, 'skipperRating'])
+  //   if(race.crewRating != null && !activeLines.includes('crewRating')) setActiveLines((prev) => [...prev, 'crewRating'])
+  //   if(race.womenSkipperRating != null && !activeLines.includes('womenSkipperRating')) setActiveLines((prev) => [...prev, 'womenSkipperRating'])
+  //   if(race.womenCrewRating != null && !activeLines.includes('womenCrewRating')) setActiveLines((prev) => [...prev, 'womenCrewRating'])
+  // })
 
   const extendData = (data) => {
     // Find the first and last valid points
@@ -113,7 +144,6 @@ export default function EloLineChart({ data }) {
     let start = { raceID: '/Start/', skipperRating: 1000, crewRating: 1000, womenSkipperRating: 1000, womenCrewRating: 1000 }
     let end = { raceID: '/END/', skipperRating: lastValids.skipperRating, crewRating: lastValidc.crewRating }
     const extendedData = [start, ...data, end]
-    console.log(extendedData[extendedData.length - 1])
     return extendedData
   }
 
@@ -130,7 +160,7 @@ export default function EloLineChart({ data }) {
             key={index}
             style={{ margin: '0 10px', display: 'flex', alignItems: 'center' }}
             onClick={() => {
-              console.log(entry)
+              console.log(activeLines)
               if (activeLines.includes(entry.value)) {
                 if (activeLines.length > 1) setActiveLines(activeLines.filter((el) => el !== entry.value))
               } else {
@@ -179,8 +209,8 @@ export default function EloLineChart({ data }) {
         <XAxis dataKey="raceID" tick={<CustomTick />} height={60} interval={0} />
         <YAxis label={{ value: 'Rating', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle' }, offset: 0 }} />
         <Tooltip content={<CustomTooltip />} isAnimationActive={false} />
-        <Line hide={!activeLines.includes('crewRating')} strokeWidth={2} type="monotone" dataKey="crewRating" connectNulls={true} stroke="#fda" dot={false} />
         <Line hide={!activeLines.includes('skipperRating')} strokeWidth={2} type="monotone" dataKey="skipperRating" connectNulls={true} stroke="#faa" dot={false} />
+        <Line hide={!activeLines.includes('crewRating')} strokeWidth={2} type="monotone" dataKey="crewRating" connectNulls={true} stroke="#fda" dot={false} />
         <Line hide={!activeLines.includes('womenSkipperRating')} strokeWidth={2} type="monotone" dataKey="womenSkipperRating" connectNulls={true} stroke="#daf" dot={false} />
         <Line hide={!activeLines.includes('womenCrewRating')} strokeWidth={2} type="monotone" dataKey="womenCrewRating" connectNulls={true} stroke="#afd" dot={false} />
         {/* {uniqueRegattas.map((regatta) => (

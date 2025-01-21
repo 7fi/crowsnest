@@ -52,8 +52,8 @@ export default function RaceByRace({ races, position }) {
                   <td className="" style={{ textTransform: 'capitalize' }}>
                     {race.raceID.split('/')[1].split('-').join(' ')} - {race.raceID.split('/')[2]}{' '}
                   </td>
+                  <td className="tableColFit secondaryText ">{race.womens ? 'W' : ''}</td>
 
-                  <td className="tableColFit secondaryText">{race.womens ? 'W' : ''}</td>
                   <td className="tableColFit">{race.pos}</td>
                   <td className="tableColFit" onClick={() => navigate(`/rankings/${race.partner}`)}>
                     <Link to={`/rankings/${race.partner['link']}`}>{race.partner['name']}</Link>

@@ -90,7 +90,6 @@ export default function Rankings() {
 
   const PartnerResults = ({ races }) => {
     // Step 1: Calculate total change and count for each partner
-    console.log(races)
     const partnerStats = races.reduce((acc, race) => {
       let key = race.partner['link']
       if (!acc[key]) {
