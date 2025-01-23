@@ -3,15 +3,15 @@ import { Link } from 'react-router-dom'
 export default function RankingsHome() {
   return (
     <div>
-      <img src='https://carteranderson.dev/images/Deep1.png' className='heroImg' />
-      <div className='heroBlock'>
-        <h1 className='heroTitle'>CrowsNest</h1>
-        <h2 className='heroSubtitle'>Home of College Sailing Statistics</h2>
+      <img src="https://carteranderson.dev/images/Deep1.png" className="heroImg" />
+      <div className="heroBlock">
+        <h1 className="heroTitle">CrowsNest</h1>
+        <h2 className="heroSubtitle">Home of College Sailing Statistics</h2>
         <span style={{ color: '#aaa' }}>15,020 Sailors | 788,908 Scores | 207 Teams</span>
-        <span className='heroExclaim'>Women's Coming Soon!</span>
+        <span className="heroExclaim">Team Racing Coming Soon!</span>
       </div>
 
-      <div className='fullContentBox'>
+      <div className="fullContentBox">
         Welcome to the custom rankings function of crowsnest. Check out these pages as a starting point:
         <div style={{ display: 'flex', gap: '0.5rem', margin: '0.8rem' }}>
           <Link to={`/rankings/team/`}>
@@ -41,7 +41,7 @@ export default function RankingsHome() {
         </ul>
         <span style={{ color: '#777' }}>
           For those wondering, crowsnest is an unfinished project of mine, that this feature will eventually be an integrated part of. For more info, check out the{' '}
-          <a href='https://github.com/7fi/crowsnest' style={{ textDecoration: 'underline' }}>
+          <a href="https://github.com/7fi/crowsnest" style={{ textDecoration: 'underline' }}>
             GitHub
           </a>
           .

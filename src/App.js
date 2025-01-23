@@ -30,6 +30,7 @@ import VersusRanking from './pages/VersusRanking'
 import EloSearch from './pages/EloSearch'
 import ScrollToTop from './components/ScrollToTop'
 import ScrollButton from './components/ScrollToTop'
+import Claim from './pages/Claim'
 
 export default function App() {
   const userData = useUserData()
@@ -70,6 +71,7 @@ export default function App() {
               <Route path="/scores" element={<Scores />} />
               {/* Rankings */}
               <Route path="/rankings/" element={<RankingsHome />} />
+              <Route path="/rankings/claim" element={<Claim />} />
               <Route path="/rankings/skipper" element={<GlobalRankings pos={'Skipper'} type={'open'} />} />
               <Route path="/rankings/crew" element={<GlobalRankings pos="Crew" type={'open'} />} />
               <Route path="/rankings/skipper/women" element={<GlobalRankings pos={'Skipper'} type={'women'} />} />
