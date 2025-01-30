@@ -501,13 +501,13 @@ th {
   background-color: var(--bg);
   position: sticky;
   top: 0;
-  border-bottom: 2px solid var(--border);
+  /* border-bottom: 2px solid var(--border); */
 }
 th,
 td {
   padding: 0.3rem;
   text-align: left;
-  border-bottom: 1px solid var(--border);
+  /* border-bottom: 1px solid var(--border); */
   transition: 0.2s;
 }
 
@@ -518,6 +518,12 @@ tr:hover td {
 
 .tdRightBorder {
   border-right: 1px solid var(--border);
+}
+tr {
+  border-bottom: 1px solid var(--border);
+}
+tbody tr:nth-child(1) {
+  border-top: 1px solid var(--border);
 }
 
 tbody tr:nth-child(odd) {
@@ -644,14 +650,29 @@ tr .filterOption:hover {
 
   right: 2vw;
   background-color: var(--bg);
+  z-index: 100;
 }
-.buttonBG{
+.footerContainer {
+  width: 100%;
+  z-index: 99;
+  position: relative;
+  bottom: 0;
+  text-align: center;
+  background-color: var(--bg);
+  display: flex;
+  gap: 15px;
+  padding: 5px 15px;
+}
+.buttonBG {
   border-radius: var(--radius);
   padding: 3px;
   /* background-color: var(--border); */
   /* box-shadow: 0px 0px 5px #0000005e; */
   border: 3px solid var(--border);
-  margin:5px;
+  margin: 5px;
+  width: 100%;
+  text-align: center;
+  justify-content: center;
 }
 
 .heroTitle {
@@ -667,7 +688,7 @@ tr .filterOption:hover {
   /* position: absolute; */
   font-size: 1.7rem;
   /* top: 45vh; */
-  color: #ccc;
+  color: #eee;
   /* left: 15vw; */
   text-align: center;
   width: 100%;
@@ -675,20 +696,40 @@ tr .filterOption:hover {
 }
 
 .fullContentBox {
-  position: absolute;
+  /* position: absolute; */
   background-color: var(--bg);
   /* margin-top: 80px; */
   padding: 15px;
   width: 100%;
   min-height: 50%;
+  z-index: 4;
+}
+.heroContainer {
+  /* background-image: url('/hero.jpeg'); */
+  background-size: cover;
+  background-position: center;
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
+  /* filter: blur(5px); */
+}
+.heroContainer::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 50vh;
+  background-color: rgba(0, 0, 0, 0.25); /* Dark overlay with transparency */
+  z-index: 1; /* Makes sure the overlay is on top of the background */
 }
 .heroBlock {
-  position: absolute;
+  position: relative;
   top: 25%;
   width: 100%;
+  height: 50vh;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
+  z-index: 3;
 }
 .heroImg {
   /* height: 500px; */
@@ -702,14 +743,14 @@ tr .filterOption:hover {
 @keyframes exclaim {
   0% {
     /* transform: translate(175px) rotate(10deg); */
-    transform: translate(175px) rotate(20deg) scale(1);
+    transform: translate(175px, -50px) rotate(20deg) scale(1);
   }
   50% {
     /* transform: scale(1.2) translate(175px) rotate(30deg); */
-    transform: translate(175px) rotate(20deg) scale(1.2);
+    transform: translate(175px, -50px) rotate(20deg) scale(1.2);
   }
   100% {
     /* transform: translate(175px) rotate(10deg); */
-    transform: translate(175px) rotate(20deg) scale(1);
+    transform: translate(175px, -50px) rotate(20deg) scale(1);
   }
 }

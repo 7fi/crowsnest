@@ -9,6 +9,7 @@ import RaceByRace from '../components/rankings/SailorPage/RaceByRace'
 import { ProCheck, ProCheckLite } from '../components/rankings/ProCheck'
 import useTeamCodes from '../lib/teamCodes'
 import Rivals from '../components/rankings/Rivals'
+import { FaDiamond } from 'react-icons/fa6'
 
 export default function Rankings() {
   const { key } = useParams()
@@ -63,13 +64,7 @@ export default function Rankings() {
           setGradYear(sailor.data().Year)
           setSailorName(sailor.data().Name)
 
-          setLinks((prevLinks) => {
-            // console.log(sailor?.data().Link)
-            if (!prevLinks.includes(sailor?.data().Link)) {
-              return [...prevLinks, sailor?.data().Link]
-            }
-            return prevLinks
-          })
+          setLinks(sailor.data().Links)
 
           setGlobalSkipper(sailor?.data().SkipperRank)
           setGlobalWomenSkipper(sailor?.data().WomenSkipperRank)
@@ -115,12 +110,13 @@ export default function Rankings() {
     console.log(sortedPartners)
     // Step 3: Map to <span> elements with rank and total change
     return (
-      <table className="raceByRaceTable">
+      <table className='raceByRaceTable'>
         <thead>
           <tr>
             <th></th>
             <th>Partner</th>
             <th>Races</th>
+            <th></th>
             <th>Rating Change</th>
             <th>Percentage</th>
           </tr>
@@ -128,17 +124,20 @@ export default function Rankings() {
         <tbody>
           {sortedPartners.map((partner, index) =>
             partner.key != 'Unknown' ? (
-              <tr key={index} className="clickable" style={{ margin: '5px' }} onClick={() => navigate(`/rankings/${partner.key}`)}>
-                <td className="tdRightBorder tableColFit secondaryText">{index + 1}</td>
+              <tr key={index} className='clickable' style={{ margin: '5px' }} onClick={() => navigate(`/rankings/${partner.key}`)}>
+                <td className='tdRightBorder tableColFit secondaryText'>{index + 1}</td>
                 <td>{partner.name}</td>
-                <td>{partner.count} races</td>
+                <td style={{ textAlign: 'right' }} className='tableColFit'>
+                  {partner.count}
+                </td>
+                <td> </td>
                 <td style={{ color: partner.change > 0 ? 'green' : 'red' }}>
                   {partner.change > 0 ? '+' : ''}
                   {partner.change.toFixed(0)}
                 </td>
                 <td style={{ textAlign: 'center' }}>
-                  <div className="ratioBarBg">
-                    <div className="ratioBar" style={{ width: partner.ratio * 100 }}>
+                  <div className='ratioBarBg'>
+                    <div className='ratioBar' style={{ width: partner.ratio * 100 }}>
                       <span>{(partner.ratio * 100).toFixed(1)}%</span>
                     </div>
                   </div>
@@ -165,7 +164,7 @@ export default function Rankings() {
         {rating != 1000 ? (
           <div>
             <div>
-              {type} {pos}: {rating} elo (
+              {type} {pos}: {rating} {type == "Women's" ? <FaDiamond className='secondaryText' /> : ''} (
               <span
                 style={{
                   color: change > 0 ? 'green' : 'red',
@@ -173,7 +172,7 @@ export default function Rankings() {
                 {change > 0 ? '+' : ''}
                 {change}
               </span>{' '}
-              in the last 5 skipper races)
+              in the last 5 races)
             </div>
             <RankObj type={type} rank={rank} pos={pos.toLowerCase()} />
           </div>
@@ -184,7 +183,7 @@ export default function Rankings() {
 
   const RankObj = ({ type, rank, pos }) => {
     return (
-      <ProCheckLite feature="ranks">
+      <ProCheckLite feature='ranks'>
         Rank:
         {rank != 0 ? (
           <span>
@@ -206,8 +205,10 @@ export default function Rankings() {
     <div style={{ padding: 30 }}>
       {loaded && sailorRaces.length > 0 ? (
         <div>
-          <div className="flexRowContainer sailorNameRow">
-            <img style={{ display: 'inline', maxHeight: '3rem' }} src={`https://scores.collegesailing.org/inc/img/schools/${teamCodes[teamNames[teamNames.length - 1]]}.png`} />
+          <div className='flexRowContainer sailorNameRow'>
+            <Link to={`/rankings/team/${teamNames.slice(-1)}`}>
+              <img style={{ display: 'inline', maxHeight: '3rem' }} src={`https://scores.collegesailing.org/inc/img/schools/${teamCodes[teamNames[teamNames.length - 1]]}.png`} />
+            </Link>
             <h1 style={{ display: 'inline-block' }}>{sailorName}</h1>
           </div>
           <div>
@@ -218,22 +219,22 @@ export default function Rankings() {
               </Link>
             ))}{' '}
             |{' '}
-            {links.map((link, index) => (
-              <span className="secondaryText" key={index} style={{ fontSize: '1rem' }}>
-                <a href={`https://scores.collegesailing.org/sailors/${link}/`} target="1">
+            <span className='secondaryText' style={{ fontSize: '1rem' }}>
+              {links.map((link, index) => (
+                <a href={`https://scores.collegesailing.org/sailors/${link}/`} target='1'>
                   {' '}
-                  (Techscore {index + 1})
+                  (Techscore{links.length > 1 ? ' ' + (index + 1) : ''})
                 </a>
-              </span>
-            ))}
+              ))}
+            </span>
           </div>
           <br />
           {/* Elos and Rankings */}
-          <div className="flexRowContainer" style={{ justifyContent: 'space-between', width: '75%' }}>
-            <PosInfo type="Open" pos="Skipper" rating={ratingSkipper} rank={globalSkipper} />
-            <PosInfo type="Open" pos="Crew" rating={ratingCrew} rank={globalCrew} />
-            <PosInfo type="Women's" pos="Skipper" rating={ratingWomenSkipper} rank={globalWomenSkipper} />
-            <PosInfo type="Women's" pos="Crew" rating={ratingWomenCrew} rank={globalWomenCrew} />
+          <div className='flexRowContainer' style={{ justifyContent: 'space-between', width: '75%' }}>
+            <PosInfo type='Open' pos='Skipper' rating={ratingSkipper} rank={globalSkipper} />
+            <PosInfo type='Open' pos='Crew' rating={ratingCrew} rank={globalCrew} />
+            <PosInfo type="Women's" pos='Skipper' rating={ratingWomenSkipper} rank={globalWomenSkipper} />
+            <PosInfo type="Women's" pos='Crew' rating={ratingWomenCrew} rank={globalWomenCrew} />
           </div>
           <span style={{ color: '#ccc', position: 'absolute', left: 30 }}> * in f24</span>
 
@@ -243,31 +244,31 @@ export default function Rankings() {
           <EloLineChart data={sailorRaces} />
 
           <h2>
-            Race by race breakdown: <span className="secondaryText">(scroll for more)</span>
+            Race by race breakdown: <span className='secondaryText'>(scroll for more)</span>
           </h2>
           <RaceByRace races={sailorRaces} />
-          <div className="flexRowContainer">
-            <div className="flexGrowChild">
-              <h2>Rating changes by partner (higher is better)</h2>
+          <div className='flexRowContainer'>
+            <div className='flexGrowChild'>
+              <h2>Rating changes by partner </h2>
               <PartnerResults races={sailorRaces} />
             </div>
-            <div className="flexGrowChild">
-              <h2>Rating changes by Venue (higher is better)</h2>
+            <div className='flexGrowChild'>
+              <h2>Rating changes by venue </h2>
               <VenueResults races={sailorRaces} />
             </div>
           </div>
-          <div className="flexRowContainer">
+          <div className='flexRowContainer'>
             <Rivals rivals={sailorRivals} pos={'Skipper'} />
             <Rivals rivals={sailorRivals} pos={'Crew'} />
           </div>
 
           <h2>Rating changes by race</h2>
           <h2>Scores (lower is better) and Percentage (higher is better) by race</h2>
-          <PosNegBarChart showLabels={false} data={sailorRaces} dataKey="change" syncID="ranking" title="Change" />
-          <PosNegBarChart showLabels={false} data={sailorRaces} dataKey="score" syncID="ranking" title="Score" />
+          <PosNegBarChart showLabels={false} data={sailorRaces} dataKey='change' syncID='ranking' title='Change' />
+          <PosNegBarChart showLabels={false} data={sailorRaces} dataKey='score' syncID='ranking' title='Score' />
           {/* <h2>Ratio by race (higher is better)</h2> */}
           <PosNegBarChart
-            title="Percentage"
+            title='Percentage'
             showLabels={true}
             data={sailorRaces.map((race) => {
               if (race.ratio < 0) {
@@ -275,8 +276,8 @@ export default function Rankings() {
               }
               return race
             })}
-            dataKey="ratio"
-            syncID="ranking"
+            dataKey='ratio'
+            syncID='ranking'
           />
         </div>
       ) : loaded ? (

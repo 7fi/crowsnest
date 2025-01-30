@@ -37,52 +37,49 @@ export default function Navbar() {
             </button>
           </li>
           {/* {userVals.username && ( */}
-          <>
-            <li>
+          {/* <li>
               <Link to='/rankings/'>
                 <button>Rankings</button>
               </Link>
-            </li>
-            {!user && (
-              <>
-                <li>
-                  <Link to='/enter'>
-                    <button>Sign In</button>
-                  </Link>
-                </li>
-              </>
-            )}
-            <AuthCheckLite>
-              {!location.pathname.includes('rankings') ? (
+            </li> */}
+          <li>
+            <Link to={`/rankings/team`}>
+              <button>Teams</button>
+            </Link>
+          </li>
+          <li>
+            <Link to={`/rankings/search`}>
+              <button>Sailors</button>
+            </Link>
+          </li>
+          {!user && (
+            <>
+              <li>
+                <Link to='/enter'>
+                  <button>Sign In</button>
+                </Link>
+              </li>
+            </>
+          )}
+          <AuthCheckLite>
+            {/* {!location.pathname.includes('rankings') ? (
                 <li>
                   <Link to='/teams'>
                     <button>Teams</button>
                   </Link>
                 </li>
-              ) : (
-                <>
-                  <li>
-                    <Link to={`/rankings/team`}>
-                      <button>Teams</button>
-                    </Link>
-                  </li>
-                  <li>
-                    <Link to={`/rankings/search`}>
-                      <button>Sailors</button>
-                    </Link>
-                  </li>
-                </>
-              )}
-              <li>
-                <SignOutButton />
-              </li>
-              <li>
-                <Link to={`/profile/${userVals?.username}`}>
-                  <img src={user?.photoURL} alt={userVals?.username} referrerPolicy='no-referrer' className='btn' />
-                </Link>
-              </li>
-            </AuthCheckLite>
-          </>
+              ) : ( */}
+
+            {/* )} */}
+            <li>
+              <SignOutButton />
+            </li>
+            <li>
+              <Link to={`/profile/${userVals?.username}`}>
+                <img style={{ maxWidth: 40, maxHeight: 40 }} src={user?.photoURL} alt={userVals?.username} referrerPolicy='no-referrer' className='btn' />
+              </Link>
+            </li>
+          </AuthCheckLite>
 
           {/*)} */}
         </ul>

@@ -2,34 +2,34 @@ import { useEffect, useState } from 'react'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 
 export default function EloLineChart({ data }) {
-  const [activeLines, setActiveLines] = useState(['regAvg']) // 'crewRating', 'skipperRating', 'womenSkipperRating', 'womenCrewRating', 
+  const [activeLines, setActiveLines] = useState(['crewRating', 'skipperRating', 'womenSkipperRating', 'womenCrewRating', 'regAvg']) // 'crewRating', 'skipperRating', 'womenSkipperRating', 'womenCrewRating',
 
-  const updateActiveLines = () => {
+  useEffect(() => {
+    console.log('updating elo lines')
     // Create a temporary list to collect the new values
-    const newLines = [];
-  
+    const newLines = []
+
     mappedRaces.forEach((race) => {
       if (race.skipperRating != null && !newLines.includes('skipperRating')) {
-        newLines.push('skipperRating');
+        newLines.push('skipperRating')
       }
       if (race.crewRating != null && !newLines.includes('crewRating')) {
-        newLines.push('crewRating');
+        newLines.push('crewRating')
       }
       if (race.womenSkipperRating != null && !newLines.includes('womenSkipperRating')) {
-        newLines.push('womenSkipperRating');
+        newLines.push('womenSkipperRating')
       }
       if (race.womenCrewRating != null && !newLines.includes('womenCrewRating')) {
-        newLines.push('womenCrewRating');
+        newLines.push('womenCrewRating')
       }
-    });
-  
-    // Update the state with the new list
-    setActiveLines((prev) => [...newLines, 'regAvg']);
-    console.log(newLines)
-  }
-  useEffect(() => updateActiveLines, [data])
+    })
 
-  // Custom Tick Component 
+    // Update the state with the new list
+    setActiveLines([...newLines, 'regAvg'])
+    console.log(newLines)
+  }, [data])
+
+  // Custom Tick Component
   const CustomTick = ({ x, y, payload, index }) => {
     if (index == mappedRaces.length) return null
     const currentEvent = mappedRaces[index]?.raceID.split('/')[0] + '/' + mappedRaces[index]?.raceID.split('/')[1]
@@ -39,11 +39,11 @@ export default function EloLineChart({ data }) {
     if (currentEvent !== previousEvent) {
       return (
         <text
-          fill="var(--text)"
+          fill='var(--text)'
           x={x}
           y={y + 10} // Adjust vertical position for better alignment
           transform={`rotate(45, ${x}, ${y + 10})`} // Rotate text at the tick position
-          className="chartLabel">
+          className='chartLabel'>
           {currentEvent}
         </text>
       )
@@ -55,7 +55,7 @@ export default function EloLineChart({ data }) {
       if (payload[0].payload?.raceID !== '/Start/' && payload[0].payload?.raceID !== '/END/') {
         return (
           <>
-            <div className="chartTooltip">
+            <div className='chartTooltip'>
               Skipper Rating: {payload[0]?.payload?.skipperRating?.toFixed(2)}
               <br />
               {/* Skipper Sigma: {payload[0]?.payload?.skipperSigma?.toFixed(2)}
@@ -70,7 +70,7 @@ export default function EloLineChart({ data }) {
               <br />
               Race Position : {payload[0]?.payload?.pos}
               <br />
-              <span className="text-titlecase">
+              <span className='text-titlecase'>
                 Race: {payload[0]?.payload?.raceID?.split('/')[1].replace(/-/g, ' ')} {payload[0]?.payload?.raceID?.split('/')[2]}
               </span>
               <br />
@@ -125,7 +125,7 @@ export default function EloLineChart({ data }) {
       }
       return race
     })
-    
+
   // mappedRaces.forEach((race) => {
   //   if(race.skipperRating != null && !activeLines.includes('skipperRating')) setActiveLines((prev) => [...prev, 'skipperRating'])
   //   if(race.crewRating != null && !activeLines.includes('crewRating')) setActiveLines((prev) => [...prev, 'crewRating'])
@@ -141,9 +141,9 @@ export default function EloLineChart({ data }) {
     const lastValidc = [...data].reverse().find((d) => d['crewRating'] != null)
     if (!firstValids || !lastValids) return data
     if (!firstValidc || !lastValidc) return data
-    let start = { raceID: '/Start/', skipperRating: 1000, crewRating: 1000, womenSkipperRating: 1000, womenCrewRating: 1000 }
+    // let start = { raceID: '/Start/', skipperRating: null, crewRating: null, womenSkipperRating: null, womenCrewRating: null }
     let end = { raceID: '/END/', skipperRating: lastValids.skipperRating, crewRating: lastValidc.crewRating }
-    const extendedData = [start, ...data, end]
+    const extendedData = [...data, end]
     return extendedData
   }
 
@@ -156,7 +156,7 @@ export default function EloLineChart({ data }) {
       <div style={{ display: 'flex', justifyContent: 'center' }}>
         {payload?.map((entry, index) => (
           <div
-            className="clickable"
+            className='clickable'
             key={index}
             style={{ margin: '0 10px', display: 'flex', alignItems: 'center' }}
             onClick={() => {
@@ -178,7 +178,7 @@ export default function EloLineChart({ data }) {
               }}
             />
             {/* Custom label with color */}
-            <span style={{ color: entry.payload.stroke, fontWeight: 'bold', opacity: activeLines.includes(entry.value) ? '100%' : '50%' }}>{entry.value == 'crewRating' ? 'Open Crew' : entry.value == 'skipperRating' ? 'Skipper' : entry.value == 'womenSkipperRating' ? "Women's Skipper" : entry.value == 'womenCrewRating' ? "Women's Crew" : 'Regatta Average'}</span>
+            <span style={{ color: entry.payload.stroke, fontWeight: 'bold', opacity: activeLines.includes(entry.value) ? '100%' : '50%' }}>{entry.value == 'crewRating' ? 'Open Crew' : entry.value == 'skipperRating' ? 'Open Skipper' : entry.value == 'womenSkipperRating' ? "Women's Skipper" : entry.value == 'womenCrewRating' ? "Women's Crew" : 'Regatta Average'}</span>
           </div>
         ))}
       </div>
@@ -196,7 +196,7 @@ export default function EloLineChart({ data }) {
   uniqueRegattas = Array.from(uniqueRegattas)
 
   return (
-    <ResponsiveContainer width="100%" height={480}>
+    <ResponsiveContainer width='100%' height={480}>
       <LineChart
         data={extended}
         margin={{
@@ -205,38 +205,17 @@ export default function EloLineChart({ data }) {
           left: 10,
           bottom: 130,
         }}>
-        <CartesianGrid strokeDasharray="3 3" verticalCoordinatesGenerator={(props) => createRange(65, props.width, (props.width + 40) / 10)} />
-        <XAxis dataKey="raceID" tick={<CustomTick />} height={60} interval={0} />
+        <CartesianGrid strokeDasharray='3 3' verticalCoordinatesGenerator={(props) => createRange(65, props.width, (props.width + 40) / 10)} />
+        <XAxis dataKey='raceID' tick={<CustomTick />} height={60} interval={0} />
         <YAxis label={{ value: 'Rating', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle' }, offset: 0 }} />
         <Tooltip content={<CustomTooltip />} isAnimationActive={false} />
-        <Line hide={!activeLines.includes('skipperRating')} strokeWidth={2} type="monotone" dataKey="skipperRating" connectNulls={true} stroke="#faa" dot={false} />
-        <Line hide={!activeLines.includes('crewRating')} strokeWidth={2} type="monotone" dataKey="crewRating" connectNulls={true} stroke="#fda" dot={false} />
-        <Line hide={!activeLines.includes('womenSkipperRating')} strokeWidth={2} type="monotone" dataKey="womenSkipperRating" connectNulls={true} stroke="#daf" dot={false} />
-        <Line hide={!activeLines.includes('womenCrewRating')} strokeWidth={2} type="monotone" dataKey="womenCrewRating" connectNulls={true} stroke="#afd" dot={false} />
-        {/* {uniqueRegattas.map((regatta) => (
-          <Line
-            strokeWidth={2}
-            type='monotone'
-            dataKey='regAvg'
-            stroke='#aaf'
-            dot={false}
-            data={mappedRaces
-              .filter((race) => {
-                const [season, raceName] = race.raceID.split('/')
-                const uniqueKey = `${season}/${raceName}`
-                return uniqueKey == regatta
-              })
-              .map((race) => {
-                return {
-                  raceID: race.raceID,
-                  regAvg: race.regAvg,
-                }
-              })}
-          />
-        ))} */}
-        <Line hide={!activeLines.includes('regAvg')} strokeWidth={2} type="monotone" dataKey="regAvg" stroke="#aaf" dot={false} />
+        <Line hide={!activeLines.includes('skipperRating')} strokeWidth={2} type='monotone' dataKey='skipperRating' connectNulls={true} stroke='#6088ff' dot={false} />
+        <Line hide={!activeLines.includes('crewRating')} strokeWidth={2} type='monotone' dataKey='crewRating' connectNulls={true} stroke='#ffc259' dot={false} />
+        <Line hide={!activeLines.includes('womenSkipperRating')} strokeWidth={2} type='monotone' dataKey='womenSkipperRating' connectNulls={true} stroke='#ff8585' dot={false} />
+        <Line hide={!activeLines.includes('womenCrewRating')} strokeWidth={2} type='monotone' dataKey='womenCrewRating' connectNulls={true} stroke='#60b55e' dot={false} />
+        <Line hide={!activeLines.includes('regAvg')} strokeWidth={2} type='monotone' dataKey='regAvg' stroke='#aaa' dot={false} />
 
-        <Legend content={<CustomLegend />} verticalAlign="top" height={36} />
+        <Legend content={<CustomLegend />} verticalAlign='top' height={36} />
       </LineChart>
     </ResponsiveContainer>
   )

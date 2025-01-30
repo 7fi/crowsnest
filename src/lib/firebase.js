@@ -122,7 +122,8 @@ const getAllTeams = async () => {
 }
 
 const getTop100 = async (type, pos) => {
-  const thisDoc = await getDoc(doc(db, 'vars', pos == 'Skipper' ? (type == 'women' ? 'topWomenSkippers' : 'topSkippers') : type == 'women' ? 'topWomenCrews' : 'topCrews'))
+  const docName = pos == 'Skipper' ? (type == 'women' ? 'topWomenSkippers' : 'topSkippers') : type == 'women' ? 'topWomenCrews' : 'topCrews'
+  const thisDoc = await getDoc(doc(db, 'vars', docName))
   console.log('reads: %d', 1)
   if (thisDoc != undefined) {
     return { data: thisDoc.data(), id: thisDoc.id }

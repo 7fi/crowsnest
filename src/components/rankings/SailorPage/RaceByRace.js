@@ -1,21 +1,23 @@
+import { FaDiamond } from 'react-icons/fa6'
 import { Link, useParams, useNavigate } from 'react-router-dom'
 
 export default function RaceByRace({ races, position }) {
   const navigate = useNavigate()
   return (
-    <div className="raceByRaceBox">
-      <table className="raceByRaceTable">
+    <div className='raceByRaceBox'>
+      <table className='raceByRaceTable'>
         <thead>
           <tr>
             <th>Date</th>
             <th>Race</th>
-            <th></th>
+            {/* <th></th> */}
             <th>Position</th>
             <th>Partner</th>
             <th>Score</th>
             <th>Predicted</th>
             <th>Percentage</th>
             <th>Rating</th>
+            <th></th>
             <th>Change</th>
             <th></th>
           </tr>
@@ -47,35 +49,36 @@ export default function RaceByRace({ races, position }) {
                   onClick={() => {
                     navigate(`/rankings/regatta/${race.raceID}/${race.pos}`)
                   }}
-                  className="clickable">
-                  <td className="secondaryText tableColFit tdRightBorder">{date.toLocaleDateString()}</td>
-                  <td className="" style={{ textTransform: 'capitalize' }}>
+                  className='clickable'>
+                  <td className='secondaryText tableColFit tdRightBorder'>{date.toLocaleDateString()}</td>
+                  <td className='' style={{ textTransform: 'capitalize' }}>
                     {race.raceID.split('/')[1].split('-').join(' ')} - {race.raceID.split('/')[2]}{' '}
                   </td>
-                  <td className="tableColFit secondaryText ">{race.womens ? 'W' : ''}</td>
+                  {/* <td className='tableColFit secondaryText '></td> */}
 
-                  <td className="tableColFit">{race.pos}</td>
-                  <td className="tableColFit" onClick={() => navigate(`/rankings/${race.partner}`)}>
+                  <td className='tableColFit'>{race.pos}</td>
+                  <td className='tableColFit' onClick={() => navigate(`/rankings/${race.partner}`)}>
                     <Link to={`/rankings/${race.partner['link']}`}>{race.partner['name']}</Link>
                   </td>
-                  <td style={{ textAlign: 'center', color: race.score < race.predicted ? 'green' : race.score > race.predicted ? 'red' : '' }}>
-                    {race.score < 10 ? '  ' : ' '}
+                  <td style={{ textAlign: 'right', color: race.score < race.predicted ? 'green' : race.score > race.predicted ? 'red' : '' }}>
                     {race.score}
                     {race.score == 1 ? 'st' : race.score == 2 ? 'nd' : race.score == 3 ? 'rd' : 'th'}
                   </td>
-                  <td style={{ textAlign: 'center' }}>
-                    {race.predicted < 10 ? '  ' : ' '}
+                  <td style={{ textAlign: 'right' }}>
                     {race.predicted}
                     {race.predicted == 1 ? 'st' : race.predicted == 2 ? 'nd' : race.predicted == 3 ? 'rd' : 'th'}
                   </td>
                   <td style={{ textAlign: 'center' }}>
-                    <div className="ratioBarBg">
-                      <div className="ratioBar" style={{ width: race.ratio * 95 }}>
+                    <div className='ratioBarBg'>
+                      <div className='ratioBar' style={{ width: race.ratio * 95 }}>
                         <span>{(race.ratio * 100).toFixed(1)}%</span>
                       </div>
                     </div>
                   </td>
-                  <td>{((race.pos == 'Skipper' ? race.skipperRating : race.crewRating) - race.change).toFixed(0)}</td>
+                  <td style={{ textAlign: 'right' }} className='tableColFit'>
+                    {((race.pos == 'Skipper' ? race.skipperRating : race.crewRating) - race.change).toFixed(0)}
+                  </td>
+                  <td style={{ textAlign: 'right' }}>{race.womens ? <FaDiamond className='secondaryText' /> : ''}</td>
                   <td style={{ color: race.change > 0 ? 'green' : 'red' }}>
                     {race.change > 0 ? ' +' : ' '}
                     {race.change.toFixed(0)}

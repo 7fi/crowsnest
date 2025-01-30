@@ -30,6 +30,7 @@ export default function VenueResults({ races }) {
           <th></th>
           <th>Venue (host)</th>
           <th>Races</th>
+          <th></th>
           <th>Rating Change</th>
           <th>Percentage</th>
         </tr>
@@ -40,7 +41,10 @@ export default function VenueResults({ races }) {
             <tr className='' key={venue.name} style={{ margin: '5px' }}>
               <td className='tdRightBorder tableColFit secondaryText'>{index + 1}</td>
               <td>{venue.name}</td>
-              <td>{venue.count} races</td>
+              <td className='tableColFit' style={{ textAlign: 'right' }}>
+                {venue.count}
+              </td>
+              <td></td>
               <td style={{ color: venue.change > 0 ? 'green' : 'red' }}>
                 {venue.change > 0 ? '+' : ''}
                 {venue.change.toFixed(0)}

@@ -26,7 +26,7 @@ export default function Profile() {
     <main>
       <AuthCheck>
         <div className='contentBox profileBox'>
-          <img src={pageUser?.photoURL} alt='Profile Image' referrerPolicy='no-referrer' />
+          <img src={pageUser?.photoURL} alt='Profile Image' referrerPolicy='no-referrer' style={{ maxWidth: 100 }} />
           <div className='text-title'>{pageUser?.displayName}</div>
           <div className='text-subtitle profileUsername'>({pageUser?.username})</div>
         </div>

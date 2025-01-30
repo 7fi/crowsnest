@@ -65,20 +65,27 @@ export default function RegattaRankings() {
       })
       .sort((a, b) => a.score - b.score) // Sort by score in descending order
 
+    const ScoreText = ({ score }) => {
+      const lastDigit = score.toString()[score.toString().length - 1]
+      return (
+        <span>
+          {score}
+          {lastDigit == '1' && score != 11 ? 'st' : lastDigit == '2' && score != 12 ? 'nd' : lastDigit == '3' && score != 13 ? 'rd' : 'th'}
+        </span>
+      )
+    }
     // Step 2: Generate race elements based on the sorted list
     const raceElements = sortedPeople.map((sailor, index) => (
-      <tr key={index} className="clickable" onClick={() => navigate(`/rankings/${sailor.key}`)}>
+      <tr key={index} className='clickable' onClick={() => navigate(`/rankings/${sailor.key}`)}>
         <td>{sailor.name}</td>
         <td>{sailor.team}</td>
         <td style={{ color: sailor.score < sailor.predicted ? 'green' : sailor.score > sailor.predicted ? 'red' : '' }}>
-          {sailor.score}
-          {sailor.score == 1 ? 'st' : sailor.score == 2 ? 'nd' : sailor.score == 3 ? 'rd' : 'th'}
+          <ScoreText score={sailor.score} />
         </td>
         <td>
-          {sailor.predicted}
-          {sailor.predicted == 1 ? 'st' : sailor.predicted == 2 ? 'nd' : sailor.predicted == 3 ? 'rd' : 'th'}
+          <ScoreText score={sailor.predicted} />
         </td>
-        <td className="secondaryText">{sailor.curRating.toFixed(0)} </td>
+        <td className='secondaryText'>{sailor.curRating.toFixed(0)} </td>
         <td style={{ color: sailor.change > 0 ? 'green' : 'red', textAlign: 'right' }}>
           {sailor.change > 0 ? '+' : ''}
           {sailor.change.toFixed(0)}
@@ -87,8 +94,8 @@ export default function RegattaRankings() {
     ))
 
     return (
-      <table className="raceByRaceTable">
-        <thead className="">
+      <table className='raceByRaceTable'>
+        <thead className=''>
           <tr>
             <th>Name</th>
             <th>Team</th>
@@ -98,7 +105,7 @@ export default function RegattaRankings() {
             <th style={{ textAlign: 'right' }}>Rating Change</th>
           </tr>
         </thead>
-        <tbody className="">{raceElements}</tbody>
+        <tbody className=''>{raceElements}</tbody>
       </table>
     )
   }
@@ -135,18 +142,19 @@ export default function RegattaRankings() {
 
     return (
       <div>
-        <div className="raceEntryAlignedFull" style={{ position: 'sticky', fontWeight: 'bold' }}>
+        <div className='raceEntryAlignedFull' style={{ position: 'sticky', fontWeight: 'bold' }}>
           <span>Name</span>
           <span>Team</span>
           <span>New Rating</span>
           <span>Total Rating Change</span>
         </div>
-        <div className="raceElementBox">
+        <div className='raceElementBox'>
           {summed
             .sort((a, b) => b.totalRatingChange - a.totalRatingChange)
+
             .map((person, index) => (
-              <Link to={`/rankings/${person.position.toLowerCase()}/${person.name}`} key={index}>
-                <div className="raceEntryAlignedFull contentBox">
+              <Link to={`/rankings/${person.key}`} key={index}>
+                <div className='raceEntryAlignedFull contentBox'>
                   <span>{person.name}</span> <span>{person.team}</span>
                   <span>{person.newRating.toFixed(0)}</span>
                   <span style={{ color: person.totalRatingChange > 0 ? 'green' : 'red' }}>
@@ -169,33 +177,33 @@ export default function RegattaRankings() {
       setActiveTab(tabName)
     }
     return (
-      <div className="flexRowContainer contentBox">
+      <div className='flexRowContainer contentBox'>
         <Link to={`/rankings/regatta/${season}/${regattaName}/${activeTab}/${'Skipper'}`}>
-          <button className="tabButton" onClick={() => setPosition('Skipper')}>
+          <button className='tabButton' style={{ backgroundColor: position == 'Skipper' ? 'var(--border)' : '' }} onClick={() => setPosition('Skipper')}>
             Skippers
           </button>
         </Link>
         <Link to={`/rankings/regatta/${season}/${regattaName}/${activeTab}/${'Crew'}`}>
-          <button className="tabButton" onClick={() => setPosition('Crew')}>
+          <button className='tabButton' style={{ backgroundColor: position == 'Crew' ? 'var(--border)' : '' }} onClick={() => setPosition('Crew')}>
             Crews
           </button>
         </Link>
         {divisions.map((div, index) => (
           <Link key={index} to={`/rankings/regatta/${season}/${regattaName}/${activeTab.slice(0, -1) + div}/${position}`}>
-            <button className="tabButton" style={{ backgroundColor: activeTab.slice(-1) == div ? 'var(--border)' : '' }} onClick={() => setActiveTab(activeTab.replace(/.$/, div))}>
+            <button className='tabButton' style={{ backgroundColor: activeTab.slice(-1) == div ? 'var(--border)' : '' }} onClick={() => setActiveTab(activeTab.replace(/.$/, div))}>
               {div}
             </button>
           </Link>
         ))}
         {[...new Set(raceIDs.map((id) => id.split('/')[2].slice(0, -1)))].map((id, index) => (
           <Link key={index} to={`/rankings/regatta/${season}/${regattaName}/${id + activeTab.charAt(activeTab.length - 1)}/${position}`}>
-            <button className="tabButton" style={{ flexGrow: 1, textAlign: 'center' }} onClick={() => handleTabClick(id + activeTab.charAt(activeTab.length - 1))}>
+            <button className='tabButton' style={{ backgroundColor: activeTab.slice(0, -1) == id ? 'var(--border)' : '', flexGrow: 1, textAlign: 'center' }} onClick={() => handleTabClick(id + activeTab.charAt(activeTab.length - 1))}>
               {id}
             </button>
           </Link>
         ))}
         <Link to={`/rankings/regatta/${season}/${regattaName}/${'All' + activeTab.charAt(activeTab.length - 1)}/${position}`}>
-          <button className="tabButton" onClick={() => setActiveTab('All' + activeTab.slice(-1))}>
+          <button className='tabButton' style={{ backgroundColor: activeTab.slice(0, 3) == 'All' ? 'var(--border)' : '' }} onClick={() => setActiveTab('All' + activeTab.slice(-1))}>
             All
           </button>
         </Link>
@@ -206,7 +214,7 @@ export default function RegattaRankings() {
   const TabComponent = ({ raceIDs, pos }) => {
     return (
       <>
-        <div className="" style={{ margin: 15 }}>
+        <div className='' style={{ margin: 15 }}>
           <div>
             {raceIDs.map((id) => {
               // Render content only for the active tab
@@ -216,7 +224,7 @@ export default function RegattaRankings() {
                     <span>
                       <h2 style={{ textTransform: 'capitalize' }}>
                         {id.split('/')[1].split('-').join(' ')} Race: {id.split('/')[2]} ({pos}s)
-                        <a style={{ fontSize: '1rem' }} className="secondaryText" target="1" href={`https://scores.collegesailing.org/${season}/${regattaName}/full-scores`}>
+                        <a style={{ fontSize: '1rem' }} className='secondaryText' target='1' href={`https://scores.collegesailing.org/${season}/${regattaName}/full-scores`}>
                           (techscore)
                         </a>
                       </h2>
@@ -233,7 +241,7 @@ export default function RegattaRankings() {
                 <h2>
                   All Scores for {position}s in {activeTab.slice(-1)}{' '}
                 </h2>
-                <a target="1" href={`https://scores.collegesailing.org/${season}/${regattaName}/full-scores`}>
+                <a target='1' href={`https://scores.collegesailing.org/${season}/${regattaName}/full-scores`}>
                   (techscore)
                 </a>
                 <TabList />
