@@ -1,10 +1,14 @@
 import { useEffect, useState } from 'react'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
+import { useMobileDetect } from '../lib/hooks'
 
 export default function EloLineChart({ data }) {
   const [activeLines, setActiveLines] = useState(['crewRating', 'skipperRating', 'womenSkipperRating', 'womenCrewRating', 'regAvg']) // 'crewRating', 'skipperRating', 'womenSkipperRating', 'womenCrewRating',
+  const [notAvailableLines, setNotAvailableLines] = useState([])
+  const isMobile = useMobileDetect()
 
   useEffect(() => {
+    console.log(isMobile)
     console.log('updating elo lines')
     // Create a temporary list to collect the new values
     const newLines = []
@@ -25,8 +29,10 @@ export default function EloLineChart({ data }) {
     })
 
     // Update the state with the new list
+    const unavaiable = ['crewRating', 'skipperRating', 'womenSkipperRating', 'womenCrewRating'].filter((line) => !newLines.includes(line) && line != 'regAvg')
+    console.log(activeLines, newLines, unavaiable)
     setActiveLines([...newLines, 'regAvg'])
-    console.log(newLines)
+    setNotAvailableLines(unavaiable)
   }, [data])
 
   // Custom Tick Component
@@ -68,7 +74,7 @@ export default function EloLineChart({ data }) {
               <br />
               Average Regatta Rating: {payload[0]?.payload?.regAvg?.toFixed(2)}
               <br />
-              Race Position : {payload[0]?.payload?.pos}
+              Race Position: {payload[0]?.payload?.pos}
               <br />
               <span className='text-titlecase'>
                 Race: {payload[0]?.payload?.raceID?.split('/')[1].replace(/-/g, ' ')} {payload[0]?.payload?.raceID?.split('/')[2]}
@@ -154,33 +160,37 @@ export default function EloLineChart({ data }) {
   const CustomLegend = ({ payload }) => {
     return (
       <div style={{ display: 'flex', justifyContent: 'center' }}>
-        {payload?.map((entry, index) => (
-          <div
-            className='clickable'
-            key={index}
-            style={{ margin: '0 10px', display: 'flex', alignItems: 'center' }}
-            onClick={() => {
-              console.log(activeLines)
-              if (activeLines.includes(entry.value)) {
-                if (activeLines.length > 1) setActiveLines(activeLines.filter((el) => el !== entry.value))
-              } else {
-                setActiveLines((prev) => [...prev, entry.value])
-              }
-            }}>
-            {/* Custom colored square */}
+        {payload?.map((entry, index) =>
+          !notAvailableLines.includes(entry.value) ? (
             <div
-              style={{
-                width: 20,
-                height: 20,
-                backgroundColor: entry.payload.stroke,
-                marginRight: 5,
-                opacity: activeLines.includes(entry.value) ? '100%' : '50%',
-              }}
-            />
-            {/* Custom label with color */}
-            <span style={{ color: entry.payload.stroke, fontWeight: 'bold', opacity: activeLines.includes(entry.value) ? '100%' : '50%' }}>{entry.value == 'crewRating' ? 'Open Crew' : entry.value == 'skipperRating' ? 'Open Skipper' : entry.value == 'womenSkipperRating' ? "Women's Skipper" : entry.value == 'womenCrewRating' ? "Women's Crew" : 'Regatta Average'}</span>
-          </div>
-        ))}
+              key={index}
+              className='clickable'
+              style={{ margin: '0 10px', display: 'flex', alignItems: 'center' }}
+              onClick={() => {
+                console.log(activeLines)
+                if (activeLines.includes(entry.value)) {
+                  if (activeLines.length > 1) setActiveLines(activeLines.filter((el) => el !== entry.value))
+                } else {
+                  setActiveLines((prev) => [...prev, entry.value])
+                }
+              }}>
+              {/* Custom colored square */}
+              <div
+                style={{
+                  width: 20,
+                  height: 20,
+                  backgroundColor: entry.payload.stroke,
+                  marginRight: 5,
+                  opacity: activeLines.includes(entry.value) ? '100%' : '50%',
+                }}
+              />
+              {/* Custom label with color */}
+              <span style={{ color: entry.payload.stroke, fontWeight: 'bold', opacity: activeLines.includes(entry.value) ? '100%' : '50%' }}>{entry.value == 'crewRating' ? 'Open Crew' : entry.value == 'skipperRating' ? 'Open Skipper' : entry.value == 'womenSkipperRating' ? "Women's Skipper" : entry.value == 'womenCrewRating' ? "Women's Crew" : 'Regatta Average'}</span>
+            </div>
+          ) : (
+            <div key={index}></div>
+          )
+        )}
       </div>
     )
   }
@@ -196,26 +206,20 @@ export default function EloLineChart({ data }) {
   uniqueRegattas = Array.from(uniqueRegattas)
 
   return (
-    <ResponsiveContainer width='100%' height={480}>
-      <LineChart
-        data={extended}
-        margin={{
-          top: 5,
-          right: 5,
-          left: 10,
-          bottom: 130,
-        }}>
+    <ResponsiveContainer width='100%' height={isMobile ? 250 : 480}>
+      <LineChart data={extended} margin={!isMobile ? { top: 5, right: 5, left: 10, bottom: 130 } : { top: 5, right: 5, left: -10, bottom: -39 }}>
         <CartesianGrid strokeDasharray='3 3' verticalCoordinatesGenerator={(props) => createRange(65, props.width, (props.width + 40) / 10)} />
         <XAxis dataKey='raceID' tick={<CustomTick />} height={60} interval={0} />
-        <YAxis label={{ value: 'Rating', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle' }, offset: 0 }} />
+        <YAxis label={!isMobile ? { value: 'Rating', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle' }, offset: 0 } : {}} />
         <Tooltip content={<CustomTooltip />} isAnimationActive={false} />
+
         <Line hide={!activeLines.includes('skipperRating')} strokeWidth={2} type='monotone' dataKey='skipperRating' connectNulls={true} stroke='#6088ff' dot={false} />
         <Line hide={!activeLines.includes('crewRating')} strokeWidth={2} type='monotone' dataKey='crewRating' connectNulls={true} stroke='#ffc259' dot={false} />
         <Line hide={!activeLines.includes('womenSkipperRating')} strokeWidth={2} type='monotone' dataKey='womenSkipperRating' connectNulls={true} stroke='#ff8585' dot={false} />
         <Line hide={!activeLines.includes('womenCrewRating')} strokeWidth={2} type='monotone' dataKey='womenCrewRating' connectNulls={true} stroke='#60b55e' dot={false} />
         <Line hide={!activeLines.includes('regAvg')} strokeWidth={2} type='monotone' dataKey='regAvg' stroke='#aaa' dot={false} />
 
-        <Legend content={<CustomLegend />} verticalAlign='top' height={36} />
+        <Legend content={<CustomLegend />} verticalAlign='top' height={isMobile ? 55 : 36} />
       </LineChart>
     </ResponsiveContainer>
   )

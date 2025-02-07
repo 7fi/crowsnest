@@ -23,8 +23,8 @@ export default function EloSearch() {
 
   return (
     <div style={{ margin: 15 }}>
-      <div className='flexRowContainer'>
-        <input className='flexGrowChild' style={{ width: '30rem' }} placeholder='Search by name / team *' onChange={filter} />
+      <div className='responsiveRowCol'>
+        <input className='flexGrowChild' style={{ minWidth: '10rem', maxWidth: '50%', height: '2rem' }} placeholder='Search by name / team *' onChange={filter} />
         <span className='secondaryText'> * only includes sailors in f24</span>
         <input
           type='checkbox'
@@ -33,7 +33,7 @@ export default function EloSearch() {
             console.log(e.target.checked)
           }}
         />
-        <div className='flexRowContainer'>
+        <div className='flexRowContainer flexWrap'>
           <Link to={'/rankings/skipper'}>
             <button className='buttonBG'>Top Open Skippers</button>
           </Link>
@@ -65,6 +65,7 @@ export default function EloSearch() {
               }
               return true
             })
+            .sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()))
             .map((sailor, index) => (
               <tr key={index} onClick={() => nav(`/rankings/${sailor}`)}>
                 {useImg ? (
@@ -78,7 +79,7 @@ export default function EloSearch() {
                 )}
                 <td>{sailors[sailor].name}</td>
                 <td>{sailors[sailor].team}</td>
-                <td>{sailors[sailor].year}</td>
+                <td>20{sailors[sailor].year.toString().split(' ')[0].slice(-2)}</td>
               </tr>
             ))}
         </tbody>

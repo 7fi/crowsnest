@@ -4,10 +4,13 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import Loader from '../components/loader'
 import useTeamCodes from '../lib/teamCodes'
 import { FaDiamond } from 'react-icons/fa6'
+import RatingNum from '../components/RatingNum'
+import { useMobileDetect } from '../lib/hooks'
 
 export default function GlobalRankings({ pos, type }) {
   const [people, setPeople] = useState([])
   const [loaded, setLoaded] = useState(false)
+  const isMobile = useMobileDetect()
 
   useEffect(() => {
     setLoaded(false)
@@ -35,10 +38,12 @@ export default function GlobalRankings({ pos, type }) {
             </div>
           </td>
           <td className='tableColFit'>{member.name}</td>
+          <td>{member.year.toString().slice(2)}</td>
           {/* <td className='tableColFit secondaryText'>{member.gender == 'F' ? 'W' : ''}</td> */}
-          <td>{member.team[member.team.length - 1]}</td>
+          {isMobile ? <></> : <td>{member.team[member.team.length - 1]}</td>}
           <td style={{ textAlign: 'right' }}>
-            {member.rating.toFixed(0)} {type == 'women' ? <FaDiamond className='secondaryText' /> : ''}
+            <RatingNum type={type} pos={pos} ratingNum={member.rating} />
+            {/* {member.rating.toFixed(0)} {type == 'women' ? <FaDiamond className='secondaryText' /> : ''} */}
           </td>
         </tr>
       </>
@@ -47,19 +52,24 @@ export default function GlobalRankings({ pos, type }) {
 
   return (
     <div style={{ margin: 15 }}>
-      <div className='contentBox' style={{ marginTop: 80 }}>
-        <h2>
-          Top 100 {type[0].toUpperCase()}
-          {type.slice(1)} {pos}s in Fall 24
-        </h2>
-        <div className='flexRowContainer'>
-          <Link to={`/rankings/${pos == 'Skipper' ? 'crew' : 'skipper'}${type == 'women' ? '/women' : ''}`}>
-            <button>See {pos == 'Skipper' ? 'Crews' : 'Skippers'}</button>
-          </Link>{' '}
-          <Link to={`/rankings/${pos == 'Skipper' ? 'skipper' : 'crew'}${type == 'women' ? '' : '/women'}`}>
-            {' '}
-            <button>See {type == 'women' ? 'Open' : "Women's"}</button>
-          </Link>
+      <div className='contentBox responsiveRowCol' style={{ marginTop: 80, justifyContent: 'space-between' }}>
+        <div>
+          <h2>
+            Top 100 {type[0].toUpperCase()}
+            {type.slice(1)} {pos}s in Fall 24
+          </h2>
+          <div className='flexRowContainer'>
+            <Link to={`/rankings/${pos == 'Skipper' ? 'crew' : 'skipper'}${type == 'women' ? '/women' : ''}`}>
+              <button>See {pos == 'Skipper' ? 'Crews' : 'Skippers'}</button>
+            </Link>{' '}
+            <Link to={`/rankings/${pos == 'Skipper' ? 'skipper' : 'crew'}${type == 'women' ? '' : '/women'}`}>
+              {' '}
+              <button>See {type == 'women' ? 'Open' : "Women's"}</button>
+            </Link>
+          </div>
+        </div>
+        <div className='secondaryText' style={isMobile ? { maxWidth: '100%' } : { maxWidth: '45%' }}>
+          This ranking requires a sailor to have 70 pairwise comparisons to out of conference sailors. So for example, two races vs 5 out of conference opponents would count as 10 comparisons. This was implemented to reduce the inflation of sailors who's rating is inaccurate due to a lack of conference diversity.
         </div>
       </div>
       {loaded ? (
@@ -69,7 +79,8 @@ export default function GlobalRankings({ pos, type }) {
               <th></th>
               <th style={{ minWidth: 50 }}></th>
               <th>Name</th>
-              <th>Team</th>
+              <th className='tableColFit'>Year</th>
+              {!isMobile ? <th>Team</th> : <></>}
               <th style={{ textAlign: 'right' }}>Rating</th>
             </tr>
           </thead>

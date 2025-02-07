@@ -220,7 +220,7 @@ export default function RegattaRankings() {
               // Render content only for the active tab
               if (activeTab === id.split('/')[2]) {
                 return (
-                  <div key={id}>
+                  <div key={id} style={{ marginTop: 75 }}>
                     <span>
                       <h2 style={{ textTransform: 'capitalize' }}>
                         {id.split('/')[1].split('-').join(' ')} Race: {id.split('/')[2]} ({pos}s)

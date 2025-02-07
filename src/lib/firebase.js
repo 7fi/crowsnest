@@ -1,6 +1,6 @@
 import { initializeApp } from 'firebase/app'
 import { getAnalytics } from 'firebase/analytics'
-import { getFirestore, collection, where, query, doc, getDoc, getDocs, setDoc, getCountFromServer, documentId, serverTimestamp } from 'firebase/firestore'
+import { getFirestore, collection, where, query, doc, getDoc, getDocs, setDoc, getCountFromServer, documentId, serverTimestamp, arrayUnion, updateDoc, arrayRemove } from 'firebase/firestore'
 import { getFunctions, httpsCallable } from 'firebase/functions'
 
 const firebaseConfig = {
@@ -103,9 +103,9 @@ const getSailorElo = async (sailorkey) => {
   const q = query(collection(db, 'sailorsElo'), where('key', '==', sailorkey))
   const docs = await getDocs(q)
   console.log('reads: ' + docs.docs.length)
-  // const doc = docs.docs[0]
-  if (docs != undefined) {
-    return { docs: docs.docs }
+  const doc = docs.docs[0]
+  if (doc != undefined) {
+    return { data: doc.data(), id: doc.id }
   } else {
     return undefined
   }
@@ -156,6 +156,64 @@ const getRegattaElos = async (regattaName) => {
   }
 }
 
+async function followUser(targetKey, targetName, uid, name, username) {
+  const db = getFirestore()
+  let d = doc(db, `users/${uid}`)
+  // let docSnap = (await getDoc(d)).data()
+  // console.log(uid, username, displayName)
+  await updateDoc(d, { following: arrayUnion({ targetKey: targetKey, targetName: targetName }) })
+
+  try {
+    const collectionRef = collection(db, 'sailorsElo')
+    const q = query(collectionRef, where('key', '==', targetKey))
+    const querySnapshot = await getDocs(q)
+
+    if (querySnapshot.empty) {
+      console.log('No matching documents.')
+      return
+    }
+
+    // Update ALL matching documents (important!).  If you only want to update
+    // the first one, you can break after the first iteration.
+    for (const docSnapshot of querySnapshot.docs) {
+      const docRef = doc(collectionRef, docSnapshot.id) // Get doc ref using docSnapshot.id
+      await updateDoc(docRef, { followers: arrayUnion({ followerUid: uid, followerName: name, followerUsername: username }) })
+      console.log(`Document ${docSnapshot.id} successfully updated!`)
+    }
+  } catch (error) {
+    console.error('Error updating documents: ', error)
+  }
+}
+
+async function unFollowUser(targetKey, targetName, uid, name, username) {
+  const db = getFirestore()
+  let d = doc(db, `users/${uid}`)
+  // let docSnap = (await getDoc(d)).data()
+  // console.log(uid, username, displayName)
+  await updateDoc(d, { following: arrayRemove({ targetKey: targetKey, targetName: targetName }) })
+
+  try {
+    const collectionRef = collection(db, 'sailorsElo')
+    const q = query(collectionRef, where('key', '==', targetKey))
+    const querySnapshot = await getDocs(q)
+
+    if (querySnapshot.empty) {
+      console.log('No matching documents.')
+      return
+    }
+
+    // Update ALL matching documents (important!).  If you only want to update
+    // the first one, you can break after the first iteration.
+    for (const docSnapshot of querySnapshot.docs) {
+      const docRef = doc(collectionRef, docSnapshot.id) // Get doc ref using docSnapshot.id
+      await updateDoc(docRef, { followers: arrayRemove({ followerUid: uid, followerName: name, followerUsername: username }) })
+      console.log(`Document ${docSnapshot.id} successfully updated!`)
+    }
+  } catch (error) {
+    console.error('Error updating documents: ', error)
+  }
+}
+
 const CACHE_KEY = 'allPeople'
 const CACHE_EXPIRY_KEY = 'allPeopleExpiry'
 const CACHE_DURATION = 24 * 60 * 60 * 1000 // 24 hours
@@ -185,4 +243,4 @@ const getAllSailors = async ({ useCache }) => {
   }
 }
 
-export { app, getUserWithUsername, getTeamWithName, getTeamWithID, getTeamList, scrapeTeamListToDb, getEventWithID, getEventsForTeam, getUserWithID, getSailorElo, getAllTeams, getTeamElos, getTop100, getRegattaElos, getAllSailors }
+export { app, getUserWithUsername, getTeamWithName, getTeamWithID, getTeamList, scrapeTeamListToDb, getEventWithID, getEventsForTeam, getUserWithID, getSailorElo, getAllTeams, getTeamElos, getTop100, getRegattaElos, getAllSailors, followUser, unFollowUser }

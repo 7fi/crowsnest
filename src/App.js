@@ -32,34 +32,40 @@ import ScrollToTop from './components/ScrollToTop'
 import ScrollButton from './components/ScrollToTop'
 import Claim from './pages/Claim'
 import Footer from './components/Footer'
+import About from './pages/About'
+import PostHogPageviewTracker from './lib/PostHogPageviewTracker'
+import posthog from 'posthog-js'
+import Feed from './pages/Feed'
 
 export default function App() {
   const userData = useUserData()
+  const { pathname } = useLocation()
+
   checkTheme()
 
   // const isProduction = process.env.NODE_ENV === 'production'
   const isProduction = false // Force render
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [pathname])
 
-  function ScrollToTop() {
-    const { pathname } = useLocation()
-
-    useEffect(() => {
-      window.scrollTo(0, 0)
-    }, [pathname])
-
-    return null
-  }
+  useEffect(() => {
+    if (userData?.user?.uid) {
+      posthog.identify(userData.user.uid, { name: userData.userVals.username })
+    }
+  }, [pathname])
 
   return (
     <>
       <UserContext.Provider value={userData}>
         {!isProduction ? (
           <>
-            <ScrollToTop />
             <Navbar />
 
+            <PostHogPageviewTracker />
             <Routes>
               <Route path='/' element={<RankingsHome />} />
+              <Route path='/about' element={<About />} />
               <Route path='/enter' element={<Enter />} />
               <Route path='/profile/:profileName' element={<Profile />} />
               {/* <Route path="/profile" element={<Navigate to={`/profile/${userData.username}`} />} /> */}
@@ -86,6 +92,7 @@ export default function App() {
               <Route path='/rankings/regatta/:season/:regattaName' element={<RegattaRankings />} />
               <Route path='/rankings/regatta/:season/:regattaName/:raceNum' element={<RegattaRankings />} />
               <Route path='/rankings/regatta/:season/:regattaName/:raceNum/:pos' element={<RegattaRankings />} />
+              <Route path='/feed' element={<Feed />} />
               <Route path='/drag' element={<TestDrag />} />
               <Route path='/:text' element={<NotFound />} />
             </Routes>

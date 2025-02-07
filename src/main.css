@@ -10,6 +10,7 @@
   --text: #000;
   --danger: #f00;
   --sucess: #3ee13e;
+  --women: #faa;
 
   --radius: 7px;
   --font: 'Inter';
@@ -24,8 +25,9 @@
   --border: #363636;
   --highlight1: #222;
   --highlight2: #222;
-  --highlight3: #444;
+  --highlight3: #555;
   --text: #eee;
+  --women: #903737;
 }
 /* michelle */
 [data-theme='new'] {
@@ -46,6 +48,29 @@
   --highlight1: #222;
   --highlight2: #222;
   --text: #000;
+}
+
+@media only screen and (max-device-width: 600px) {
+  .responsiveRowCol {
+    display: flex;
+    flex-direction: column !important;
+  }
+  .responsiveRowCol div {
+    overflow: scroll;
+  }
+  .chartLabel {
+    display: none;
+  }
+  .recharts-legend-wrapper {
+    top: 0px;
+  }
+}
+.responsiveRowCol {
+  display: flex;
+  flex-direction: row;
+}
+.flexWrap {
+  flex-wrap: wrap;
 }
 
 body {
@@ -148,7 +173,7 @@ select {
 .flexRowContainer {
   display: flex;
   flex-direction: row;
-  gap: 0.3rem;
+  gap: 0 0.3rem;
   align-items: start;
 }
 
@@ -467,16 +492,12 @@ select {
   right: 15px;
   left: 15px;
   overflow: scroll;
-  position: absolute;
+  /* position: absolute; */
 }
 
 .comparisonBox {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
-}
-.racebyRaceBox {
-  display: grid;
-  grid-template-columns: 1fr 5fr 1fr 3fr 1fr;
 }
 
 .comparisonRow {
@@ -490,7 +511,7 @@ select {
   border-radius: var(--radius); */
 }
 .raceByRaceBox {
-  height: 500px;
+  max-height: 500px;
   overflow: scroll;
 }
 .tableColFit {
@@ -540,12 +561,17 @@ tbody tr:nth-child(even) {
   border: var(--border) 0.2rem solid;
   /* background-color: var(--border); */
   border-radius: var(--radius);
+  overflow: visible;
 }
 .ratioBar {
   text-align: left;
   background-color: var(--border);
   border-radius: 3px 0 0 3px;
+  overflow: visible;
   /* max-width: 90px; */
+}
+.ratioBar > span {
+  overflow: visible;
 }
 
 .flexGrowChild {
@@ -558,24 +584,29 @@ tbody tr:nth-child(even) {
   text-align: center;
   background-color: var(--border);
   font-weight: 500;
+  max-width: fit-content;
   color: #ffffff;
   transition: 0.1s;
 }
 .filterHighlight {
   background-color: var(--highlight1);
 }
-.filterOption:hover {
-  background-color: var(--highlight1);
-  opacity: 50%;
+@media (hover: hover) {
+  .filterOption:hover {
+    background-color: var(--highlight1);
+    opacity: 50%;
 
-  transform: scale(1.1);
+    transform: scale(1.1);
+  }
+  tr .filterOption:hover {
+    transform: scale(1);
+  }
 }
-tr .filterOption:hover {
-  transform: scale(1);
-}
+
 .tabButton {
   border: var(--border) 0.2rem solid;
 }
+
 .filterHeader {
   width: 100%;
   height: 60px;
@@ -590,6 +621,7 @@ tr .filterOption:hover {
   /* margin-top: 45px; */
   /* padding: 15px; */
   z-index: 8;
+  overflow: scroll;
   /* position: relative; */
 }
 

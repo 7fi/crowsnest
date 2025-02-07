@@ -7,6 +7,7 @@ import GitHubSignInButton from '../components/login/GitHubSignInButton'
 import SignOutButton from '../components/login/SignOutButton'
 import EmailSignInForm from '../components/login/EmailSignInForm'
 import { useNavigate } from 'react-router'
+import posthog from 'posthog-js'
 
 export default function Enter() {
   const { user, userVals } = useContext(UserContext)
@@ -100,6 +101,7 @@ function UsernameForm() {
     batch.set(usernameDoc, { uid: user.uid })
 
     await batch.commit()
+    posthog.identify(user.uid, { name: usernameValue })
     navigate(`/profile/${usernameValue}`)
   }
 

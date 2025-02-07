@@ -28,3 +28,4 @@ elo calculation/EloScript.py.lprof
 /elo calculation/pages/
 /elo calculation/__pycache__/
 adventures.html
+.env

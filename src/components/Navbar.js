@@ -3,8 +3,9 @@ import { Link, NavLink, useLocation } from 'react-router-dom'
 import { useContext, useEffect, useState } from 'react'
 import { UserContext } from '../lib/context'
 import SignOutButton from './login/SignOutButton'
-import { setTheme } from '../lib/hooks'
+import { setTheme, useMobileDetect } from '../lib/hooks'
 import { FaSun, FaMoon } from 'react-icons/fa'
+import { IoSunnySharp } from 'react-icons/io5'
 import { AuthCheckLite } from './AuthCheck'
 
 export default function Navbar() {
@@ -12,19 +13,26 @@ export default function Navbar() {
 
   const [theme, setThemeVal] = useState(localStorage.getItem('theme'))
   const location = useLocation()
+  const isMobile = useMobileDetect()
 
   return (
     <nav className='navbar'>
       <ul>
         <li style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <Link to='/' className='text-title' style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <Link to='/' style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <img style={{ margin: 5 }} src={theme == 'dark' ? `/Logo_Dark.png` : `/Logo_Light.png`} />
-            <span>CrowsNest</span>
+            {isMobile ? (
+              <></>
+            ) : (
+              <>
+                <span className='text-title'>CrowsNest</span>
+                <span style={{ marginTop: 3 }} className='secondaryText'>
+                  {' '}
+                  [Alpha]
+                </span>
+              </>
+            )}
           </Link>
-          <span style={{ marginTop: 3 }} className='secondaryText'>
-            {' '}
-            [Alpha]
-          </span>
         </li>
         <ul className='navRight'>
           <li>
@@ -72,9 +80,6 @@ export default function Navbar() {
 
             {/* )} */}
             <li>
-              <SignOutButton />
-            </li>
-            <li>
               <Link to={`/profile/${userVals?.username}`}>
                 <img style={{ maxWidth: 40, maxHeight: 40 }} src={user?.photoURL} alt={userVals?.username} referrerPolicy='no-referrer' className='btn' />
               </Link>
@@ -91,7 +96,7 @@ export default function Navbar() {
 function RenderThemeBtn() {
   switch (localStorage.getItem('theme') ? localStorage.getItem('theme') : null) {
     case 'dark':
-      return <FaSun />
+      return <IoSunnySharp />
 
     default:
       return <FaMoon />

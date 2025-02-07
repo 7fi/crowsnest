@@ -40,40 +40,52 @@ export default function Profile() {
           ))}
         </ul>
         {profileName == userVals?.username && pageUserId == user?.uid && (
-          <div className='contentBox'>
-            <button
-              className='text-danger'
-              onClick={() => {
-                toast(
-                  (t) => (
-                    <div>
-                      Delete Account?
-                      <div className='flexRowContainer'>
-                        <button
-                          onClick={() => {
-                            toast.dismiss(t.id)
-                            toast.error('Cancelled')
-                          }}>
-                          Cancel
-                        </button>
-                        <button
-                          onClick={() => {
-                            deleteAccount(user, userVals.username)
-                            toast.dismiss(t.id)
-                            toast.success('Deleted!')
-                          }}
-                          className='text-danger'>
-                          Delete!
-                        </button>
+          <>
+            <div className='contentBox'>
+              <h2>Following:</h2>
+              {pageUser?.following?.map((targetFollow) => (
+                <div>
+                  <Link to={`/rankings/${targetFollow.targetKey}`}>{targetFollow.targetName}</Link>
+                </div>
+              ))}
+            </div>
+            <div className='contentBox'>
+              <SignOutButton />
+
+              <button
+                className='text-danger'
+                onClick={() => {
+                  toast(
+                    (t) => (
+                      <div>
+                        Delete Account?
+                        <div className='flexRowContainer'>
+                          <button
+                            onClick={() => {
+                              toast.dismiss(t.id)
+                              toast.error('Cancelled')
+                            }}>
+                            Cancel
+                          </button>
+                          <button
+                            onClick={() => {
+                              deleteAccount(user, userVals.username)
+                              toast.dismiss(t.id)
+                              toast.success('Deleted!')
+                            }}
+                            className='text-danger'>
+                            Delete!
+                          </button>
+                        </div>
                       </div>
-                    </div>
+                    )
+                    // { position: 'top-center' }
                   )
-                  // { position: 'top-center' }
-                )
-              }}>
-              Delete Account
-            </button>
-          </div>
+                }}>
+                Delete Account
+              </button>
+            </div>
+          </>
         )}
       </AuthCheck>
     </main>

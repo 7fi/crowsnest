@@ -1,4 +1,13 @@
+import { useState } from 'react'
+import { FaSortDown } from 'react-icons/fa'
+import { useMobileDetect } from '../../lib/hooks'
+import RatioBar from './RatioBar'
+
 export default function VenueResults({ races }) {
+  const [byChange, setByChange] = useState(false)
+  const [byRaces, setByRaces] = useState(true)
+  const isMobile = useMobileDetect()
+
   // Step 1: Calculate total change and count for each venue
   const venueStats = races.reduce((acc, race) => {
     if (!acc[race.venue]) {
@@ -20,19 +29,49 @@ export default function VenueResults({ races }) {
         ratio: venueStats[venue].ratio / venueStats[venue].count,
       }
     })
-    .sort((a, b) => b.ratio - a.ratio) // Sort by change in descending order
+    .sort((a, b) => {
+      if (byChange) return b.change - a.change
+      if (byRaces) return b.count - a.count
+      return b.ratio - a.ratio
+    })
 
-  // Step 3: Map to <span> elements with rank and total change
   return (
     <table className='raceByRaceTable'>
       <thead>
         <tr>
           <th></th>
           <th>Venue (host)</th>
-          <th>Races</th>
+          <th
+            style={{ minWidth: 75 }}
+            className='clickable'
+            onClick={() => {
+              setByChange(false)
+              setByRaces(true)
+            }}>
+            Races
+            {byRaces ? <FaSortDown /> : <></>}
+          </th>
           <th></th>
-          <th>Rating Change</th>
-          <th>Percentage</th>
+          <th
+            style={{ minWidth: isMobile ? 85 : 150 }}
+            className='clickable'
+            onClick={() => {
+              setByChange(true)
+              setByRaces(false)
+            }}>
+            {isMobile ? 'Change' : 'Rating Change'}
+            {byChange ? <FaSortDown /> : ' '}
+          </th>
+          <th
+            style={{ minWidth: 113 }}
+            className='clickable'
+            onClick={() => {
+              setByChange(false)
+              setByRaces(false)
+            }}>
+            Percentage
+            {!byChange && !byRaces ? <FaSortDown /> : <></>}
+          </th>
         </tr>
       </thead>
       <tbody>
@@ -50,11 +89,7 @@ export default function VenueResults({ races }) {
                 {venue.change.toFixed(0)}
               </td>
               <td style={{ textAlign: 'center' }}>
-                <div className='ratioBarBg'>
-                  <div className='ratioBar' style={{ width: venue.ratio * 100 }}>
-                    <span>{(venue.ratio * 100).toFixed(1)}%</span>
-                  </div>
-                </div>
+                <RatioBar ratio={venue.ratio} />
               </td>
             </tr>
           ) : (

@@ -19,7 +19,7 @@ export function useUserData() {
       // let docSnap = await getDoc(docRef)
       unsubscribe = onSnapshot(docRef, (snapshot) => {
         // console.log(snapshot.data())
-        setUserVals({ username: snapshot.data()?.username, displayName: snapshot.data()?.displayName, pro: snapshot.data()?.pro })
+        setUserVals({ username: snapshot.data()?.username, displayName: snapshot.data()?.displayName, pro: snapshot.data()?.pro, following: snapshot.data()?.following })
         // setUsername(snapshot.data()?.username)
         // setDisplayName(snapshot.data()?.displayName)
       })
@@ -52,4 +52,16 @@ export function checkTheme() {
     localStorage.setItem('theme', 'light')
     checkTheme()
   }
+}
+
+export function useMobileDetect() {
+  const [isMobile, setIsMobile] = useState(false)
+
+  useEffect(() => {
+    const userAgent = typeof window.navigator === 'undefined' ? '' : navigator.userAgent
+    const isMobileDevice = /Mobi|Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent)
+    setIsMobile(isMobileDevice)
+  }, [])
+
+  return isMobile
 }
