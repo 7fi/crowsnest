@@ -8,8 +8,6 @@ export default function EloLineChart({ data }) {
   const isMobile = useMobileDetect()
 
   useEffect(() => {
-    console.log(isMobile)
-    console.log('updating elo lines')
     // Create a temporary list to collect the new values
     const newLines = []
 
@@ -30,7 +28,6 @@ export default function EloLineChart({ data }) {
 
     // Update the state with the new list
     const unavaiable = ['crewRating', 'skipperRating', 'womenSkipperRating', 'womenCrewRating'].filter((line) => !newLines.includes(line) && line != 'regAvg')
-    console.log(activeLines, newLines, unavaiable)
     setActiveLines([...newLines, 'regAvg'])
     setNotAvailableLines(unavaiable)
   }, [data])
@@ -167,7 +164,6 @@ export default function EloLineChart({ data }) {
               className='clickable'
               style={{ margin: '0 10px', display: 'flex', alignItems: 'center' }}
               onClick={() => {
-                console.log(activeLines)
                 if (activeLines.includes(entry.value)) {
                   if (activeLines.length > 1) setActiveLines(activeLines.filter((el) => el !== entry.value))
                 } else {

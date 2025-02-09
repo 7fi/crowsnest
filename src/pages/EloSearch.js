@@ -71,7 +71,7 @@ export default function EloSearch() {
                 {useImg ? (
                   <td className='tableColFit'>
                     <div className='flexRowContainer sailorNameRow'>
-                      <img style={{ display: 'inline', maxHeight: '3rem' }} src={`https://scores.collegesailing.org/inc/img/schools/${teamCodes[sailors[sailor].team]}.png`} />
+                      <img style={{ display: 'inline', maxHeight: '1.5rem' }} src={`https://scores.collegesailing.org/inc/img/schools/${teamCodes[sailors[sailor].team]}-40.png`} />
                     </div>
                   </td>
                 ) : (

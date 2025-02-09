@@ -14,23 +14,23 @@ import PartnerResults from '../components/rankings/SailorPage/PartnerResults'
 import PosInfo from '../components/rankings/SailorPage/PosInfo'
 import { useMobileDetect, useUserData } from '../lib/hooks'
 import { AuthCheckLite } from '../components/AuthCheck'
+import FollowButton from '../components/rankings/FollowButton'
 
 export default function Rankings() {
   const { key } = useParams()
   const [sailor, setSailor] = useState(undefined)
   const [loaded, setLoaded] = useState(false)
   const [following, setFollowing] = useState(false)
-  const navigate = useNavigate()
   const teamCodes = useTeamCodes()
   const isMobile = useMobileDetect()
   const userData = useUserData()
 
   useEffect(() => {
     getSailorElo(key).then((tempSailor) => {
-      console.log(tempSailor?.data)
       setSailor(undefined)
       if (tempSailor != undefined) {
         setSailor(tempSailor.data)
+        // setFollowing(sailor?.followers?.some((fol) => fol.followerUid === userData?.user?.uid))
         setLoaded(true)
       } else {
         setLoaded(true)
@@ -38,9 +38,10 @@ export default function Rankings() {
     })
   }, [key])
   useEffect(() => {
-    if (userData != undefined) {
-      setFollowing(sailor?.followers?.some((fol) => fol.followerUid === userData.user.uid))
-      console.log(following)
+    if (userData.user != undefined) {
+      console.log('checking following')
+      // setFollowing(sailor?.followers?.some((fol) => fol.followerUid === userData?.user?.uid))
+      setFollowing(userData.userVals?.following?.some((fol) => fol.targetKey === sailor?.key))
     }
   }, [key, userData])
 
@@ -54,21 +55,7 @@ export default function Rankings() {
             </Link>
             <h1 style={{ display: 'inline-block' }}>{sailor.Name}</h1>
             <AuthCheckLite>
-              <button
-                className='tabButton'
-                style={{ marginLeft: 10, backgroundColor: following ? 'var(--border)' : '' }}
-                onClick={() => {
-                  console.log('following', sailor.key, sailor.Name, userData.user.uid, userData.userVals.displayName)
-                  if (!following) {
-                    followUser(sailor.key, sailor.Name, userData.user.uid, userData.userVals.displayName, userData.userVals.username)
-                    setFollowing(true)
-                  } else {
-                    unFollowUser(sailor.key, sailor.Name, userData.user.uid, userData.userVals.displayName, userData.userVals.username)
-                    setFollowing(false)
-                  }
-                }}>
-                {following ? 'Unfollow' : 'Follow'}
-              </button>
+              <FollowButton sailor={sailor} userData={userData} following={following} setFollowing={setFollowing} />
             </AuthCheckLite>
           </div>
           <div>
@@ -78,7 +65,7 @@ export default function Rankings() {
                 {i != 0 ? ', ' : ''} {teamName}
               </Link>
             ))}{' '}
-            | Followers: {sailor?.followers?.length}|{' '}
+            | Followers: {sailor?.followers ? sailor?.followers?.length : '0'} |{' '}
             <span className='secondaryText' style={{ fontSize: '1rem' }}>
               {sailor.Links.map((link, index) => (
                 <a key={index} href={`https://scores.collegesailing.org/sailors/${link}/`} target='1'>
@@ -151,6 +138,7 @@ export default function Rankings() {
           <ul>
             <li>Capitalization must be correct (ie first letter of each name capitalized)</li>
             <li>Link should match techscore link (ex: 'rankings/first-last')</li>
+            <li>If the sailor does not have a techscore page, it should be name - team (ex: 'rankings/First Last-Team Name')</li>
           </ul>
           <Link to={`/rankings`}>
             <button>Back to homepage</button>

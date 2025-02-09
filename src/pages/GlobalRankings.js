@@ -34,7 +34,7 @@ export default function GlobalRankings({ pos, type }) {
           </td>
           <td className='tableColFit'>
             <div className='flexRowContainer sailorNameRow'>
-              <img style={{ display: 'inline', maxHeight: '3rem' }} src={`https://scores.collegesailing.org/inc/img/schools/${teamCodes[member.team]}.png`} />
+              <img style={{ display: 'inline', maxHeight: '1.5rem' }} src={`https://scores.collegesailing.org/inc/img/schools/${teamCodes[member.team]}-40.png`} />
             </div>
           </td>
           <td className='tableColFit'>{member.name}</td>

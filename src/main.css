@@ -50,24 +50,10 @@
   --text: #000;
 }
 
-@media only screen and (max-device-width: 600px) {
-  .responsiveRowCol {
-    display: flex;
-    flex-direction: column !important;
-  }
-  .responsiveRowCol div {
-    overflow: scroll;
-  }
-  .chartLabel {
-    display: none;
-  }
-  .recharts-legend-wrapper {
-    top: 0px;
-  }
-}
 .responsiveRowCol {
   display: flex;
   flex-direction: row;
+  gap: 0 10px;
 }
 .flexWrap {
   flex-wrap: wrap;
@@ -81,6 +67,7 @@ body {
   background-color: var(--bg);
   color: var(--text);
 }
+
 main {
   padding: 1rem;
   min-height: 100vh; /* Ensure body takes full height */
@@ -784,5 +771,22 @@ tbody tr:nth-child(even) {
   100% {
     /* transform: translate(175px) rotate(10deg); */
     transform: translate(175px, -50px) rotate(20deg) scale(1);
+  }
+}
+
+@media only screen and (max-device-width: 600px) {
+  .responsiveRowCol {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+  }
+  .responsiveRowCol div {
+    overflow: scroll;
+  }
+  .chartLabel {
+    display: none;
+  }
+  .recharts-legend-wrapper {
+    top: 0px;
   }
 }

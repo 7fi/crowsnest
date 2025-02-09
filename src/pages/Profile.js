@@ -42,7 +42,9 @@ export default function Profile() {
         {profileName == userVals?.username && pageUserId == user?.uid && (
           <>
             <div className='contentBox'>
-              <h2>Following:</h2>
+              <Link to='/feed'>
+                <h2>Following:</h2>
+              </Link>
               {pageUser?.following?.map((targetFollow) => (
                 <div>
                   <Link to={`/rankings/${targetFollow.targetKey}`}>{targetFollow.targetName}</Link>

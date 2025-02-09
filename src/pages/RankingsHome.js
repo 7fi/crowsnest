@@ -86,7 +86,7 @@ export default function RankingsHome() {
                   })
                   .slice(0, 10)
                   .map((team, index) => (
-                    <tr className='clickable' onClick={() => nav(`/rankings/team/${team.name}`)}>
+                    <tr key={index} className='clickable' onClick={() => nav(`/rankings/team/${team.name}`)}>
                       <td className='tableColFit' style={{ textAlign: 'right' }}>
                         {index + 1}
                       </td>

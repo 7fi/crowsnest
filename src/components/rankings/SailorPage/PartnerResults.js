@@ -38,7 +38,6 @@ export default function PartnerResults({ races }) {
       return b.ratio - a.ratio
     }) // Sort by change in descending order
 
-  console.log(sortedPartners)
   // Step 3: Map to <span> elements with rank and total change
   return (
     <table className='raceByRaceTable'>

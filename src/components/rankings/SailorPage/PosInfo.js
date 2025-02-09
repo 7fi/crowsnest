@@ -25,11 +25,16 @@ export default function PosInfo({ type, pos, rating, rank, races }) {
     )
   }
 
-  let change = races
+  const change = races
     .filter((race) => race.pos == pos && (type == "Women's" ? race.womens : !race.womens))
     .slice(-5)
     .reduce((sum, race) => sum + Math.round(race.change), 0)
     .toFixed(0)
+
+  const peakRating = races
+    .filter((race) => race.pos == pos && (type == "Women's" ? race.womens : !race.womens))
+    // .sort((a,b) => race)
+    .slice(-1)
 
   return (
     <>
