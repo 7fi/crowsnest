@@ -38,9 +38,10 @@ export default function RankingsHome() {
         <div className='heroBlock'>
           <h1 className='heroTitle'>CrowsNest</h1>
           <h2 className='heroSubtitle'>Home of College Sailing Statistics</h2>
-          <span style={{ color: '#eee' }}>15,020 Sailors | 788,908 Scores | 207 Teams</span>
+          <span style={{ color: '#eee' }}>15,060 Sailors | 809,541 Scores | 207 Teams</span>
+          <span style={{ color: '#eee' }}>Last Updated: 02-07-2025</span>
           {/* <span className='heroExclaim'>Team Racing Coming Soon!</span> */}
-          <span className='heroExclaim'>Mobile Soon!</span>
+          <span className='heroExclaim'>Team Racing!</span>
         </div>
       </div>
 
@@ -135,15 +136,22 @@ export default function RankingsHome() {
             Top Women's Crews
           </button>
         </div>
-        <div className='responsiveRowCol'>
+        <div className='flexRowContainer'>
           {isMobile ? <></> : <img src='accent.png' style={{ maxWidth: '30%', borderRadius: 'var(--radius)', margin: '0.5rem' }} />}
           <div style={{ display: 'flex', flexDirection: 'column' }} className='flexGrowChild'>
-            <div className='contentBox flexGrowChild'>We are updating the site almost daily so make sure to check back frequently!</div>
+            {/* <div className='contentBox flexGrowChild'>We are updating the site almost daily so make sure to check back frequently!</div> */}
+            <div className='contentBox flexGrowChild'>
+              Team racing is now released! There may still be bugs/errors so please report those{' '}
+              <a style={{ textDecoration: 'underline' }} href='https://docs.google.com/forms/d/e/1FAIpQLSfTz5XO-7UM5vloq1Rs9Aly5IGqNvNJN1p7mXq-O1NzoVg6-Q/viewform?usp=header'>
+                here
+              </a>
+              . The team racing features are also not fully finished, so bear with us as we fix bugs and add more features.
+            </div>
             <div className='contentBox flexGrowChild'>
               Data from 2016 onwards has been scraped from techscore and processed to assign each individual sailor a rating value. These ratings change based on performance in regattas, and the strength of the opponents.
               <br />
               <br />
-              Keep in mind that all data is scraped straight from scores.collegesailing.org so any inaccuracies in that data will be reflected here (such as inaccuate RP forms).
+              Keep in mind that all data is scraped straight from <a href='https://scores.collegesailing.org'>scores.collegesailing.org</a> so any inaccuracies in that data will be reflected here (such as inaccuate RP forms).
             </div>
             <div className='contentBox flexGrowChild'>
               {' '}

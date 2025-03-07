@@ -10,12 +10,14 @@ export default function VenueResults({ races }) {
 
   // Step 1: Calculate total change and count for each venue
   const venueStats = races.reduce((acc, race) => {
-    if (!acc[race.venue]) {
-      acc[race.venue] = { change: 0, count: 0, ratio: 0 }
+    if (race.type == 'fleet') {
+      if (!acc[race.venue]) {
+        acc[race.venue] = { change: 0, count: 0, ratio: 0 }
+      }
+      acc[race.venue].change += race.change
+      acc[race.venue].count += 1
+      acc[race.venue].ratio += race.ratio
     }
-    acc[race.venue].change += race.change
-    acc[race.venue].count += 1
-    acc[race.venue].ratio += race.ratio
     return acc
   }, {})
 
@@ -54,7 +56,7 @@ export default function VenueResults({ races }) {
           <th></th>
           <th
             style={{ minWidth: isMobile ? 85 : 150 }}
-            className='clickable'
+            className='tableColFit clickable'
             onClick={() => {
               setByChange(true)
               setByRaces(false)
@@ -64,7 +66,7 @@ export default function VenueResults({ races }) {
           </th>
           <th
             style={{ minWidth: 113 }}
-            className='clickable'
+            className='tableColFit clickable'
             onClick={() => {
               setByChange(false)
               setByRaces(false)

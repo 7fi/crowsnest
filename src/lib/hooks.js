@@ -18,7 +18,7 @@ export function useUserData() {
       let docRef = doc(db, 'users', user.uid)
       // let docSnap = await getDoc(docRef)
       unsubscribe = onSnapshot(docRef, (snapshot) => {
-        console.log(snapshot.data())
+        // console.log(snapshot.data())
         setUserVals({ username: snapshot.data()?.username, displayName: snapshot.data()?.displayName, pro: snapshot.data()?.pro, following: snapshot.data()?.following })
         // setUsername(snapshot.data()?.username)
         // setDisplayName(snapshot.data()?.displayName)
@@ -28,14 +28,9 @@ export function useUserData() {
     }
 
     return unsubscribe
-  }, [user])
+  }, [user, db])
   // console.log(displayname)
   return { user, userVals }
-}
-
-export function useScoreSelections() {
-  const [teams, setTeams] = useState([])
-  const [regattas, setRegattas] = useState([])
 }
 
 export function setTheme(theme) {

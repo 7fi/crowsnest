@@ -39,6 +39,7 @@ function UsernameForm() {
   const [displaynameValue, setdisplaynameValue] = useState('')
   const [isValid, setIsValid] = useState(false)
   const [loading, setLoading] = useState(false)
+  const debug = false
 
   const { user, userVals } = useContext(UserContext)
 
@@ -87,7 +88,7 @@ function UsernameForm() {
 
   useEffect(() => {
     checkUsername(usernameValue)
-  }, [usernameValue])
+  }, [usernameValue, checkUsername])
 
   const onSubmit = async (e) => {
     e.preventDefault()
@@ -117,14 +118,20 @@ function UsernameForm() {
             Choose
           </button>
 
-          <h3>Debug State</h3>
-          <div>
-            Username: {usernameValue}
-            <br />
-            Loading: {loading.toString()}
-            <br />
-            Username Valid: {isValid.toString()}
-          </div>
+          {debug ? (
+            <>
+              <h3>Debug State</h3>
+              <div>
+                Username: {usernameValue}
+                <br />
+                Loading: {loading.toString()}
+                <br />
+                Username Valid: {isValid.toString()}
+              </div>
+            </>
+          ) : (
+            <></>
+          )}
         </form>
       </section>
     )

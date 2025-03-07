@@ -9,8 +9,10 @@ export default function RaceByRace({ races, woman, showFilter }) {
   const navigate = useNavigate()
   const positions = ['Skipper', 'Crew']
   const types = ['Open', "Women's"]
+  const raceTypes = ['Fleet', 'Team Race']
   const [activePositions, setActivePositions] = useState(positions)
   const [activeTypes, setActiveTypes] = useState(types)
+  const [activeRaceTypes, setActiveRaceTypes] = useState(raceTypes)
   const [filterText, setFilterText] = useState('')
   const isMobile = useMobileDetect()
 
@@ -20,7 +22,7 @@ export default function RaceByRace({ races, woman, showFilter }) {
 
   const toggleFilter = (filter) => {
     if (positions.includes(filter)) {
-      if (activePositions.includes(filter) && [...activePositions, ...activeTypes].length > 1) {
+      if (activePositions.includes(filter) && [...activeRaceTypes, ...activePositions, ...activeTypes].length > 1) {
         setActivePositions((prev) => prev.filter((item) => item != filter))
       } else {
         setActivePositions((prev) => [...prev, filter])
@@ -28,16 +30,24 @@ export default function RaceByRace({ races, woman, showFilter }) {
     }
 
     if (types.includes(filter)) {
-      if (activeTypes.includes(filter) && [...activePositions, ...activeTypes].length > 1) {
+      if (activeTypes.includes(filter) && [...activeRaceTypes, ...activePositions, ...activeTypes].length > 1) {
         setActiveTypes((prev) => prev.filter((item) => item != filter))
       } else {
         setActiveTypes((prev) => [...prev, filter])
       }
     }
+
+    if (raceTypes.includes(filter)) {
+      if (activeRaceTypes.includes(filter) && [...activeRaceTypes, ...activePositions, ...activeTypes].length > 1) {
+        setActiveRaceTypes((prev) => prev.filter((item) => item != filter))
+      } else {
+        setActiveRaceTypes((prev) => [...prev, filter])
+      }
+    }
   }
   const filtered = races.slice(0).filter((race) => {
     let isSearched = false
-    if (race.raceID.split('-').join(' ').toLowerCase().includes(filterText.toLowerCase()) || race.partner['name'].includes(filterText)) {
+    if (race.raceID.split('-').join(' ').toLowerCase().includes(filterText.toLowerCase()) || race.partner['name'].toLowerCase().includes(filterText.toLowerCase())) {
       isSearched = true
     }
 
@@ -50,8 +60,12 @@ export default function RaceByRace({ races, woman, showFilter }) {
     if (!activePositions.includes('Skipper') && !activePositions.includes('Crew')) {
       validPos = false
     }
-    // console.log(race.raceID, validPos, validType, isSearched)
-    return validType && validPos && isSearched
+
+    let validRaceType = (race.type == 'fleet' && activeRaceTypes.includes('Fleet')) || (race.type == 'team' && activeRaceTypes.includes('Team Race'))
+    if (!activeRaceTypes.includes('Team Race') && !activeRaceTypes.includes('Fleet')) {
+      validRaceType = false
+    }
+    return validType && validPos && validRaceType && isSearched
   })
 
   return (
@@ -74,6 +88,11 @@ export default function RaceByRace({ races, woman, showFilter }) {
                 {pos}
               </button>
             ))}{' '}
+            {raceTypes.map((raceType, i) => (
+              <button key={i} style={{ backgroundColor: activeRaceTypes.includes(raceType) ? 'var(--highlight1)' : '' }} className={`filterOption ${activeRaceTypes.includes(raceType) ? '' : 'filterInactive'}`} onClick={() => toggleFilter(raceType)}>
+                {raceType}
+              </button>
+            ))}{' '}
           </>
         ) : (
           <></>
@@ -93,7 +112,6 @@ export default function RaceByRace({ races, woman, showFilter }) {
               <th>Percentage</th>
               <th>Rating</th>
               <th>Change</th>
-              <th></th>
             </tr>
           </thead>
           <tbody>
@@ -111,8 +129,8 @@ export default function RaceByRace({ races, woman, showFilter }) {
                   if (dateb.getDate() != datea.getDate()) {
                     return dateb.getDate() - datea.getDate()
                   }
-                  let raceNumA = a.raceID.split('/')[2].slice(0, -1)
-                  let raceNumB = b.raceID.split('/')[2].slice(0, -1)
+                  let raceNumA = a.type == 'fleet' ? a.raceID.split('/')[2].slice(0, -1) : a.raceID.split('/')[2]
+                  let raceNumB = a.type == 'fleet' ? b.raceID.split('/')[2].slice(0, -1) : b.raceID.split('/')[2]
                   return raceNumB - raceNumA
                 })
                 .map((race, i) => {
@@ -127,32 +145,39 @@ export default function RaceByRace({ races, woman, showFilter }) {
                       {isMobile ? <></> : <td className='secondaryText tableColFit tdRightBorder'>{date.toLocaleDateString()}</td>}
                       <td className='' style={{ textTransform: 'capitalize' }}>
                         {race.raceID.split('/')[1].split('-').join(' ')} - {race.raceID.split('/')[2]}{' '}
+                        {race.type == 'team' ? (
+                          <>
+                            <span style={{ textTransform: 'none' }}> vs </span>
+                            <span>
+                              {race.opponentTeam} {race.opponentNick}
+                            </span>{' '}
+                          </>
+                        ) : (
+                          ''
+                        )}
                       </td>
-                      {/* <td className='tableColFit secondaryText '></td> */}
 
                       <td className='tableColFit'>{race.pos}</td>
                       <td className='tableColFit' onClick={() => navigate(`/rankings/${race.partner}`)}>
                         <Link to={`/rankings/${race.partner['link']}`}>{race.partner['name']}</Link>
                       </td>
-                      <td style={{ textAlign: 'right', color: race.score < race.predicted ? 'green' : race.score > race.predicted ? 'red' : '' }}>
+                      <td style={{ textAlign: race.type == 'fleet' ? 'right' : 'left', color: race.type == 'fleet' ? race.score < race.predicted : race.outcome == 'win' && race.predicted == 'lose' ? 'green' : race.type == 'fleet' ? race.score > race.predicted : race.outcome == 'lose' && race.predicted == 'win' ? 'red' : '' }}>
                         {race.score}
-                        {race.score == 1 ? 'st' : race.score == 2 ? 'nd' : race.score == 3 ? 'rd' : 'th'}
+                        {race.type == 'team' ? ' (' + race.outcome + ')' : ''}
+                        {race.type == 'fleet' ? (race.score == 1 ? 'st' : race.score == 2 ? 'nd' : race.score == 3 ? 'rd' : 'th') : ' '}
                       </td>
                       <td style={{ textAlign: 'right' }}>
                         {race.predicted}
-                        {race.predicted == 1 ? 'st' : race.predicted == 2 ? 'nd' : race.predicted == 3 ? 'rd' : 'th'}
+                        {race.type == 'fleet' ? (race.predicted == 1 ? 'st' : race.predicted == 2 ? 'nd' : race.predicted == 3 ? 'rd' : 'th') : ''}
                       </td>
-                      <td style={{ textAlign: 'center' }}>
-                        <RatioBar ratio={race.ratio} />
-                      </td>
+                      <td style={{ textAlign: 'center' }}>{race.type == 'fleet' ? <RatioBar ratio={race.ratio} /> : ''}</td>
                       <td style={{ textAlign: 'right' }} className='tableColFit'>
-                        <RatingNum ratingNum={(race.pos == 'Skipper' ? (race.womens ? race.womenSkipperRating : race.skipperRating) : race.womens ? race.womenCrewRating : race.crewRating) - race.change} type={race.womens ? 'women' : ''} />
+                        <RatingNum ratingNum={(race.pos == 'Skipper' ? (race.womens ? (race.type == 'fleet' ? race.womenSkipperRating : race.wtsr) : race.type == 'fleet' ? race.skipperRating : race.tsr) : race.womens ? (race.type == 'fleet' ? race.womenCrewRating : race.wtcr) : race.type == 'fleet' ? race.crewRating : race.tcr) - race.change} type={race.womens ? 'women' : ''} />
                       </td>
                       <td style={{ color: race.change > 0 ? 'green' : 'red' }}>
                         {race.change > 0 ? ' +' : ' '}
                         {race.change.toFixed(0)}
                       </td>
-                      <td>{race.skipperSigma}</td>
                     </tr>
                   )
                 })

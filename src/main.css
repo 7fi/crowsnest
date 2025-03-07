@@ -53,6 +53,7 @@
 .responsiveRowCol {
   display: flex;
   flex-direction: row;
+  flex-wrap: wrap;
   gap: 0 10px;
 }
 .flexWrap {
@@ -601,6 +602,7 @@ tbody tr:nth-child(even) {
   top: 55px;
   position: sticky;
   /* z-index: 9; */
+  overflow-y: scroll;
   background-color: var(--bg);
 }
 
@@ -617,7 +619,7 @@ tbody tr:nth-child(even) {
   overflow-y: auto;
 }
 .teamsTable thead {
-  /* position: fixed; */
+  position: sticky;
   z-index: 2;
 }
 
@@ -644,6 +646,11 @@ tbody tr:nth-child(even) {
 
 .sailorNameRow {
   align-items: center;
+  position: sticky;
+  top: 55px;
+  width: 100%;
+  background-color: var(--bg);
+  z-index: 3;
 }
 
 .chartTooltip {
@@ -660,6 +667,11 @@ tbody tr:nth-child(even) {
 
 .teamPageHeader {
   padding-bottom: 15px;
+  position: sticky;
+  top: 55px;
+  background-color: var(--bg);
+  z-index: 9;
+  padding-top: 15px;
 }
 
 .scrollButton {

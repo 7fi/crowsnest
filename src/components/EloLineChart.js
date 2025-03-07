@@ -3,7 +3,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsi
 import { useMobileDetect } from '../lib/hooks'
 
 export default function EloLineChart({ data }) {
-  const [activeLines, setActiveLines] = useState(['crewRating', 'skipperRating', 'womenSkipperRating', 'womenCrewRating', 'regAvg']) // 'crewRating', 'skipperRating', 'womenSkipperRating', 'womenCrewRating',
+  const [activeLines, setActiveLines] = useState(['crewRating', 'skipperRating', 'womenSkipperRating', 'womenCrewRating', 'tsr', 'tcr', 'wtsr', 'wtcr', 'regAvg']) // 'crewRating', 'skipperRating', 'womenSkipperRating', 'womenCrewRating',
   const [notAvailableLines, setNotAvailableLines] = useState([])
   const isMobile = useMobileDetect()
 
@@ -24,10 +24,22 @@ export default function EloLineChart({ data }) {
       if (race.womenCrewRating != null && !newLines.includes('womenCrewRating')) {
         newLines.push('womenCrewRating')
       }
+      if (race.tsr != null && !newLines.includes('tsr')) {
+        newLines.push('tsr')
+      }
+      if (race.tcr != null && !newLines.includes('tcr')) {
+        newLines.push('tcr')
+      }
+      if (race.wtsr != null && !newLines.includes('wtsr')) {
+        newLines.push('wtsr')
+      }
+      if (race.wtcr != null && !newLines.includes('wtcr')) {
+        newLines.push('wtcr')
+      }
     })
 
     // Update the state with the new list
-    const unavaiable = ['crewRating', 'skipperRating', 'womenSkipperRating', 'womenCrewRating'].filter((line) => !newLines.includes(line) && line != 'regAvg')
+    const unavaiable = ['crewRating', 'skipperRating', 'womenSkipperRating', 'womenCrewRating', 'tsr', 'tcr', 'wtsr', 'wtcr'].filter((line) => !newLines.includes(line) && line != 'regAvg')
     setActiveLines([...newLines, 'regAvg'])
     setNotAvailableLines(unavaiable)
   }, [data])
@@ -126,6 +138,18 @@ export default function EloLineChart({ data }) {
       if (race.womenCrewRating == 1000) {
         race.womenCrewRating = null
       }
+      if (race.tsr == 1000) {
+        race.tsr = null
+      }
+      if (race.tcr == 1000) {
+        race.tcr = null
+      }
+      if (race.wtsr == 1000) {
+        race.wtsr = null
+      }
+      if (race.wtcr == 1000) {
+        race.wtcr = null
+      }
       return race
     })
 
@@ -181,7 +205,9 @@ export default function EloLineChart({ data }) {
                 }}
               />
               {/* Custom label with color */}
-              <span style={{ color: entry.payload.stroke, fontWeight: 'bold', opacity: activeLines.includes(entry.value) ? '100%' : '50%' }}>{entry.value == 'crewRating' ? 'Open Crew' : entry.value == 'skipperRating' ? 'Open Skipper' : entry.value == 'womenSkipperRating' ? "Women's Skipper" : entry.value == 'womenCrewRating' ? "Women's Crew" : 'Regatta Average'}</span>
+              <span style={{ color: entry.payload.stroke, fontWeight: 'bold', opacity: activeLines.includes(entry.value) ? '100%' : '50%' }}>
+                {entry.value == 'crewRating' ? 'Open Crew' : entry.value == 'skipperRating' ? 'Open Skipper' : entry.value == 'womenSkipperRating' ? "Women's Skipper" : entry.value == 'womenCrewRating' ? "Women's Crew" : entry.value == 'tsr' ? 'Open TR Skipper' : entry.value == 'tcr' ? 'Open TR Crew' : entry.value == 'wtsr' ? "Women's TR Skipper" : entry.value == 'wtcr' ? "Women's TR Crew" : 'Regatta Average'}
+              </span>
             </div>
           ) : (
             <div key={index}></div>
@@ -213,6 +239,12 @@ export default function EloLineChart({ data }) {
         <Line hide={!activeLines.includes('crewRating')} strokeWidth={2} type='monotone' dataKey='crewRating' connectNulls={true} stroke='#ffc259' dot={false} />
         <Line hide={!activeLines.includes('womenSkipperRating')} strokeWidth={2} type='monotone' dataKey='womenSkipperRating' connectNulls={true} stroke='#ff8585' dot={false} />
         <Line hide={!activeLines.includes('womenCrewRating')} strokeWidth={2} type='monotone' dataKey='womenCrewRating' connectNulls={true} stroke='#60b55e' dot={false} />
+
+        <Line hide={!activeLines.includes('tsr')} strokeWidth={2} type='monotone' dataKey='tsr' connectNulls={true} stroke='#a90000' dot={false} />
+        <Line hide={!activeLines.includes('tcr')} strokeWidth={2} type='monotone' dataKey='tcr' connectNulls={true} stroke='#77dd84' dot={false} />
+        <Line hide={!activeLines.includes('wtsr')} strokeWidth={2} type='monotone' dataKey='wtsr' connectNulls={true} stroke='#ef8b60' dot={false} />
+        <Line hide={!activeLines.includes('wtcr')} strokeWidth={2} type='monotone' dataKey='wtcr' connectNulls={true} stroke='#8956e1' dot={false} />
+
         <Line hide={!activeLines.includes('regAvg')} strokeWidth={2} type='monotone' dataKey='regAvg' stroke='#aaa' dot={false} />
 
         <Legend content={<CustomLegend />} verticalAlign='top' height={isMobile ? 55 : 36} />

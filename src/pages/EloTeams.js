@@ -1,10 +1,9 @@
 import { getAllTeams } from '../lib/firebase'
 import { useEffect, useRef, useState } from 'react'
-import { Link, useParams, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import Loader from '../components/loader'
-import { FaArrowDown, FaSortUp, FaSortDown } from 'react-icons/fa'
+import { FaSortUp, FaSortDown } from 'react-icons/fa'
 import useTeamCodes from '../lib/teamCodes'
-import ScrollButton from '../components/ScrollToTop'
 import RatingNum from '../components/RatingNum'
 import useRegionColors from '../lib/regionColors'
 
@@ -14,7 +13,7 @@ export default function EloTeams() {
   const [allRegions, setAllRegions] = useState([])
   const [filterText, setFilterText] = useState('')
   const [reverse, setReverse] = useState(false)
-  const [sort, setSort] = useState('top') // ['ratio', 'members', 'women', 'rating']
+  const [sort, setSort] = useState('top') // ['ratio', 'members', 'women', 'rating', 'team', 'womensteam]
 
   const [loaded, setLoaded] = useState(false)
 
@@ -38,8 +37,8 @@ export default function EloTeams() {
   const navigate = useNavigate()
 
   const toggleFilter = (region) => {
-    if (activeRegions.indexOf(region) != -1) {
-      setActiveRegions(activeRegions.filter((reg) => reg != region))
+    if (activeRegions.indexOf(region) !== -1) {
+      setActiveRegions(activeRegions.filter((reg) => reg !== region))
     } else {
       setActiveRegions((activeRegions) => [...activeRegions, region])
     }
@@ -56,7 +55,7 @@ export default function EloTeams() {
 
   const filtered = teams
     .filter((team) => {
-      if (filterText != '') {
+      if (filterText !== '') {
         return team.name.toLowerCase().includes(filterText.toLowerCase())
       }
       return true
@@ -66,15 +65,17 @@ export default function EloTeams() {
       // if (byRatio || byMembers) {
       //   temp = team.memberCount > 0
       // }
-      return activeRegions.indexOf(team.region) != -1 && temp
+      return activeRegions.indexOf(team.region) !== -1 && temp
     })
     .sort((a, b) => {
       if (reverse) [a, b] = [b, a]
-      if (sort == 'ratio') return b.avgRatio - a.avgRatio
-      else if (sort == 'members') return b.memberCount - a.memberCount
-      else if (sort == 'rating') return b.avg - a.avg
-      else if (sort == 'women') return b.topWomenRating - a.topWomenRating
-      // sort == 'top'
+      if (sort === 'ratio') return b.avgRatio - a.avgRatio
+      else if (sort === 'members') return b.memberCount - a.memberCount
+      else if (sort === 'rating') return b.avg - a.avg
+      else if (sort === 'women') return b.topWomenRating - a.topWomenRating
+      else if (sort === 'team') return b.topRatingTR - a.topRatingTR
+      else if (sort === 'womensteam') return b.topWomenRatingTR - a.topWomenRatingTR
+      // sort === 'top'
       else return b.topRating - a.topRating
     })
 
@@ -85,7 +86,7 @@ export default function EloTeams() {
         <input className='flexGrowChild' placeholder='Search for a team' onChange={filter} />
         <div className='flexRowContainer'>
           {Object.keys(RegionColors).map((region, i) => (
-            <button key={i} style={{ backgroundColor: activeRegions.indexOf(region) != -1 ? RegionColors[region] : '' }} className={`filterOption ${activeRegions.indexOf(region) != -1 ? '' : 'filterInactive'}`} onClick={() => toggleFilter(region)}>
+            <button key={i} style={{ backgroundColor: activeRegions.indexOf(region) !== -1 ? RegionColors[region] : '' }} className={`filterOption ${activeRegions.indexOf(region) !== -1 ? '' : 'filterInactive'}`} onClick={() => toggleFilter(region)}>
               {region}
             </button>
           ))}
@@ -98,7 +99,7 @@ export default function EloTeams() {
         </div>
       </div>
       {loaded ? (
-        <div className='teamTableContainer' style={{ position: 'fixed', zIndex: 100 }}>
+        <div className='teamTableContainer' style={{ zIndex: 100 }}>
           <table className='raceByRaceTable teamsTable' ref={temp}>
             <thead>
               <tr>
@@ -112,46 +113,68 @@ export default function EloTeams() {
                     setReverse(false)
                     setSort('top')
                   }}
-                  style={{ minWidth: 130, textAlign: 'right' }}>
-                  {sort == 'top' ? reverse ? <FaSortUp /> : <FaSortDown /> : <></>}
-                  Open Rating
+                  style={{ minWidth: 80, textAlign: 'right' }}>
+                  {sort === 'top' ? reverse ? <FaSortUp /> : <FaSortDown /> : <></>}
+                  Open
                   <span className='tooltiptext'>Takes avg the top 3 from each pos</span>
                 </th>
                 <th
                   className='tableColFit tooltip'
                   onClick={() => {
                     setReverse(false)
-                    setSort(sort == 'women' ? 'top' : 'women')
+                    setSort(sort === 'women' ? 'top' : 'women')
                   }}
-                  style={{ minWidth: 150, textAlign: 'right' }}>
-                  {sort == 'women' ? reverse ? <FaSortUp /> : <FaSortDown /> : <></>}
-                  Women's Rating
+                  style={{ minWidth: 95, textAlign: 'right' }}>
+                  {sort === 'women' ? reverse ? <FaSortUp /> : <FaSortDown /> : <></>}
+                  Women's
                   <span className='tooltiptext'>Takes avg the top 2 from each pos</span>
                 </th>
                 <th
                   className='tableColFit tooltip'
                   onClick={() => {
                     setReverse(false)
-                    setSort(sort == 'rating' ? 'top' : 'rating')
+                    setSort(sort === 'team' ? 'top' : 'team')
                   }}
-                  style={{ minWidth: 150, textAlign: 'right' }}>
+                  style={{ minWidth: 130, textAlign: 'right' }}>
+                  {sort === 'team' ? reverse ? <FaSortUp /> : <FaSortDown /> : <></>}
+                  Team Racing
+                  <span className='tooltiptext'>Takes avg the top 3 from each pos</span>
+                </th>
+                <th
+                  className='tableColFit tooltip'
+                  onClick={() => {
+                    setReverse(false)
+                    setSort(sort === 'womensteam' ? 'top' : 'womensteam')
+                  }}
+                  style={{ minWidth: 125, textAlign: 'right' }}>
+                  {sort === 'womensteam' ? reverse ? <FaSortUp /> : <FaSortDown /> : <></>}
+                  Women's TR
+                  <span className='tooltiptext'>Takes avg the top 3 from each pos</span>
+                </th>
+                <th
+                  className='tableColFit tooltip'
+                  onClick={() => {
+                    setReverse(false)
+                    setSort(sort === 'rating' ? 'top' : 'rating')
+                  }}
+                  style={{ minWidth: 110, textAlign: 'right' }}>
                   <span className='tooltiptext'>Avg Rating of all sailors</span>
-                  {sort == 'rating' ? reverse ? <FaSortUp /> : <FaSortDown /> : <></>}Avg Rating
+                  {sort === 'rating' ? reverse ? <FaSortUp /> : <FaSortDown /> : <></>}Avg Rating
                 </th>
                 <th
                   style={{ minWidth: 113, textAlign: 'right' }}
                   className='tableColFit'
                   onClick={() => {
                     setReverse(false)
-                    setSort(sort == 'ratio' ? 'top' : 'ratio')
+                    setSort(sort === 'ratio' ? 'top' : 'ratio')
                   }}>
-                  {sort == 'ratio' ? reverse ? <FaSortUp /> : <FaSortDown /> : <></>}Percentage
+                  {sort === 'ratio' ? reverse ? <FaSortUp /> : <FaSortDown /> : <></>}Percentage
                 </th>
                 <th
                   style={{ minWidth: 80, textAlign: 'right' }}
                   className='tableColFit'
                   onClick={() => {
-                    if (sort == 'members') {
+                    if (sort === 'members') {
                       if (!reverse) {
                         setReverse(true)
                       } else {
@@ -163,7 +186,7 @@ export default function EloTeams() {
                       setReverse(false)
                     }
                   }}>
-                  {sort == 'members' ? reverse ? <FaSortUp /> : <FaSortDown /> : <></>}
+                  {sort === 'members' ? reverse ? <FaSortUp /> : <FaSortDown /> : <></>}
                   Sailors
                 </th>
 
@@ -175,7 +198,7 @@ export default function EloTeams() {
                 filtered.map((team, index) => (
                   <tr key={index} className='clickable' onClick={() => navigate(`/rankings/team/${team.name}`)}>
                     <td className='tableColFit tdRightBorder'>
-                      {(sort == 'rating' ? team.avg != 0 : sort == 'women' ? team.topWomenRating != 0 : sort == 'members' ? team.memberCount != 0 : sort == 'ratio' ? team.avgRatio != 0 : team.topRating != 0) ? (
+                      {(sort === 'rating' ? team.avg !== 0 : sort === 'women' ? team.topWomenRating !== 0 : sort === 'members' ? team.memberCount !== 0 : sort === 'ratio' ? team.avgRatio !== 0 : sort === 'team' ? team.topRatingTR !== 0 : team.topRating !== 0) ? (
                         index + 1
                       ) : (
                         <span className='secondaryText' style={{ textAlign: 'center' }}>
@@ -184,13 +207,11 @@ export default function EloTeams() {
                       )}
                     </td>
                     <td className='tableColFit'>
-                      <div className='flexRowContainer sailorNameRow'>
-                        <img style={{ display: 'inline', maxHeight: '3rem' }} src={`https://scores.collegesailing.org/inc/img/schools/${teamCodes[team.name]}.png`} />
-                      </div>
+                      <img style={{ display: 'inline', maxHeight: '2rem' }} src={`https://scores.collegesailing.org/inc/img/schools/${teamCodes[team.name]}.png`} />
                     </td>
 
                     <td className='tableColFit'>{team.name}</td>
-                    <td className='tableColFit'>
+                    <td className=''>
                       <div className='filterOption' style={{ backgroundColor: RegionColors[team.region] }}>
                         {team.region}
                       </div>
@@ -200,6 +221,12 @@ export default function EloTeams() {
                     </td>
                     <td style={{ textAlign: 'right' }}>
                       <RatingNum ratingNum={team.topWomenRating} type={'women'} />
+                    </td>
+                    <td style={{ textAlign: 'right' }}>
+                      <RatingNum ratingNum={team.topRatingTR} type={'open'} />
+                    </td>
+                    <td style={{ textAlign: 'right' }}>
+                      <RatingNum ratingNum={team.topWomenRatingTR} type={'women'} />
                     </td>
                     <td style={{ textAlign: 'right' }}>{team.avg.toLocaleString().split('.')[0]}</td>
 

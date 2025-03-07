@@ -80,10 +80,14 @@ export default function App() {
               {/* Rankings */}
               <Route path='/rankings/' element={<RankingsHome />} />
               <Route path='/rankings/claim' element={<Claim />} />
-              <Route path='/rankings/skipper' element={<GlobalRankings pos={'Skipper'} type={'open'} />} />
-              <Route path='/rankings/crew' element={<GlobalRankings pos='Crew' type={'open'} />} />
-              <Route path='/rankings/skipper/women' element={<GlobalRankings pos={'Skipper'} type={'women'} />} />
-              <Route path='/rankings/crew/women' element={<GlobalRankings pos='Crew' type={'women'} />} />
+              <Route path='/rankings/skipper' element={<GlobalRankings pos={'Skipper'} type={'open'} raceType={'fleet'} />} />
+              <Route path='/rankings/crew' element={<GlobalRankings pos='Crew' type={'open'} raceType={'fleet'} />} />
+              <Route path='/rankings/skipper/women' element={<GlobalRankings pos={'Skipper'} type={'women'} raceType={'fleet'} />} />
+              <Route path='/rankings/crew/women' element={<GlobalRankings pos='Crew' type={'women'} raceType={'fleet'} />} />
+              <Route path='/rankings/trskipper' element={<GlobalRankings pos={'Skipper'} type={'open'} raceType={'team'} />} />
+              <Route path='/rankings/trcrew' element={<GlobalRankings pos='Crew' type={'open'} raceType={'team'} />} />
+              <Route path='/rankings/trskipper/women' element={<GlobalRankings pos={'Skipper'} type={'women'} raceType={'team'} />} />
+              <Route path='/rankings/trcrew/women' element={<GlobalRankings pos='Crew' type={'women'} raceType={'team'} />} />
               <Route path='/rankings/:key' element={<Rankings />} />
               <Route path='/rankings/search' element={<EloSearch />} />
               <Route path='/rankings/:sailorAName/vs/:sailorBName' element={<VersusRanking />} />
@@ -96,7 +100,7 @@ export default function App() {
               <Route path='/drag' element={<TestDrag />} />
               <Route path='/:text' element={<NotFound />} />
             </Routes>
-            <Footer />
+            {!pathname.includes('/rankings/team') ? <Footer /> : <></>}
             <Toaster position='top-center' reverseOrder={false} />
             <ScrollButton />
             {/* <div onClick={() => window.scrollTo(0, 0)} style={{ position: 'sticky', bottom: -20, right: 0, visibility: window.scrollX > 20 ? 'visible' : 'visible' }}>
@@ -105,7 +109,8 @@ export default function App() {
           </>
         ) : (
           // <span>Crowsnest is under construction... </span>
-          <span>Crowsnest is experiencing technical difficulties... We will be back soon!</span>
+          // <span>Crowsnest is experiencing technical difficulties... We will be back soon!</span>
+          <span>Crowsnest is updating... We will be back soon!</span>
         )}
       </UserContext.Provider>
     </>

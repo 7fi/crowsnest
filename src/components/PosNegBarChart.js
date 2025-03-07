@@ -69,7 +69,7 @@ export default function PosNegBarChart({ data, dataKey, showLabels, color, alter
             <br />
             {/* Predicted Score : {payload[0]?.payload.predicted}
             <br /> */}
-            Race Ratio: {payload[0]?.payload.ratio.toFixed(2)}
+            Race Ratio: {payload[0]?.payload?.ratio?.toFixed(2)}
             <br />
             {/* Partner: {payload[0]?.payload.partner}
             <br /> */}

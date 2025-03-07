@@ -100,15 +100,12 @@ const scrapeTeamListToDb = async (district, seasons) => {
 }
 
 const getSailorElo = async (sailorkey) => {
-  const q = query(collection(db, 'sailorsElo'), where('key', '==', sailorkey))
-  const docs = await getDocs(q)
-  console.log('reads: ' + docs.docs.length)
-  const doc = docs.docs[0]
-  if (doc != undefined) {
-    return { data: doc.data(), id: doc.id }
-  } else {
-    return undefined
-  }
+  // const q = query(collection(db, 'eloSailors'), where('key', '==', sailorkey))
+  // const docs = await getDocs(q)
+  // console.log('reads: ' + docs.docs.length)
+  // const doc = docs.docs[0]
+  const thisdoc = await getDoc(doc(db, 'eloSailors', sailorkey))
+  return thisdoc
 }
 
 const getAllTeams = async () => {
@@ -121,8 +118,8 @@ const getAllTeams = async () => {
   }
 }
 
-const getTop100 = async (type, pos) => {
-  const docName = pos == 'Skipper' ? (type == 'women' ? 'topWomenSkippers' : 'topSkippers') : type == 'women' ? 'topWomenCrews' : 'topCrews'
+const getTop100 = async (type, pos, raceType) => {
+  const docName = pos == 'Skipper' ? (type == 'women' ? (raceType == 'fleet' ? 'topWomenSkippers' : 'topWomenSkippersTR') : raceType == 'fleet' ? 'topSkippers' : 'topSkippersTR') : type == 'women' ? (raceType == 'fleet' ? 'topWomenCrews' : 'topWomenCrewsTR') : raceType == 'fleet' ? 'topCrews' : 'topCrewsTR'
   const thisDoc = await getDoc(doc(db, 'vars', docName))
   console.log('reads: %d', 1)
   if (thisDoc != undefined) {
@@ -164,7 +161,7 @@ async function followUser(targetKey, targetName, uid, name, username) {
   await updateDoc(d, { following: arrayUnion({ targetKey: targetKey, targetName: targetName }) })
 
   try {
-    const collectionRef = collection(db, 'sailorsElo')
+    const collectionRef = collection(db, 'eloSailors')
     const q = query(collectionRef, where('key', '==', targetKey))
     const querySnapshot = await getDocs(q)
 
@@ -193,7 +190,7 @@ async function unFollowUser(targetKey, targetName, uid, name, username) {
   await updateDoc(d, { following: arrayRemove({ targetKey: targetKey, targetName: targetName }) })
 
   try {
-    const collectionRef = collection(db, 'sailorsElo')
+    const collectionRef = collection(db, 'eloSailors')
     const q = query(collectionRef, where('key', '==', targetKey))
     const querySnapshot = await getDocs(q)
 

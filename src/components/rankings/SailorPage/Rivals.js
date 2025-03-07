@@ -162,7 +162,7 @@ export default function Rivals({ rivals, pos }) {
                 return (
                   <tr key={index} onClick={() => nav(`/rankings/${rival}`)} className='clickable'>
                     <td>{posRivals[rival].name}</td>
-                    <td>{posRivals[rival].team}</td>
+                    <td className='tableColFit'>{posRivals[rival].team}</td>
                     <td style={{ textAlign: 'right' }}>{rivalRaces}</td>
                     <td style={{ textAlign: 'center' }}>
                       <RatioBar ratio={ratio} />

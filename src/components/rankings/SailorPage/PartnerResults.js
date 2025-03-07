@@ -13,13 +13,17 @@ export default function PartnerResults({ races }) {
   // Step 1: Calculate total change and count for each partner
   const partnerStats = races.reduce((acc, race) => {
     // TODO: Switch link to key when sailors get re-uploaded
-    let key = race.partner['link']
+    let key = race.partner['key']
     if (!acc[key]) {
-      acc[key] = { key: race.partner['link'], name: race.partner['name'], change: 0, count: 0, ratio: 0 }
+      acc[key] = { key: race.partner['key'], name: race.partner['name'], change: 0, count: 0, ratio: 0 }
     }
     acc[key].change += race.change
     acc[key].count += 1
-    acc[key].ratio += race.ratio
+    if (race.type == 'fleet') {
+      acc[key].ratio += race.ratio
+    } else {
+      acc[key].ratio += race.outcome == 'win' ? 1 : 0
+    }
     return acc
   }, {})
 
@@ -58,7 +62,7 @@ export default function PartnerResults({ races }) {
           <th></th>
           <th
             style={{ minWidth: isMobile ? 50 : 150 }}
-            className='clickable'
+            className='tableColFit clickable'
             onClick={() => {
               setByChange(true)
               setByRaces(false)
@@ -68,7 +72,7 @@ export default function PartnerResults({ races }) {
           </th>
           <th
             style={{ minWidth: 113 }}
-            className='clickable'
+            className='tableColFit clickable'
             onClick={() => {
               setByChange(false)
               setByRaces(false)
