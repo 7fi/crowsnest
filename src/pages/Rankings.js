@@ -19,9 +19,12 @@ export default function Rankings() {
   const [sailor, setSailor] = useState(undefined)
   const [loaded, setLoaded] = useState(false)
   const [following, setFollowing] = useState(false)
+  const [isUsers, setIsUsers] = useState(false)
   const teamCodes = useTeamCodes()
   const isMobile = useMobileDetect()
   const userData = useUserData()
+
+  // 7 6 2 1 5 4 3 8
 
   useEffect(() => {
     getSailorElo(key).then((tempSailor) => {
@@ -29,6 +32,7 @@ export default function Rankings() {
       if (tempSailor !== undefined) {
         setSailor(tempSailor.data())
         // setFollowing(sailor?.followers?.some((fol) => fol.followerUid === userData?.user?.uid))
+        console.log(tempSailor.data())
         setLoaded(true)
       } else {
         setLoaded(true)
@@ -40,6 +44,7 @@ export default function Rankings() {
       console.log('checking following')
       // setFollowing(sailor?.followers?.some((fol) => fol.followerUid === userData?.user?.uid))
       setFollowing(userData.userVals?.following?.some((fol) => fol.targetKey === sailor?.key))
+      setIsUsers(userData.userVals?.tsLink?.split('/')[4] == key)
     }
   }, [key, userData])
 
@@ -49,15 +54,16 @@ export default function Rankings() {
         <div>
           <div className='flexRowContainer sailorNameRow'>
             <Link to={`/rankings/team/${sailor.Teams.slice(-1)}`}>
-              <img alt='team burgee' style={{ display: 'inline', maxHeight: '3rem' }} src={`https://scores.collegesailing.org/inc/img/schools/${teamCodes[sailor.Teams[sailor.Teams.length - 1]]}.png`} />
+              <img style={{ display: 'inline', maxHeight: '3rem' }} src={`https://scores.collegesailing.org/inc/img/schools/${teamCodes[sailor.Teams[sailor.Teams.length - 1]]}.png`} />
             </Link>
             <h1 style={{ display: 'inline-block' }}>{sailor.Name}</h1>
             <AuthCheckLite>
               <FollowButton style={{ position: 'absolute', right: 0 }} sailor={sailor} userData={userData} following={following} setFollowing={setFollowing} />
+              {isUsers ? '(You)' : ''}
             </AuthCheckLite>
           </div>
           <div>
-            {sailor.Year} |{' '}
+            {typeof sailor.Year === 'number' ? sailor.Year : sailor?.Year.split('.')[0].includes('*') ? '20' + sailor.Year?.split('.')[0].slice(0, 2) : '20' + sailor.Year?.split('.')[0].slice(2, 4)} |{' '}
             {sailor.Teams.map((teamName, i) => (
               <Link style={{ textDecoration: 'underline' }} key={i} to={`/rankings/team/${teamName}`}>
                 {i !== 0 ? ', ' : ''} {teamName}
@@ -71,6 +77,10 @@ export default function Rankings() {
                   (Techscore{sailor.Links.length > 1 ? ' ' + (index + 1) : ''})
                 </a>
               ))}
+            </span>{' '}
+            |{' '}
+            <span className='secondaryText'>
+              Last updated: {new Date(sailor.lastUpdate.seconds * 1000).toLocaleDateString()} at {new Date(sailor.lastUpdate.seconds * 1000).toLocaleTimeString()}
             </span>
           </div>
           <br />
@@ -86,11 +96,11 @@ export default function Rankings() {
             <PosInfo raceType={'team'} races={sailor.races} type="Women's" pos='Skipper' rating={sailor.wtsr} rank={sailor.WomenSkipperRankTR} />
             <PosInfo raceType={'team'} races={sailor.races} type="Women's" pos='Crew' rating={sailor.wtcr} rank={sailor.WomenCrewRankTR} />
           </div>
-          <span style={{ color: '#ccc', position: 'absolute', left: 30 }}> * in f24</span>
+          <span style={{ color: '#ccc', position: 'absolute', left: 30 }}> * in s25</span>
 
           {/* Graphs */}
           <h2>Rating over time </h2>
-          <EloLineChart data={sailor.races} />
+          <EloLineChart woman={sailor.WomenSkipperRating !== 1000 || sailor.WomenCrewRating !== 1000} data={sailor.races} />
 
           <h2>
             Race by race breakdown: <span className='secondaryText'>(scroll for more)</span>
@@ -124,6 +134,13 @@ export default function Rankings() {
                 data={sailor.races.map((race) => {
                   if (race.ratio < 0) {
                     race.ratio = 0
+                  }
+                  if (race.type == 'team') {
+                    if (race.outcome == 'win') {
+                      race.ratio = 1
+                    } else {
+                      race.ratio = 0
+                    }
                   }
                   return race
                 })}

@@ -5,7 +5,7 @@ import { ProCheckLite } from '../ProCheck'
 import RatingNum from '../../RatingNum'
 
 export default function PosInfo({ type, raceType, pos, rating, rank, races }) {
-  const RankObj = ({ type, rank, pos }) => {
+  const RankObj = ({ type, rank, pos, raceType }) => {
     return (
       <ProCheckLite feature='ranks'>
         Rank:
@@ -13,13 +13,13 @@ export default function PosInfo({ type, raceType, pos, rating, rank, races }) {
           <span>
             {' '}
             #{rank} for{' '}
-            <Link style={{ textDecoration: 'underline' }} to={`/rankings/${pos}${type == "Women's" ? '/women' : ''}`}>
+            <Link style={{ textDecoration: 'underline' }} to={`/rankings/${raceType == 'fleet' ? pos : 'tr' + pos}${type == "Women's" ? '/women' : ''}`}>
               {type.toLowerCase()} {pos}s
             </Link>
             *
           </span>
         ) : (
-          <span> (did not {pos} in f24)</span>
+          <span> (did not {pos} in s25)</span>
         )}
       </ProCheckLite>
     )
@@ -51,7 +51,7 @@ export default function PosInfo({ type, raceType, pos, rating, rank, races }) {
             </span>{' '}
             in the last 5 races)
           </div>
-          <RankObj type={type} rank={rank} pos={pos.toLowerCase()} />
+          <RankObj raceType={raceType} type={type} rank={rank} pos={pos.toLowerCase()} />
         </div>
       ) : undefined}
     </>

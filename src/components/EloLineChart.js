@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 import { useMobileDetect } from '../lib/hooks'
 
-export default function EloLineChart({ data }) {
+export default function EloLineChart({ data, woman }) {
   const [activeLines, setActiveLines] = useState(['crewRating', 'skipperRating', 'womenSkipperRating', 'womenCrewRating', 'tsr', 'tcr', 'wtsr', 'wtcr', 'regAvg']) // 'crewRating', 'skipperRating', 'womenSkipperRating', 'womenCrewRating',
   const [notAvailableLines, setNotAvailableLines] = useState([])
   const isMobile = useMobileDetect()
@@ -71,23 +71,50 @@ export default function EloLineChart({ data }) {
         return (
           <>
             <div className='chartTooltip'>
-              Skipper Rating: {payload[0]?.payload?.skipperRating?.toFixed(2)}
+              <strong className='text-titlecase'>
+                {payload[0]?.payload?.raceID?.split('/')[1].replace(/-/g, ' ')} {payload[0]?.payload?.raceID?.split('/')[2]}
+              </strong>
+              <table style={{ borderCollapse: 'collapse' }}>
+                <thead>
+                  <tr>
+                    <td>{payload[0]?.payload?.raceID?.split('/')[0]}</td>
+                    <td>Skipper</td>
+                    <td>Crew</td>
+                  </tr>
+                </thead>
+                <tbody>
+                  {woman ? (
+                    <>
+                      <tr>
+                        <td>Women's Fleet</td>
+                        <td>{payload[0]?.payload?.womenSkipperRating?.toFixed(2)}</td>
+                        <td>{payload[0]?.payload?.womenCrewRating?.toFixed(2)}</td>
+                      </tr>
+                      <tr>
+                        <td>Women's Team</td>
+                        <td>{payload[0]?.payload?.wtsr?.toFixed(2)}</td>
+                        <td>{payload[0]?.payload?.wtcr?.toFixed(2)}</td>
+                      </tr>
+                    </>
+                  ) : (
+                    <></>
+                  )}
+                  <tr>
+                    <td>Open Fleet</td>
+                    <td>{payload[0]?.payload?.skipperRating?.toFixed(2)}</td>
+                    <td>{payload[0]?.payload?.crewRating?.toFixed(2)}</td>
+                  </tr>
+                  <tr>
+                    <td>Open Team</td>
+                    <td>{payload[0]?.payload?.tsr?.toFixed(2)}</td>
+                    <td>{payload[0]?.payload?.tcr?.toFixed(2)}</td>
+                  </tr>
+                </tbody>
+              </table>
+              Avg Regatta {payload[0]?.payload?.pos}: {payload[0]?.payload?.regAvg?.toFixed(2)}
               <br />
-              {/* Skipper Sigma: {payload[0]?.payload?.skipperSigma?.toFixed(2)}
-              <br /> */}
-              Crew Rating: {payload[0]?.payload?.crewRating?.toFixed(2)}
+              Position: {payload[0]?.payload?.pos}
               <br />
-              Women Skipper Rating: {payload[0]?.payload?.womenSkipperRating?.toFixed(2)}
-              <br />
-              Women Crew Rating: {payload[0]?.payload?.womenCrewRating?.toFixed(2)}
-              <br />
-              Average Regatta Rating: {payload[0]?.payload?.regAvg?.toFixed(2)}
-              <br />
-              Race Position: {payload[0]?.payload?.pos}
-              <br />
-              <span className='text-titlecase'>
-                Race: {payload[0]?.payload?.raceID?.split('/')[1].replace(/-/g, ' ')} {payload[0]?.payload?.raceID?.split('/')[2]}
-              </span>
               <br />
               {/* <span>{new Date(payload[0]?.payload?.date.seconds * 1000).toDateString()}</span> */}
             </div>

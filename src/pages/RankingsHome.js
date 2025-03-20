@@ -38,18 +38,21 @@ export default function RankingsHome() {
         <div className='heroBlock'>
           <h1 className='heroTitle'>CrowsNest</h1>
           <h2 className='heroSubtitle'>Home of College Sailing Statistics</h2>
-          <span style={{ color: '#eee' }}>15,060 Sailors | 809,541 Scores | 207 Teams</span>
-          <span style={{ color: '#eee' }}>Last Updated: 02-07-2025</span>
+          <span style={{ color: '#eee' }}>15,143 Sailors | 817,302 Scores | 207 Teams</span>
+          <Link style={{ color: '#eee' }} to={'/rankings/team'}>
+            Last Score Update: 03-18-2025
+          </Link>
           {/* <span className='heroExclaim'>Team Racing Coming Soon!</span> */}
-          <span className='heroExclaim'>Team Racing!</span>
+          <Link className='heroExclaim' to={'/rankings/team'}>
+            Team Racing!
+          </Link>
         </div>
       </div>
-
       <div className='fullContentBox'>
         <div className='responsiveRowCol'>
           <div className='flexGrowChild contentBox'>
             <h2 style={{ margin: 10 }} onClick={() => nav(`/rankings/team`)} className='clickable'>
-              Top Open Teams
+              Top Open Fleet Racing Teams
             </h2>
             <table className='raceByRaceTable'>
               <tbody>
@@ -77,7 +80,7 @@ export default function RankingsHome() {
           </div>
           <div className='flexGrowChild contentBox'>
             <h2 style={{ margin: 10 }} onClick={() => nav(`/rankings/team`)} className='clickable'>
-              Top Women's Teams
+              Top Women's Fleet Racing Teams
             </h2>
             <table className='raceByRaceTable'>
               <tbody>
@@ -110,14 +113,14 @@ export default function RankingsHome() {
             onClick={() => {
               nav('/rankings/skipper')
             }}>
-            Top Open Skippers
+            Top Open Fleet Skippers
           </button>
           <button
             className='buttonBG flexGrowChild'
             onClick={() => {
               nav('/rankings/crew')
             }}>
-            Top Open Crews
+            Top Open Fleet Crews
           </button>
 
           <button
@@ -125,7 +128,7 @@ export default function RankingsHome() {
             onClick={() => {
               nav('/rankings/skipper/women')
             }}>
-            Top Women's Skippers
+            Top Women's Fleet Skippers
           </button>
 
           <button
@@ -133,9 +136,41 @@ export default function RankingsHome() {
             onClick={() => {
               nav('/rankings/crew/women')
             }}>
-            Top Women's Crews
+            Top Women's Fleet Crews
           </button>
         </div>
+        {/* <div className='flexRowContainer ' style={{ width: '100%' }}>
+          <button
+            className='buttonBG flexGrowChild'
+            onClick={() => {
+              nav('/rankings/trskipper')
+            }}>
+            Top Open TR Skippers
+          </button>
+          <button
+            className='buttonBG flexGrowChild'
+            onClick={() => {
+              nav('/rankings/trcrew')
+            }}>
+            Top Open TR Crews
+          </button>
+
+          <button
+            className='buttonBG flexGrowChild'
+            onClick={() => {
+              nav('/rankings/trskipper/women')
+            }}>
+            Top Women's TR Skippers
+          </button>
+
+          <button
+            className='buttonBG flexGrowChild'
+            onClick={() => {
+              nav('/rankings/trcrew/women')
+            }}>
+            Top Women's TR Crews
+          </button>
+        </div> */}
         <div className='flexRowContainer'>
           {isMobile ? <></> : <img src='accent.png' style={{ maxWidth: '30%', borderRadius: 'var(--radius)', margin: '0.5rem' }} />}
           <div style={{ display: 'flex', flexDirection: 'column' }} className='flexGrowChild'>
@@ -145,7 +180,13 @@ export default function RankingsHome() {
               <a style={{ textDecoration: 'underline' }} href='https://docs.google.com/forms/d/e/1FAIpQLSfTz5XO-7UM5vloq1Rs9Aly5IGqNvNJN1p7mXq-O1NzoVg6-Q/viewform?usp=header'>
                 here
               </a>
-              . The team racing features are also not fully finished, so bear with us as we fix bugs and add more features.
+              . The team racing features are also not fully finished, so bear with me as I fix bugs and add more features.
+              <br />
+              <br /> I am currently working on rewriting the backend for crowsnest, so the major website updates will slow down for a little bit. The scores will still be updated at least weekly (if not more often) so keep checking in! If you are interested in helping please reach out to our{' '}
+              <a href='https://instagram.com/crowsnest.club' style={{ textDecoration: 'underline' }}>
+                instagram
+              </a>
+              !
             </div>
             <div className='contentBox flexGrowChild'>
               Data from 2016 onwards has been scraped from techscore and processed to assign each individual sailor a rating value. These ratings change based on performance in regattas, and the strength of the opponents.

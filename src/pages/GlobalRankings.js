@@ -54,10 +54,9 @@ export default function GlobalRankings({ pos, type, raceType }) {
       <div className='contentBox responsiveRowCol' style={{ marginTop: 80, justifyContent: 'space-between' }}>
         <div>
           <h2>
-            Top 100 {type[0].toUpperCase()}
-            {type.slice(1)} {pos}s in {raceType === 'fleet' ? 'Fall' : 'Spring'} 24
+            Top 100 {raceType == 'fleet' ? 'Fleet Race' : 'Team Race'} {type[0].toUpperCase()}
+            {type.slice(1)} {pos}s in Spring 25
           </h2>
-          {pos} {type} {raceType}
           <div className='flexRowContainer'>
             <Link to={`/rankings/${pos === 'Skipper' ? (raceType == 'fleet' ? 'crew' : 'trcrew') : raceType == 'fleet' ? 'skipper' : 'trskipper'}${type === 'women' ? '/women' : ''}`}>
               <button>See {pos === 'Skipper' ? 'Crews' : 'Skippers'}</button>

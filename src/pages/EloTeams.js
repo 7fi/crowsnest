@@ -1,6 +1,6 @@
 import { getAllTeams } from '../lib/firebase'
 import { useEffect, useRef, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import Loader from '../components/loader'
 import { FaSortUp, FaSortDown } from 'react-icons/fa'
 import useTeamCodes from '../lib/teamCodes'
@@ -17,6 +17,9 @@ export default function EloTeams() {
 
   const [loaded, setLoaded] = useState(false)
 
+  const [searchParams] = useSearchParams()
+  const linkRegion = searchParams.get('region')
+
   const temp = useRef(null)
 
   const teamCodes = useTeamCodes()
@@ -29,7 +32,11 @@ export default function EloTeams() {
         let teams = tempTeams.data.teams
         setTeams(teams)
         let regions = tempTeams.data.teams.map((team) => team.region).filter((value, index, self) => self.indexOf(value) === index)
-        setActiveRegions(regions)
+        if (linkRegion == null) {
+          setActiveRegions(regions)
+        } else {
+          setActiveRegions([linkRegion])
+        }
         setAllRegions(regions)
       })
       .then(() => setLoaded(true))
@@ -228,7 +235,7 @@ export default function EloTeams() {
                     <td style={{ textAlign: 'right' }}>
                       <RatingNum ratingNum={team.topWomenRatingTR} type={'women'} />
                     </td>
-                    <td style={{ textAlign: 'right' }}>{team.avg.toLocaleString().split('.')[0]}</td>
+                    <td style={{ textAlign: 'right' }}>{team.avg.toFixed(0)}</td>
 
                     <td style={{ textAlign: 'right' }}>
                       <div className='ratioBarBg'>

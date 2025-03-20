@@ -17,8 +17,9 @@ export default function Feed() {
       userData?.userVals?.following?.forEach((follow) => {
         console.log(follow.targetKey)
         getSailorElo(follow.targetKey).then((sailor) => {
-          setFollowing((prev) => [...prev, sailor.data])
-          console.log(sailor.data.races.slice(0, 5))
+          console.log(sailor.data())
+          console.log(sailor?.data().races?.slice(0, 5))
+          setFollowing((prev) => [...prev, sailor.data()])
         })
       })
     }
@@ -30,7 +31,7 @@ export default function Feed() {
         <h2>Your Feed</h2> Your feed shows the latest 5 races from each sailor that you follow!
       </div>
       {following
-        .sort((a, b) => b?.races[b.races.length - 1]?.date - a?.races[a.races.length - 1]?.date)
+        .sort((a, b) => b?.races[b?.races?.length - 1]?.date - a?.races[a?.races?.length - 1]?.date)
         .map((sailor, i) => (
           <div key={i} className='contentBox'>
             <div className='flexRowContainer' style={{ alignItems: 'center' }}>

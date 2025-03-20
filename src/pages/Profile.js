@@ -30,6 +30,15 @@ export default function Profile() {
           <div className='text-title'>{pageUser?.displayName}</div>
           <div className='text-subtitle profileUsername'>({pageUser?.username})</div>
         </div>
+        {userVals.tsLink ? (
+          <ul className='contentBox'>
+            <button>
+              <Link to={`/rankings/${userVals.tsLink.split('/')[4]}`}>Your Crowsnest Rating Profile</Link>
+            </button>
+          </ul>
+        ) : (
+          <></>
+        )}
         <ul className='contentBox teamsBox'>
           {pageUser?.teams?.map((team) => (
             <li key={team}>

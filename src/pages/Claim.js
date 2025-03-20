@@ -12,25 +12,26 @@ export default function Claim() {
     <main>
       <AuthCheck>
         <h1>Link your CrowsNest account to your Techscore account for additional features!</h1>
-        <div className="contentBox">
+        <div className='contentBox'>
           <h2>Step 1:</h2>
           <span>
             Head to{' '}
-            <a style={{ textDecoration: 'underline' }} href="https://ts.collegesailing.org/" target="1">
+            <a style={{ textDecoration: 'underline' }} href='https://ts.collegesailing.org/' target='1'>
               https://ts.collegesailing.org/
             </a>{' '}
             and copy your ID.
           </span>
-        </div>
-        <div className="contentBox">
-          <h2>Step 2:</h2>
-          <div>
-            <label>Sailor Link:</label>
-            <input onChange={(e) => setLink(e.target.value)} type="text" placeholder="ex: https://scores.collegesailing.org/sailors/example-sailor" />
-          </div>
           <div></div>
-          <label>Techscore ID:</label>
-          <input onChange={(e) => setId(e.target.value)} type="number" placeholder="ex: 1234567" />
+          <label>Techscore ID: </label>
+          <input onChange={(e) => setId(e.target.value)} type='number' placeholder='ex: 1234567' />
+        </div>
+        <div className='contentBox'>
+          <h2>Step 2:</h2>
+          Now grab the link to your techscore page (such as https://scores.collegesailing.org/sailors/example-sailor) and put that below.
+          <div>
+            <label>Sailor Link: </label>
+            <input style={{ width: 360 }} onChange={(e) => setLink(e.target.value)} type='text' placeholder='ex: https://scores.collegesailing.org/sailors/example-sailor' />
+          </div>
           <button
             onClick={() => {
               if (id != 0 && id > 999999 && id < 10000000 && link != '') createLink(user.uid, id, link)
@@ -39,7 +40,7 @@ export default function Claim() {
           </button>
         </div>
 
-        <h1>Transfered schools? Combine your crowsnest pages</h1>
+        {/* <h1>Transfered schools? Combine your crowsnest pages</h1> */}
       </AuthCheck>
     </main>
   )

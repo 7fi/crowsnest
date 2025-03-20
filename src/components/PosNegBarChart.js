@@ -14,6 +14,7 @@ export default function PosNegBarChart({ data, dataKey, showLabels, color, alter
       eventToColor[event] = colors[Object.keys(eventToColor).length % colors.length]
     }
   })
+
   data = data.sort((a, b) => {
     let datea = new Date(a.date.seconds * 1000)
     let dateb = new Date(b.date.seconds * 1000)

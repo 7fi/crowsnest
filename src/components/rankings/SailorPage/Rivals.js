@@ -23,7 +23,8 @@ export default function Rivals({ rivals, pos }) {
           return 1
         }
       })
-      setActiveSeasons([uniqueSeasons[uniqueSeasons.length - 1]])
+      // setActiveSeasons([uniqueSeasons[uniqueSeasons.length - 1]])
+      setActiveSeasons(uniqueSeasons)
       setAllSeasons(uniqueSeasons)
     }
   }, [rivals, pos])
@@ -44,7 +45,7 @@ export default function Rivals({ rivals, pos }) {
     <div className='flexGrowChild'>
       <div className='responsiveRowCol' style={{ alignItems: 'center' }}>
         <h2>
-          Season Rivals: {pos} <span className='secondaryText'>(scroll for more)</span>
+          {pos} Rivals: <span className='secondaryText'>(scroll for more)</span>
         </h2>
         <div className='flexRowContainer flexWrap'>
           {allSeasons

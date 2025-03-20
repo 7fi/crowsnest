@@ -254,5 +254,6 @@ export default function RegattaRankings() {
     )
   }
 
-  return <>{loaded ? <TabComponent raceIDs={raceIDs} pos={position} /> : <Loader show={!loaded} />}</>
+  // return <>{loaded ? <TabComponent raceIDs={raceIDs} pos={position} /> : <Loader show={!loaded} />}</>
+  return <div>Regatta page is currently being rewritten... </div>
 }

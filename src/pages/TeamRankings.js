@@ -152,7 +152,7 @@ export default function TeamRankings() {
           <></>
         )}
         <td className='tableColFit'>{decodeURIComponent(member.name)}</td>
-        <td className='tableColFit'>{member.year.split('.')[0].slice(2, 4)}</td>
+        <td className='tableColFit'>{member.year.split('.')[0].includes('*') ? member.year.split('.')[0].slice(0, 2) : member.year.split('.')[0].slice(2, 4)}</td>
         <td style={{ textAlign: 'left', minWidth: 50 }}>
           {rankingOpen ? <TiStarFullOutline style={{ bottom: -5 }} className='secondaryText' /> : ''}
           {rankingWomen ? <TiStarFullOutline className='secondaryText' color='var(--women)' /> : ''}
@@ -330,12 +330,12 @@ export default function TeamRankings() {
               </h1>
             </div>
 
-            <div>
+            <Link to={{ pathname: `/rankings/team`, search: `?region=${teamRegion}` }}>
               <span className='filterOption' style={{ backgroundColor: regionColors[teamRegion] }}>
                 {teamRegion}
               </span>{' '}
               avg rating: {rating.toFixed(0)}
-            </div>
+            </Link>
           </div>
           <div className='flexRowContainer flexWrap' style={{ marginLeft: 15 }}>
             {allSeasons
