@@ -24,15 +24,6 @@ export default function EloSearch() {
   return (
     <div style={{ margin: 15 }}>
       <div className='responsiveRowCol'>
-        <input className='flexGrowChild' style={{ minWidth: '10rem', maxWidth: '50%', height: '2rem' }} placeholder='Search by name / team *' onChange={filter} />
-        <span className='secondaryText'> * only includes sailors in f24</span>
-        <input
-          type='checkbox'
-          onChange={(e) => {
-            setUseImg(e.target.checked)
-            console.log(e.target.checked)
-          }}
-        />
         <div className='flexRowContainer flexWrap'>
           <Link to={'/rankings/skipper'}>
             <button className='buttonBG'>Top Open Skippers</button>
@@ -46,7 +37,28 @@ export default function EloSearch() {
           <Link to={'/rankings/crew/women'}>
             <button className='buttonBG'>Top Women's Crews</button>
           </Link>
+          <Link to={'/rankings/trskipper'}>
+            <button className='buttonBG'>Top Open TR Skippers</button>
+          </Link>
+          <Link to={'/rankings/trcrew'}>
+            <button className='buttonBG'>Top Open TR Crews</button>
+          </Link>
+          <Link to={'/rankings/trskipper/women'}>
+            <button className='buttonBG'>Top W TR Skippers</button>
+          </Link>
+          <Link to={'/rankings/trcrew/women'}>
+            <button className='buttonBG'>Top W TR Crews</button>
+          </Link>
         </div>
+        <input className='flexGrowChild' style={{ minWidth: '15rem', maxWidth: '50%', height: '2rem' }} placeholder='Search by name / team *' onChange={filter} />
+        <span className='secondaryText'> * only includes sailors in f24/s25</span>
+        <input
+          type='checkbox'
+          onChange={(e) => {
+            setUseImg(e.target.checked)
+            console.log(e.target.checked)
+          }}
+        />
       </div>
       <table className='raceByRaceTable teamsTable'>
         <thead>

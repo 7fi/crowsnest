@@ -26,6 +26,7 @@ export default function TeamRankings() {
 
   useEffect(() => {
     getTeamElos(teamName).then((tempTeam) => {
+      console.log(tempTeam)
       const members = tempTeam.data.members.filter((member) => member.teams[member.teams.length - 1] === teamName)
       setTeamMembers(members)
       setRating(tempTeam.data.avg)
@@ -242,7 +243,7 @@ export default function TeamRankings() {
       .slice(0)
       .sort((a, b) => getRating(b, pos, 'women') - getRating(a, pos, 'women'))
       .filter((member) => member.cross > 20 && member.outLinks > 70 && member.seasons[pos].includes(allSeasons.slice(-1)[0]) && (pos === 'skipper' ? member.womenSkipperRating !== 1000 : member.womenCrewRating !== 1000))
-      .slice(0, 3)
+      .slice(0, 2)
 
     return (
       <>

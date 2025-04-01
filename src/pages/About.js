@@ -24,7 +24,7 @@ export default function About() {
           </li>
         </ul>
         <span style={{ color: '#777' }}>
-          For those wondering, crowsnest is an unfinished project of mine. In the future this feature will be just one part of the website. For more info, check out the{' '}
+          For those wondering, crowsnest is an unfinished solo project of mine. In the future this feature will be just one part of the website. For more info, check out the{' '}
           <a href='https://github.com/7fi/crowsnest' style={{ textDecoration: 'underline' }}>
             GitHub
           </a>
@@ -34,12 +34,16 @@ export default function About() {
       <div>
         <h2>Interested in helping?</h2>
         <p>
-          We are looking a passionate college sailor who can help us improve the website, or increase the accuracy of our algorithm. A willingness to learn react or python is a must, and experience in either one is highly appreciated. If you are interested please reach out to our{' '}
-          <a href='https://instagram.com/crowsnest.club' style={{ textDecoration: 'underline' }}>
-            instagram
+          We are looking a passionate college sailor who can help us improve the website, or increase the accuracy of our algorithm. A willingness to learn react or python is a must, and experience in either one is highly appreciated. If you are interested please reach out on our{' '}
+          <a style={{ textDecoration: 'underline' }} href='https://discord.gg/RxVhg2aUQE/'>
+            discord
           </a>
           .
         </p>
+      </div>
+      <div>
+        <h2>Explaination Video</h2>
+        <p>I am currently in the process of creating an explaination video that will help users get familar with the website and understand all of it's features. Keep an eye out on our socials for this!</p>
       </div>
     </main>
   )

@@ -32,7 +32,7 @@ export default function Rankings() {
       if (tempSailor !== undefined) {
         setSailor(tempSailor.data())
         // setFollowing(sailor?.followers?.some((fol) => fol.followerUid === userData?.user?.uid))
-        console.log(tempSailor.data())
+        // console.log(tempSailor.data())
         setLoaded(true)
       } else {
         setLoaded(true)

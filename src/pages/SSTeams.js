@@ -7,7 +7,7 @@ import useTeamCodes from '../lib/teamCodes'
 import RatingNum from '../components/RatingNum'
 import useRegionColors from '../lib/regionColors'
 
-export default function EloTeams() {
+export default function SSTeams() {
   const [teams, setTeams] = useState([])
   const [activeRegions, setActiveRegions] = useState([])
   const [allRegions, setAllRegions] = useState([])
@@ -113,13 +113,13 @@ export default function EloTeams() {
       </div>
       {loaded ? (
         <div className='teamTableContainer' style={{ zIndex: 100 }}>
-          <table className='raceByRaceTable teamsTable' ref={temp}>
+          <table className='raceByRaceTable teamsTable' ref={temp} style={{ backgroundColor: 'var(--bg)' }}>
             <thead>
               <tr>
-                <th style={{ minWidth: 40, textAlign: 'right' }}></th>
                 <th style={{ minWidth: 50 }}> </th>
+                <th style={{ minWidth: 40, textAlign: 'right' }}></th>
                 <th>Name</th>
-                <th>Conference</th>
+                <th style={{ display: 'none' }}>Conference</th>
                 <th
                   className='tableColFit tooltip'
                   onClick={() => {
@@ -206,11 +206,15 @@ export default function EloTeams() {
                 <th></th>
               </tr>
             </thead>
-            <tbody className='teamsTable'>
+            <tbody className='teamsTable ssbody'>
               {filtered.length > 0 ? (
-                filtered.map((team, index) => (
+                filtered.slice(0, 10).map((team, index) => (
                   <tr key={index} className='clickable' onClick={() => navigate(`/rankings/team/${team.name}`)}>
-                    <td className='tableColFit tdRightBorder'>
+                    <td className='' style={{ width: 100, paddingLeft: 30 }}>
+                      <img style={{ display: 'inline', maxHeight: '2.3rem' }} src={`https://scores.collegesailing.org/inc/img/schools/${teamCodes[team.name]}.png`} />
+                    </td>
+
+                    <td className={`tableColFit`} style={{ width: 25 }}>
                       {(sort === 'rating' ? team.avg !== 0 : sort === 'women' ? team.topWomenRating !== 0 : sort === 'members' ? team.memberCount !== 0 : sort === 'ratio' ? team.avgRatio !== 0 : sort === 'team' ? team.topRatingTR !== 0 : team.topRating !== 0) ? (
                         index + 1
                       ) : (
@@ -219,38 +223,37 @@ export default function EloTeams() {
                         </span>
                       )}
                     </td>
-                    <td className='tableColFit'>
-                      <img style={{ display: 'inline', maxHeight: '2rem' }} src={`https://scores.collegesailing.org/inc/img/schools/${teamCodes[team.name]}.png`} />
-                    </td>
 
-                    <td className='tableColFit'>{team.name}</td>
-                    <td className=''>
+                    <td className='tableColFit'>
+                      <strong style={{ fontFamily: 'Arial' }}>{team.name}</strong>
+                    </td>
+                    <td className='' style={{ display: 'none' }}>
                       <div className='filterOption' style={{ backgroundColor: RegionColors[team.region] }}>
                         {team.region}
                       </div>
                     </td>
-                    <td style={{ textAlign: 'right' }}>
+                    <td style={{ textAlign: 'right', display: sort !== 'top' ? 'none' : 'table-cell' }}>
                       <RatingNum ratingNum={team.topRating} />
                     </td>
-                    <td style={{ textAlign: 'right' }}>
+                    <td style={{ textAlign: 'right', display: sort !== 'women' ? 'none' : 'table-cell' }}>
                       <RatingNum ratingNum={team.topWomenRating} type={'women'} />
                     </td>
-                    <td style={{ textAlign: 'right' }}>
+                    <td style={{ textAlign: 'right', display: sort !== 'team' ? 'none' : 'table-cell' }}>
                       <RatingNum ratingNum={team.topRatingTR} type={'open'} />
                     </td>
-                    <td style={{ textAlign: 'right' }}>
+                    <td style={{ textAlign: 'right', display: sort !== 'womensteam' ? 'none' : 'table-cell' }}>
                       <RatingNum ratingNum={team.topWomenRatingTR} type={'women'} />
                     </td>
-                    <td style={{ textAlign: 'right' }}>{team.avg.toFixed(0)}</td>
+                    <td style={{ textAlign: 'right', display: sort !== 'rating' ? 'none' : 'table-cell' }}>{team.avg.toFixed(0)}</td>
 
-                    <td style={{ textAlign: 'right' }}>
+                    <td style={{ textAlign: 'right', display: sort !== 'artio' ? 'none' : 'table-cell' }}>
                       <div className='ratioBarBg'>
                         <div className='ratioBar' style={{ width: team.avgRatio * 100 }}>
                           <span>{(team.avgRatio * 100).toFixed(1)}%</span>
                         </div>
                       </div>
                     </td>
-                    <td className='' style={{ textAlign: 'right' }}>
+                    <td className='' style={{ textAlign: 'right', display: sort !== 'members' ? 'none' : 'table-cell' }}>
                       {team.memberCount}
                     </td>
 

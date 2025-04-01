@@ -528,18 +528,27 @@ tr:hover td {
 .tdRightBorder {
   border-right: 1px solid var(--border);
 }
-tr {
+tbody:not(.ssbody) tr {
   border-bottom: 1px solid var(--border);
 }
-tbody tr:nth-child(1) {
+tbody:not(.ssbody) tr:nth-child(1) {
   border-top: 1px solid var(--border);
 }
 
-tbody tr:nth-child(odd) {
+tbody:not(.ssbody) tr:nth-child(odd) {
   background-color: var(--veryLight);
 }
+.ssbody td {
+  padding-top: 0;
+  padding-bottom: 0;
+  size: 2.5rem;
+}
+.ssbody {
+  padding-top: 30px;
+  padding-bottom: 100px;
+}
 
-tbody tr:nth-child(even) {
+tbody:not(.ssbody) tr:nth-child(even) {
   background-color: var(--bg);
 }
 
@@ -564,6 +573,7 @@ tbody tr:nth-child(even) {
 
 .flexGrowChild {
   flex-grow: 1;
+  flex-basis: 0;
 }
 .filterOption {
   padding: 0.4rem;
@@ -579,15 +589,16 @@ tbody tr:nth-child(even) {
 .filterHighlight {
   background-color: var(--highlight1);
 }
+tr .filterOption:hover {
+  transform: scale(1);
+  opacity: 100%;
+}
 @media (hover: hover) {
   .filterOption:hover {
     background-color: var(--highlight1);
     opacity: 50%;
 
     transform: scale(1.1);
-  }
-  tr .filterOption:hover {
-    transform: scale(1);
   }
 }
 
@@ -622,7 +633,6 @@ tbody tr:nth-child(even) {
   position: sticky;
   z-index: 2;
 }
-
 /* Tooltip text */
 .tooltip .tooltiptext {
   visibility: hidden;
@@ -785,16 +795,13 @@ tbody tr:nth-child(even) {
     transform: translate(175px, -50px) rotate(20deg) scale(1);
   }
 }
-
 @media only screen and (max-device-width: 600px) {
   .responsiveRowCol {
     display: flex;
     flex-direction: column;
     align-items: start;
   }
-  .responsiveRowCol div {
-    overflow: scroll;
-  }
+
   .chartLabel {
     display: none;
   }

@@ -19,7 +19,7 @@ export default function PosInfo({ type, raceType, pos, rating, rank, races }) {
             *
           </span>
         ) : (
-          <span> (did not {pos} in s25)</span>
+          <span> (ineligible for {pos} rank in s25)</span>
         )}
       </ProCheckLite>
     )

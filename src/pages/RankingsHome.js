@@ -38,9 +38,9 @@ export default function RankingsHome() {
         <div className='heroBlock'>
           <h1 className='heroTitle'>CrowsNest</h1>
           <h2 className='heroSubtitle'>Home of College Sailing Statistics</h2>
-          <span style={{ color: '#eee' }}>15,143 Sailors | 817,302 Scores | 207 Teams</span>
+          <span style={{ color: '#eee' }}>15,309 Sailors | 823,650 Scores | 207 Teams</span>
           <Link style={{ color: '#eee' }} to={'/rankings/team'}>
-            Last Score Update: 03-18-2025
+            Last Score Update: 03-30-2025
           </Link>
           {/* <span className='heroExclaim'>Team Racing Coming Soon!</span> */}
           <Link className='heroExclaim' to={'/rankings/team'}>
@@ -50,15 +50,15 @@ export default function RankingsHome() {
       </div>
       <div className='fullContentBox'>
         <div className='responsiveRowCol'>
-          <div className='flexGrowChild contentBox'>
+          <div className='flexGrowChild contentBox' style={{ minHeight: 'fit-content' }}>
             <h2 style={{ margin: 10 }} onClick={() => nav(`/rankings/team`)} className='clickable'>
-              Top Open Fleet Racing Teams
+              Top Open Team Racing Teams
             </h2>
             <table className='raceByRaceTable'>
               <tbody>
                 {teams
                   .sort((a, b) => {
-                    return b.topRating - a.topRating
+                    return b.topRatingTR - a.topRatingTR
                   })
                   .slice(0, 10)
                   .map((team, index) => (
@@ -71,22 +71,22 @@ export default function RankingsHome() {
                       </td>
                       <td>{team.name}</td>
                       <td className='tableColFit'>
-                        <RatingNum ratingNum={team.topRating} />
+                        <RatingNum ratingNum={team.topRatingTR} />
                       </td>
                     </tr>
                   ))}
               </tbody>
             </table>
           </div>
-          <div className='flexGrowChild contentBox'>
+          <div className='flexGrowChild contentBox' style={{ minHeight: 'fit-content' }}>
             <h2 style={{ margin: 10 }} onClick={() => nav(`/rankings/team`)} className='clickable'>
-              Top Women's Fleet Racing Teams
+              Top Women's Team Racing Teams
             </h2>
             <table className='raceByRaceTable'>
               <tbody>
                 {teams
                   .sort((a, b) => {
-                    return b.topWomenRating - a.topWomenRating
+                    return b.topWomenRatingTR - a.topWomenRatingTR
                   })
                   .slice(0, 10)
                   .map((team, index) => (
@@ -99,7 +99,7 @@ export default function RankingsHome() {
                       </td>
                       <td>{team.name}</td>
                       <td className='tableColFit'>
-                        <RatingNum ratingNum={team.topWomenRating} type='women' />
+                        <RatingNum ratingNum={team.topWomenRatingTR} type='women' />
                       </td>
                     </tr>
                   ))}
@@ -171,6 +171,14 @@ export default function RankingsHome() {
             Top Women's TR Crews
           </button>
         </div> */}
+        <div className='flexRowContainer' style={{ flexBasis: 0 }}>
+          <a className='flexGrowChild contentBox' href='https://discord.gg/RxVhg2aUQE'>
+            Join or Discord for frequent updates and to ask questions!
+          </a>
+          <a className='flexGrowChild contentBox' href='https://instagram.com/crowsnest.club/'>
+            Follow our Instagram!
+          </a>
+        </div>
         <div className='flexRowContainer'>
           {isMobile ? <></> : <img src='accent.png' style={{ maxWidth: '30%', borderRadius: 'var(--radius)', margin: '0.5rem' }} />}
           <div style={{ display: 'flex', flexDirection: 'column' }} className='flexGrowChild'>
@@ -182,9 +190,9 @@ export default function RankingsHome() {
               </a>
               . The team racing features are also not fully finished, so bear with me as I fix bugs and add more features.
               <br />
-              <br /> I am currently working on rewriting the backend for crowsnest, so the major website updates will slow down for a little bit. The scores will still be updated at least weekly (if not more often) so keep checking in! If you are interested in helping please reach out to our{' '}
-              <a href='https://instagram.com/crowsnest.club' style={{ textDecoration: 'underline' }}>
-                instagram
+              <br /> I am currently working on rewriting the backend for crowsnest, so the major website updates will slow down for a little bit. The scores will still be updated at least weekly (if not more often) so keep checking in! If you are interested in helping please reach on our{' '}
+              <a style={{ textDecoration: 'underline' }} href='https://discord.gg/RxVhg2aUQE'>
+                discord
               </a>
               !
             </div>

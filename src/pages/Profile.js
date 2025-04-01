@@ -30,10 +30,10 @@ export default function Profile() {
           <div className='text-title'>{pageUser?.displayName}</div>
           <div className='text-subtitle profileUsername'>({pageUser?.username})</div>
         </div>
-        {userVals.tsLink ? (
+        {pageUser.techscoreLink ? (
           <ul className='contentBox'>
             <button>
-              <Link to={`/rankings/${userVals.tsLink.split('/')[4]}`}>Your Crowsnest Rating Profile</Link>
+              <Link to={`/rankings/${pageUser?.techscoreLink?.split('/')[4]}`}>Crowsnest Rating Profile</Link>
             </button>
           </ul>
         ) : (
@@ -54,8 +54,8 @@ export default function Profile() {
               <Link to='/feed'>
                 <h2>Following:</h2>
               </Link>
-              {pageUser?.following?.map((targetFollow) => (
-                <div>
+              {pageUser?.following?.map((targetFollow, i) => (
+                <div key={i}>
                   <Link to={`/rankings/${targetFollow.targetKey}`}>{targetFollow.targetName}</Link>
                 </div>
               ))}

@@ -36,6 +36,8 @@ import About from './pages/About'
 import PostHogPageviewTracker from './lib/PostHogPageviewTracker'
 import posthog from 'posthog-js'
 import Feed from './pages/Feed'
+import Simulator from './pages/Simulator'
+import SSTeams from './pages/SSTeams'
 
 export default function App() {
   const userData = useUserData()
@@ -96,6 +98,8 @@ export default function App() {
               <Route path='/rankings/regatta/:season/:regattaName' element={<RegattaRankings />} />
               <Route path='/rankings/regatta/:season/:regattaName/:raceNum' element={<RegattaRankings />} />
               <Route path='/rankings/regatta/:season/:regattaName/:raceNum/:pos' element={<RegattaRankings />} />
+              <Route path='/rankings/simulator' element={<Simulator />} />
+              <Route path='/rankings/screenshot' element={<SSTeams />} />
               <Route path='/feed' element={<Feed />} />
               <Route path='/drag' element={<TestDrag />} />
               <Route path='/:text' element={<NotFound />} />

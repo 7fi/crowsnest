@@ -60,6 +60,15 @@ export default function Navbar() {
               <button>Sailors</button>
             </Link>
           </li>
+          {isMobile ? (
+            <></>
+          ) : (
+            <li>
+              <Link to={`/about`}>
+                <button>About</button>
+              </Link>
+            </li>
+          )}
           {!user && (
             <>
               <li>
@@ -70,15 +79,6 @@ export default function Navbar() {
             </>
           )}
           <AuthCheckLite>
-            {/* {!location.pathname.includes('rankings') ? (
-                <li>
-                  <Link to='/teams'>
-                    <button>Teams</button>
-                  </Link>
-                </li>
-              ) : ( */}
-
-            {/* )} */}
             <li>
               <Link to={`/profile/${userVals?.username}`}>
                 <img style={{ maxWidth: 40, maxHeight: 40 }} src={user?.photoURL} alt={userVals?.username} referrerPolicy='no-referrer' className='btn' />

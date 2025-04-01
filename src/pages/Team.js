@@ -21,7 +21,7 @@ export default function Team() {
 
   useEffect(() => {
     getTeamWithName(teamName).then((tempTeam) => {
-      // console.log(tempTeam)
+      console.log(tempTeam.data)
       setTeam(tempTeam.data)
       // setMemeberNames(tempTeam.data?.members)
       setTeamID(tempTeam.id)
