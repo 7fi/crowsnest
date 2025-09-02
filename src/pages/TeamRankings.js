@@ -291,7 +291,7 @@ export default function TeamRankings() {
                 </th>
                 <th
                   className=' tableColFit clickable'
-                  style={{ minWidth: 95, textAlign: 'right' }}
+                  style={{ minWidth: 98, textAlign: 'right' }}
                   onClick={() => {
                     setSort('wteamrating')
                   }}>
@@ -320,7 +320,7 @@ export default function TeamRankings() {
         <div style={{ padding: 15 }}>
           <div className='teamPageHeader'>
             <Link to={'/rankings/team'} className='secondaryText'>
-              {'<'} Back
+              {'<'} All Teams
             </Link>
             <div className='flexRowContainer' style={{ alignItems: 'center' }}>
               <img style={{ display: 'inline', maxHeight: '3rem' }} src={`https://scores.collegesailing.org/inc/img/schools/${teamCodes[teamName]}.png`} />
@@ -350,7 +350,7 @@ export default function TeamRankings() {
                 }
               })
               .map((season, index) => (
-                <div key={index} className={`filterOption`} style={{ backgroundColor: activeSeasons.includes(season) ? 'var(--highlight1)' : '' }} onClick={(e) => toggleFilter(season, e.target)}>
+                <div key={index} className={`filterOption`} style={{ backgroundColor: activeSeasons.includes(season) ? 'var(--highlight1)' : '' }} onClick={(e) => toggleFilter(season, e.target)} onDoubleClick={() => setActiveSeasons([season])}>
                   {season?.toUpperCase()}
                 </div>
               ))}

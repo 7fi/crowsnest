@@ -1,12 +1,22 @@
-import { useContext, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import AuthCheck from '../components/AuthCheck'
 import { updateDoc, doc, getFirestore, arrayUnion, arrayRemove, getDoc, deleteDoc } from 'firebase/firestore'
 import { UserContext } from '../lib/context'
+import { Link, useSearchParams } from 'react-router-dom'
+import toast from 'react-hot-toast'
 
 export default function Claim() {
   const { user, userVals } = useContext(UserContext)
-  const [id, setId] = useState(0)
+  const [id, setId] = useState('')
   const [link, setLink] = useState('')
+
+  const [searchParams] = useSearchParams()
+  const claimLink = searchParams.get('link')
+
+  useEffect(() => {
+    if (claimLink != null && claimLink != '') setLink('https://scores.collegesailing.org/sailors/' + claimLink)
+    console.log(claimLink)
+  }, [claimLink])
 
   return (
     <main>
@@ -23,21 +33,33 @@ export default function Claim() {
           </span>
           <div></div>
           <label>Techscore ID: </label>
-          <input onChange={(e) => setId(e.target.value)} type='number' placeholder='ex: 1234567' />
+          <input onChange={(e) => setId(e.target.value)} value={id} type='number' placeholder='ex: 1234567' />
         </div>
         <div className='contentBox'>
           <h2>Step 2:</h2>
           Now grab the link to your techscore page (such as https://scores.collegesailing.org/sailors/example-sailor) and put that below.
           <div>
             <label>Sailor Link: </label>
-            <input style={{ width: 360 }} onChange={(e) => setLink(e.target.value)} type='text' placeholder='ex: https://scores.collegesailing.org/sailors/example-sailor' />
+            <input style={{ width: 360 }} value={link} onChange={(e) => setLink(e.target.value)} type='text' placeholder='ex: https://scores.collegesailing.org/sailors/example-sailor' />
           </div>
           <button
             onClick={() => {
-              if (id != 0 && id > 999999 && id < 10000000 && link != '') createLink(user.uid, id, link)
+              if (id != 0 && id > 999999 && id < 10000000 && link != '') {
+                createLink(user.uid, id, link)
+                setId('')
+                setLink('')
+              } else {
+                toast((t) => {
+                  toast.dismiss(t.id)
+                  toast.error('Invalid parameters')
+                })
+              }
             }}>
             Submit
           </button>
+        </div>
+        <div>
+          Currently Claiming: <a href={link}>{link.split('/')[4]}</a>
         </div>
 
         {/* <h1>Transfered schools? Combine your crowsnest pages</h1> */}
@@ -56,4 +78,9 @@ async function createLink(uid, techscoreID, techscoreLink) {
   console.log('test')
   d = doc(db, `users/${uid}`)
   await updateDoc(d, { techscoreID: techscoreID, techscoreLink: techscoreLink })
+
+  toast((t) => {
+    toast.dismiss(t.id)
+    toast.success('Account successfully linked!')
+  })
 }

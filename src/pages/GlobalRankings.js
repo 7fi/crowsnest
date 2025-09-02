@@ -4,12 +4,16 @@ import { Link, useNavigate } from 'react-router-dom'
 import Loader from '../components/loader'
 import useTeamCodes from '../lib/teamCodes'
 import RatingNum from '../components/RatingNum'
-import { useMobileDetect } from '../lib/hooks'
+import { useMobileDetect, useTeamRegions } from '../lib/hooks'
+import useRegionColors from '../lib/regionColors'
 
 export default function GlobalRankings({ pos, type, raceType }) {
   const [people, setPeople] = useState([])
   const [loaded, setLoaded] = useState(false)
   const isMobile = useMobileDetect()
+
+  const regionColors = useRegionColors()
+  const teamRegions = useTeamRegions()
 
   useEffect(() => {
     setLoaded(false)
@@ -39,7 +43,19 @@ export default function GlobalRankings({ pos, type, raceType }) {
           <td className='tableColFit'>{member.name}</td>
           <td>{member.year.toString().slice(2)}</td>
           {/* <td className='tableColFit secondaryText'>{member.gender === 'F' ? 'W' : ''}</td> */}
-          {isMobile ? <></> : <td>{member.team[member.team.length - 1]}</td>}
+          {isMobile ? (
+            <></>
+          ) : (
+            <>
+              <td>
+                <div className='filterOption' style={{ backgroundColor: regionColors[teamRegions[member.team[member.team.length - 1]]], fontSize: '0.8rem' }}>
+                  {teamRegions[member.team[member.team.length - 1]]}
+                </div>
+              </td>
+              <td>{member.team[member.team.length - 1]}</td>
+            </>
+          )}
+          {/* <td></td> */}
           <td style={{ textAlign: 'right' }}>
             <RatingNum type={type} pos={pos} ratingNum={member.rating} />
             {/* {member.rating.toFixed(0)} {type === 'women' ? <FaDiamond className='secondaryText' /> : ''} */}
@@ -87,10 +103,17 @@ export default function GlobalRankings({ pos, type, raceType }) {
               <th style={{ minWidth: 50 }}></th>
               <th>Name</th>
               <th className='tableColFit'>Year</th>
-              {!isMobile ? <th>Team</th> : <></>}
+              {!isMobile ? (
+                <>
+                  <th className='tableColFit'></th>
+                  <th>Team</th>
+                </>
+              ) : (
+                <></>
+              )}
               <th style={{ textAlign: 'right' }}>Rating</th>
             </tr>
-          </thead>
+      </thead>
           <tbody>
             {people
               // .filter((member) => member.seasons[pos.toLowerCase()].includes('f24'))

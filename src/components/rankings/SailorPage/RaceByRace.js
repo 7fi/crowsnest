@@ -107,7 +107,7 @@ export default function RaceByRace({ races, woman, showFilter }) {
               {/* <th></th> */}
               <th>Position</th>
               <th>Partner</th>
-              <th>Score</th>
+              <th style={{ textAlign: 'right' }}>Score</th>
               <th>Predicted</th>
               <th>Percentage</th>
               <th>Rating</th>
@@ -140,7 +140,7 @@ export default function RaceByRace({ races, woman, showFilter }) {
                       key={i}
                       onClick={() => {
                         // navigate(`/rankings/regatta/${race.raceID}/${race.pos}`)
-                        window.location.replace(`https://scores.collegesailing.org/${race.raceID.split('/')[0]}/${race.raceID.split('/')[1]}/full-scores/`)
+                        window.open(`https://scores.collegesailing.org/${race.raceID.split('/')[0]}/${race.raceID.split('/')[1]}/full-scores/`, '_blank', 'noopener,noreferrer')
                       }}
                       className='clickable'>
                       {isMobile ? <></> : <td className='secondaryText tableColFit tdRightBorder'>{date.toLocaleDateString()}</td>}
@@ -159,12 +159,15 @@ export default function RaceByRace({ races, woman, showFilter }) {
                       </td>
 
                       <td className='tableColFit'>{race.pos}</td>
-                      <td className='tableColFit' onClick={() => navigate(`/rankings/${race.partner}`)}>
-                        <Link to={`/rankings/${race.partner['link']}`}>{race.partner['name']}</Link>
+                      <td className='tableColFit'>
+                        {' '}
+                        {/*onClick={() => navigate(`/rankings/${race.partner}`)} */}
+                        {/* <Link to={`/rankings/${race.partner['link']}`}>{race.partner['name']}</Link> */}
+                        <div>{race.partner['name']}</div>
                       </td>
-                      <td style={{ textAlign: race.type == 'fleet' ? 'right' : 'left', color: race.type == 'fleet' ? (race.score < race.predicted ? 'green' : race.score > race.predicted ? 'red' : '') : race.outcome == 'win' && race.predicted == 'lose' ? 'green' : race.type == 'fleet' ? (race.score > race.predicted ? 'red' : race.score < race.predicted ? 'green' : '') : race.outcome == 'lose' && race.predicted == 'win' ? 'red' : '' }}>
+                      <td style={{ textAlign: 'right', color: race.type == 'fleet' ? (race.score < race.predicted ? 'green' : race.score > race.predicted ? 'red' : '') : race.outcome == 'win' && race.predicted == 'lose' ? 'green' : race.type == 'fleet' ? (race.score > race.predicted ? 'red' : race.score < race.predicted ? 'green' : '') : race.outcome == 'lose' && race.predicted == 'win' ? 'red' : '' }}>
                         {race.score}
-                        {race.type == 'team' ? ' (' + race.outcome + ')' : ''}
+                        {race.type == 'team' ? (race.outcome == 'win' ? '  ' : '') + ' (' + race.outcome + ')' : ''}
                         {race.type == 'fleet' ? (race.score == 1 ? 'st' : race.score == 2 ? 'nd' : race.score == 3 ? 'rd' : 'th') : ' '}
                       </td>
                       <td style={{ textAlign: 'right' }}>

@@ -7,6 +7,7 @@ import { setTheme, useMobileDetect } from '../lib/hooks'
 import { FaSun, FaMoon } from 'react-icons/fa'
 import { IoSunnySharp } from 'react-icons/io5'
 import { AuthCheckLite } from './AuthCheck'
+import { ProCheckLite } from './rankings/ProCheck'
 
 export default function Navbar() {
   const { user, userVals } = useContext(UserContext)
@@ -26,6 +27,9 @@ export default function Navbar() {
             ) : (
               <>
                 <span className='text-title'>CrowsNest</span>
+                {/* <ProCheckLite>
+                  <span style={{ position: 'relative', rotate: '15deg', top: -15, left: -20 }}>Pro</span>
+                </ProCheckLite> */}
                 <span style={{ marginTop: 3 }} className='secondaryText'>
                   {' '}
                   [Alpha]
@@ -55,10 +59,36 @@ export default function Navbar() {
               <button>Teams</button>
             </Link>
           </li>
-          <li>
+          <li className='hoverbox'>
             <Link to={`/rankings/search`}>
               <button>Sailors</button>
             </Link>
+            <div className='hoverafter'>
+              <li>
+                <Link to={'/rankings/skipper'}>Top Open Skippers</Link>
+              </li>
+              <li>
+                <Link to={'/rankings/crew'}>Top Open Crews</Link>
+              </li>
+              <li>
+                <Link to={'/rankings/skipper/women'}>Top Women's Skippers</Link>
+              </li>
+              <li>
+                <Link to={'/rankings/crew/women'}>Top Women's Crews</Link>
+              </li>
+              <li>
+                <Link to={'/rankings/trskipper'}>Top Open TR Skippers</Link>
+              </li>
+              <li>
+                <Link to={'/rankings/trcrew'}>Top Open TR Crews</Link>
+              </li>
+              <li>
+                <Link to={'/rankings/trskipper/women'}>Top Women's TR Skippers</Link>
+              </li>
+              <li>
+                <Link to={'/rankings/trcrew/women'}>Top Women's TR Crews</Link>
+              </li>
+            </div>
           </li>
           {isMobile ? (
             <></>
@@ -68,6 +98,15 @@ export default function Navbar() {
                 <button>About</button>
               </Link>
             </li>
+          )}
+          {userVals.tsLink ? (
+            <li>
+              <button>
+                <Link to={`/rankings/${userVals?.tsLink?.split('/')[4]}`}>{userVals?.displayName}</Link>
+              </button>
+            </li>
+          ) : (
+            <></>
           )}
           {!user && (
             <>

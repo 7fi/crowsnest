@@ -17,6 +17,45 @@ export default function SSTeams() {
 
   const [loaded, setLoaded] = useState(false)
 
+  const manualTeams = [
+    'Harvard',
+    'Yale',
+    'Stanford',
+    'Roger Williams',
+    'Brown',
+    'Boston College',
+    'Dartmouth',
+    'Tulane',
+    'Navy',
+    'Coast Guard',
+    'Georgetown',
+    "St. Mary's",
+    'Rhode Island',
+    'Bowdoin',
+    'Charleston',
+    'Cornell',
+    'MIT',
+    'U. Miami',
+    'Tufts',
+    'Pennsylvania',
+    'Hobart & William',
+    'Fordham',
+    'Jacksonville',
+    'Northeastern',
+    'George Washington',
+    'Old Dominion',
+    'South Florida',
+    'Eckerd',
+    'Webb Institute',
+    'North Carolina State',
+    'UC Santa Barbara',
+    'Florida State',
+    'Connecticut College',
+    'Wisconsin',
+    'Texas',
+    'Michigan',
+  ]
+
   const [searchParams] = useSearchParams()
   const linkRegion = searchParams.get('region')
   const linkSort = searchParams.get('sort')
@@ -207,8 +246,17 @@ export default function SSTeams() {
               </tr>
             </thead>
             <tbody className='teamsTable ssbody'>
+              {manualTeams.map((team, index) => (
+                <tr key={index}>
+                  <td className='' style={{ width: 100, paddingLeft: 30 }}>
+                    <img style={{ display: 'inline', maxHeight: '2.3rem' }} src={`https://scores.collegesailing.org/inc/img/schools/${teamCodes[team]}.png`} />
+                  </td>
+                  <td>{index + 1}</td>
+                  <td>{team}</td>
+                </tr>
+              ))}
               {filtered.length > 0 ? (
-                filtered.slice(0, 10).map((team, index) => (
+                filtered.slice(0, 36).map((team, index) => (
                   <tr key={index} className='clickable' onClick={() => navigate(`/rankings/team/${team.name}`)}>
                     <td className='' style={{ width: 100, paddingLeft: 30 }}>
                       <img style={{ display: 'inline', maxHeight: '2.3rem' }} src={`https://scores.collegesailing.org/inc/img/schools/${teamCodes[team.name]}.png`} />

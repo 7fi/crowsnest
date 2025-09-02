@@ -118,6 +118,16 @@ const getAllTeams = async () => {
   }
 }
 
+const getAllTeamsPredVals = async () => {
+  const thisDoc = await getDoc(doc(db, 'vars', 'predTeams'))
+  console.log('reads: %d', 1)
+  if (thisDoc != undefined) {
+    return { data: thisDoc.data(), id: thisDoc.id }
+  } else {
+    return undefined
+  }
+}
+
 const getTop100 = async (type, pos, raceType) => {
   const docName = pos == 'Skipper' ? (type == 'women' ? (raceType == 'fleet' ? 'topWomenSkippers' : 'topWomenSkippersTR') : raceType == 'fleet' ? 'topSkippers' : 'topSkippersTR') : type == 'women' ? (raceType == 'fleet' ? 'topWomenCrews' : 'topWomenCrewsTR') : raceType == 'fleet' ? 'topCrews' : 'topCrewsTR'
   const thisDoc = await getDoc(doc(db, 'vars', docName))
@@ -240,4 +250,14 @@ const getAllSailors = async ({ useCache }) => {
   }
 }
 
-export { app, getUserWithUsername, getTeamWithName, getTeamWithID, getTeamList, scrapeTeamListToDb, getEventWithID, getEventsForTeam, getUserWithID, getSailorElo, getAllTeams, getTeamElos, getTop100, getRegattaElos, getAllSailors, followUser, unFollowUser }
+const getTeamRanks = async () => {
+  const thisDoc = await getDoc(doc(db, 'vars', 'dateRanks'))
+  console.log('reads: %d', 1)
+  if (thisDoc != undefined) {
+    return thisDoc.data()
+  } else {
+    return undefined
+  }
+}
+
+export { app, getUserWithUsername, getTeamWithName, getTeamWithID, getTeamList, scrapeTeamListToDb, getEventWithID, getEventsForTeam, getUserWithID, getSailorElo, getAllTeams, getTeamElos, getTop100, getRegattaElos, getAllSailors, followUser, unFollowUser, getAllTeamsPredVals, getTeamRanks }

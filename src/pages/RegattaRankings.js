@@ -43,6 +43,7 @@ export default function RegattaRankings() {
   }, [activeTab])
 
   const navigate = useNavigate()
+  navigate('/rankings')
 
   const RaceBreakdown = ({ raceID, sailors, pos }) => {
     const filteredPeople = sailors.filter((person) => person.races.some((race) => race.raceID === raceID) && person.Position == pos)

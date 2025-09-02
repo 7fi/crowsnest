@@ -99,7 +99,7 @@ export default function EloTeams() {
         <input className='flexGrowChild' placeholder='Search for a team' onChange={filter} />
         <div className='flexRowContainer'>
           {Object.keys(RegionColors).map((region, i) => (
-            <button key={i} style={{ backgroundColor: activeRegions.indexOf(region) !== -1 ? RegionColors[region] : '' }} className={`filterOption ${activeRegions.indexOf(region) !== -1 ? '' : 'filterInactive'}`} onClick={() => toggleFilter(region)}>
+            <button key={i} style={{ backgroundColor: activeRegions.indexOf(region) !== -1 ? RegionColors[region] : '' }} className={`filterOption ${activeRegions.indexOf(region) !== -1 ? '' : 'filterInactive'}`} onClick={() => toggleFilter(region)} onDoubleClick={() => setActiveRegions([region])}>
               {region}
             </button>
           ))}

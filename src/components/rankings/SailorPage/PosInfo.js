@@ -8,10 +8,8 @@ export default function PosInfo({ type, raceType, pos, rating, rank, races }) {
   const RankObj = ({ type, rank, pos, raceType }) => {
     return (
       <ProCheckLite feature='ranks'>
-        Rank:
         {rank != 0 ? (
           <span>
-            {' '}
             #{rank} for{' '}
             <Link style={{ textDecoration: 'underline' }} to={`/rankings/${raceType == 'fleet' ? pos : 'tr' + pos}${type == "Women's" ? '/women' : ''}`}>
               {type.toLowerCase()} {pos}s
@@ -19,7 +17,7 @@ export default function PosInfo({ type, raceType, pos, rating, rank, races }) {
             *
           </span>
         ) : (
-          <span> (ineligible for {pos} rank in s25)</span>
+          <span className='secondaryText'> (ineligible for {pos} rank in s25)</span>
         )}
       </ProCheckLite>
     )
@@ -39,17 +37,24 @@ export default function PosInfo({ type, raceType, pos, rating, rank, races }) {
   return (
     <>
       {rating != 1000 ? (
-        <div>
+        <div className='ratingStatCard'>
           <div>
-            {type} {raceType} {pos}: <RatingNum ratingNum={rating} type={type == "Women's" ? 'women' : 'open'} pos={pos} /> (
-            <span
-              style={{
-                color: change > 0 ? 'green' : 'red',
-              }}>
-              {change > 0 ? '+' : ''}
-              {change}
-            </span>{' '}
-            in the last 5 races)
+            <div style={{ fontSize: '2rem' }}>
+              <RatingNum ratingNum={rating} type={type == "Women's" ? 'women' : 'open'} pos={pos} />
+            </div>
+            <div>
+              <span
+                style={{
+                  color: change > 0 ? 'green' : 'red',
+                }}>
+                {change > 0 ? '+' : ''}
+                {change}
+              </span>{' '}
+              in the last 5 races
+            </div>
+            <div>
+              {type} {raceType} {pos}
+            </div>
           </div>
           <RankObj raceType={raceType} type={type} rank={rank} pos={pos.toLowerCase()} />
         </div>

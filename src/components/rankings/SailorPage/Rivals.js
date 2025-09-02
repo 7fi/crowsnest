@@ -59,7 +59,7 @@ export default function Rivals({ rivals, pos }) {
               }
             })
             .map((season, index) => (
-              <div key={index} className='filterOption' style={{ backgroundColor: activeSeasons.includes(season) ? 'var(--highlight1)' : '' }} onClick={(e) => toggleFilter(season, e.target)}>
+              <div key={index} className='filterOption' style={{ backgroundColor: activeSeasons.includes(season) ? 'var(--highlight1)' : '' }} onClick={(e) => toggleFilter(season, e.target)} onDoubleClick={() => setActiveSeasons([season])}>
                 {season?.toUpperCase()}
               </div>
             ))}

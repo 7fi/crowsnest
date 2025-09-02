@@ -38,6 +38,7 @@ import posthog from 'posthog-js'
 import Feed from './pages/Feed'
 import Simulator from './pages/Simulator'
 import SSTeams from './pages/SSTeams'
+import History from './pages/History'
 
 export default function App() {
   const userData = useUserData()
@@ -100,6 +101,7 @@ export default function App() {
               <Route path='/rankings/regatta/:season/:regattaName/:raceNum/:pos' element={<RegattaRankings />} />
               <Route path='/rankings/simulator' element={<Simulator />} />
               <Route path='/rankings/screenshot' element={<SSTeams />} />
+              <Route path='/rankings/history' element={<History />} />
               <Route path='/feed' element={<Feed />} />
               <Route path='/drag' element={<TestDrag />} />
               <Route path='/:text' element={<NotFound />} />

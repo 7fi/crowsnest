@@ -200,6 +200,33 @@ select {
   margin: 0.2rem;
 }
 
+.navbar .hoverbox .hoverafter {
+  display: none;
+  position: absolute;
+  top: 40px;
+  background-color: var(--bg);
+  flex-direction: column;
+  align-items: start;
+
+  border-radius: 0 0 var(--radius) var(--radius);
+}
+.hoverafter:hover {
+  display: flex;
+}
+
+.navbar .hoverbox:hover .hoverafter {
+  display: flex;
+}
+.hoverafter li {
+  padding: 0.3rem 0.4rem;
+  width: 100%;
+  margin: 0;
+}
+.hoverafter:hover li:hover {
+  padding: 0.3rem 0.4rem;
+  background-color: var(--border);
+}
+
 /* Loader */
 
 .loader {
@@ -781,6 +808,37 @@ tr .filterOption:hover {
   transform: translate(175px) rotate(20deg);
   animation: exclaim 3s ease-in-out infinite;
 }
+.popupBackground {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  background-color: #000000aa;
+  z-index: 150;
+  top: 0;
+  left: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.popupWindow {
+  position: absolute;
+  background-color: var(--bg);
+  padding: 20px;
+  border-radius: var(--radius);
+  width: 80%;
+  height: 80%;
+  z-index: 151;
+}
+.popupBar {
+  display: flex;
+  justify-content: space-between;
+}
+.popupX {
+  height: 30px;
+  width: 30px;
+  text-align: center;
+}
+
 @keyframes exclaim {
   0% {
     /* transform: translate(175px) rotate(10deg); */
@@ -795,6 +853,28 @@ tr .filterOption:hover {
     transform: translate(175px, -50px) rotate(20deg) scale(1);
   }
 }
+.sailorStatTabContainer {
+  gap: 0;
+}
+.sailorStatTabButton {
+  background-color: var(--border);
+  padding: 0.2rem 0.5rem;
+  margin: 0;
+  border-radius: var(--radius) var(--radius) 2px 2px;
+}
+.ratingStatCard {
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.3rem;
+  /* box-shadow: #00000066 0 0 5px; */
+  /* max0w: 45%; */
+}
+.ratingStatContainer {
+  gap: 0.5rem;
+  width: 100%;
+}
+
+/* Mobile Stuff */
 @media only screen and (max-device-width: 600px) {
   .responsiveRowCol {
     display: flex;
