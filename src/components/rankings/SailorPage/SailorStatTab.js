@@ -6,7 +6,7 @@ export default function SailorStatTab({ titles, components }) {
     <div>
       <div className='flexRowContainer sailorStatTabContainer'>
         {titles.map((title, i) => (
-          <div className='sailorStatTabButton' style={{ backgroundColor: activeTabIndex == i ? 'var(--bg)' : '', textDecoration: activeTabIndex == i ? 'underline' : '' }} onClick={() => setActiveTabIndex(i)}>
+          <div className='sailorStatTabButton' style={activeTabIndex == i ? { backgroundColor: 'var(--highlight1)', color: '#fff', border: '2px solid var(--highlight1)' } : {}} onClick={() => setActiveTabIndex(i)}>
             {title}
           </div>
         ))}

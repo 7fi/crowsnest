@@ -1,6 +1,4 @@
 import { Link } from 'react-router-dom'
-import EloLineChart from '../../EloLineChart'
-import RaceByRace from './RaceByRace'
 import { ProCheckLite } from '../ProCheck'
 import RatingNum from '../../RatingNum'
 
@@ -10,22 +8,32 @@ export default function PosInfo({ type, raceType, pos, rating, rank, races }) {
       <ProCheckLite feature='ranks'>
         {rank != 0 ? (
           <span>
-            #{rank} for{' '}
             <Link style={{ textDecoration: 'underline' }} to={`/rankings/${raceType == 'fleet' ? pos : 'tr' + pos}${type == "Women's" ? '/women' : ''}`}>
-              {type.toLowerCase()} {pos}s
+              #{rank}
             </Link>
-            *
+
+            {/* for{' '} */}
+            {/* <Link style={{ textDecoration: 'underline' }} to={`/rankings/${raceType == 'fleet' ? pos : 'tr' + pos}${type == "Women's" ? '/women' : ''}`}>
+              {type.toLowerCase()} {pos}s
+            </Link> */}
+            {/* * */}
           </span>
         ) : (
-          <span className='secondaryText'> (ineligible for {pos} rank in s25)</span>
+          <span className='secondaryText'> (unranked) </span>
         )}
       </ProCheckLite>
     )
   }
 
+  const lastRegatta = races
+    .filter((race) => race.pos == pos && (type == "Women's" ? race.womens : !race.womens) && race.type == raceType)
+    .slice(-1)[0]
+    ?.raceID.split('/')[1]
+  console.log(lastRegatta)
+
   const change = races
     .filter((race) => race.pos == pos && (type == "Women's" ? race.womens : !race.womens) && race.type == raceType)
-    .slice(-5)
+    .filter((race) => race.raceID.split('/')[1] == lastRegatta)
     .reduce((sum, race) => sum + Math.round(race.change), 0)
     .toFixed(0)
 
@@ -41,22 +49,22 @@ export default function PosInfo({ type, raceType, pos, rating, rank, races }) {
           <div>
             <div style={{ fontSize: '2rem' }}>
               <RatingNum ratingNum={rating} type={type == "Women's" ? 'women' : 'open'} pos={pos} />
+              <span style={{ fontSize: '0.7rem' }}>
+                <span
+                  style={{
+                    color: change > 0 ? 'green' : 'red',
+                  }}>
+                  {change > 0 ? '+' : ''}
+                  {change}
+                </span>{' '}
+                in last regatta
+              </span>
             </div>
+            {/* <div>{lastRegatta}</div> */}
             <div>
-              <span
-                style={{
-                  color: change > 0 ? 'green' : 'red',
-                }}>
-                {change > 0 ? '+' : ''}
-                {change}
-              </span>{' '}
-              in the last 5 races
-            </div>
-            <div>
-              {type} {raceType} {pos}
+              {type} {raceType} {pos} <RankObj raceType={raceType} type={type} rank={rank} pos={pos.toLowerCase()} />
             </div>
           </div>
-          <RankObj raceType={raceType} type={type} rank={rank} pos={pos.toLowerCase()} />
         </div>
       ) : undefined}
     </>

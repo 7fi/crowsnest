@@ -38,13 +38,13 @@ export default function RankingsHome() {
         <div className='heroBlock'>
           <h1 className='heroTitle'>CrowsNest</h1>
           <h2 className='heroSubtitle'>Home of College Sailing Statistics</h2>
-          <span style={{ color: '#eee' }}>15,367 Sailors | 844,096 Scores | 207 Teams</span>
+          <span style={{ color: '#eee' }}>15,554 Sailors | 849,016 Scores | 207 Teams</span>
           <Link style={{ color: '#eee' }} to={'/rankings/team'}>
-            Last Score Update: 05-31-2025
+            Last Score Update: 09-07-2025
           </Link>
           {/* <span className='heroExclaim'>Team Racing Coming Soon!</span> */}
           <Link className='heroExclaim' to={'/rankings/team?sort=team'}>
-            Team Racing!
+            We're back!
           </Link>
         </div>
       </div>
@@ -84,13 +84,13 @@ export default function RankingsHome() {
         <div className='responsiveRowCol'>
           <div className='flexGrowChild contentBox' style={{ minHeight: 'fit-content' }}>
             <h2 style={{ margin: 10 }} onClick={() => nav(`/rankings/team`)} className='clickable'>
-              Top Open Team Racing Teams
+              Top Open Fleet Racing Teams
             </h2>
             <table className='raceByRaceTable'>
               <tbody>
                 {teams
                   .sort((a, b) => {
-                    return b.topRatingTR - a.topRatingTR
+                    return b.topRating - a.topRating
                   })
                   .slice(0, 10)
                   .map((team, index) => (
@@ -103,7 +103,7 @@ export default function RankingsHome() {
                       </td>
                       <td>{team.name}</td>
                       <td className='tableColFit'>
-                        <RatingNum ratingNum={team.topRatingTR} />
+                        <RatingNum ratingNum={team.topRating} />
                       </td>
                     </tr>
                   ))}
@@ -112,13 +112,13 @@ export default function RankingsHome() {
           </div>
           <div className='flexGrowChild contentBox' style={{ minHeight: 'fit-content' }}>
             <h2 style={{ margin: 10 }} onClick={() => nav(`/rankings/team`)} className='clickable'>
-              Top Women's Team Racing Teams
+              Top Women's Fleet Racing Teams
             </h2>
             <table className='raceByRaceTable'>
               <tbody>
                 {teams
                   .sort((a, b) => {
-                    return b.topWomenRatingTR - a.topWomenRatingTR
+                    return b.topWomenRating - a.topWomenRating
                   })
                   .slice(0, 10)
                   .map((team, index) => (
@@ -131,7 +131,7 @@ export default function RankingsHome() {
                       </td>
                       <td>{team.name}</td>
                       <td className='tableColFit'>
-                        <RatingNum ratingNum={team.topWomenRatingTR} type='women' />
+                        <RatingNum ratingNum={team.topWomenRating} type='women' />
                       </td>
                     </tr>
                   ))}
@@ -184,7 +184,7 @@ export default function RankingsHome() {
           {isMobile ? <></> : <img src='accent.png' style={{ maxWidth: '30%', borderRadius: 'var(--radius)', margin: '0.5rem' }} />}
           <div style={{ display: 'flex', flexDirection: 'column' }} className='flexGrowChild'>
             {/* <div className='contentBox flexGrowChild'>We are updating the site almost daily so make sure to check back frequently!</div> */}
-            <div className='contentBox flexGrowChild'>
+            {/* <div className='contentBox flexGrowChild'>
               Team racing is now released! There may still be bugs/errors so please report those{' '}
               <a style={{ textDecoration: 'underline' }} href='https://docs.google.com/forms/d/e/1FAIpQLSfTz5XO-7UM5vloq1Rs9Aly5IGqNvNJN1p7mXq-O1NzoVg6-Q/viewform?usp=header'>
                 here
@@ -194,7 +194,7 @@ export default function RankingsHome() {
                 discord
               </a>
               !
-            </div>
+            </div> */}
             <div className='contentBox flexGrowChild'>
               Data from 2016 onwards has been scraped from techscore and processed to assign each individual sailor a rating value. These ratings change based on performance in regattas, and the strength of the opponents.
               <br />

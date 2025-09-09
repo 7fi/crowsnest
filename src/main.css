@@ -855,12 +855,18 @@ tr .filterOption:hover {
 }
 .sailorStatTabContainer {
   gap: 0;
+  border-bottom: 5px solid var(--highlight1);
+  margin: 0.75rem 0;
 }
 .sailorStatTabButton {
-  background-color: var(--border);
+  background-color: var(--component-bg);
   padding: 0.2rem 0.5rem;
-  margin: 0;
+  margin: 0 0 -2px;
+  border: 2px solid var(--border);
+  border-bottom: none;
   border-radius: var(--radius) var(--radius) 2px 2px;
+  bottom: -2px;
+  text-wrap-mode: nowrap;
 }
 .ratingStatCard {
   border: 2px solid var(--border);

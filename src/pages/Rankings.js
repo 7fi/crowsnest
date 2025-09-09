@@ -77,19 +77,16 @@ export default function Rankings() {
           <div>
             {typeof sailor.Year === 'number' ? sailor.Year : sailor?.Year.split('.')[0].includes('*') ? '20' + sailor.Year?.split('.')[0].slice(0, 2) : '20' + sailor.Year?.split('.')[0].slice(2, 4)} |{' '}
             {sailor.Teams.map((teamName, i) => (
-              <Link style={{ textDecoration: 'underline' }} key={i} to={`/rankings/team/${teamName}`}>
-                {i !== 0 ? ', ' : ''} {teamName}
+              <Link key={i} to={`/rankings/team/${teamName}`}>
+                {i !== 0 ? ', ' : ''} <span style={{ textDecoration: 'underline' }}>{teamName}</span>
               </Link>
             ))}{' '}
-            | {sailor.races.length} total races | {regattaCount} total regattas | Followers: {sailor?.followers ? sailor?.followers?.length : '0'} |{' '}
-            <span className='secondaryText' style={{ fontSize: '1rem' }}>
-              {sailor.Links.map((link, index) => (
-                <a key={index} href={`https://scores.collegesailing.org/sailors/${link}/`} target='1'>
-                  {' '}
-                  (Techscore{sailor.Links.length > 1 ? ' ' + (index + 1) : ''})
-                </a>
-              ))}
-            </span>{' '}
+            | {sailor.races.length} total races | {regattaCount} total regattas | {sailor?.followers ? sailor?.followers?.length : '0'} followers |{' '}
+            {sailor.Links.map((link, index) => (
+              <a key={index} href={`https://scores.collegesailing.org/sailors/${link}/`} target='1'>
+                {index !== 0 ? ', ' : ''} <span style={{ textDecoration: 'underline' }}>Techscore{sailor.Links.length > 1 ? ' ' + (index + 1) : ''}</span>
+              </a>
+            ))}{' '}
             |{' '}
             <span className='secondaryText'>
               Last updated: {new Date(sailor.lastUpdate.seconds * 1000).toLocaleDateString()} at {new Date(sailor.lastUpdate.seconds * 1000).toLocaleTimeString()}
@@ -128,7 +125,7 @@ export default function Rankings() {
             <PosInfo raceType={'team'} races={sailor.races} type="Women's" pos='Skipper' rating={sailor.wtsr} rank={sailor.WomenSkipperRankTR} />
             <PosInfo raceType={'team'} races={sailor.races} type="Women's" pos='Crew' rating={sailor.wtcr} rank={sailor.WomenCrewRankTR} />
           </div>
-          <span style={{ color: '#ccc', left: 30 }}> * in s25</span>
+          {/* <span style={{ color: '#ccc', left: 30 }}> * in s25</span> */}
 
           {/* Graphs */}
           {/* <h2>Rating over time </h2> */}
