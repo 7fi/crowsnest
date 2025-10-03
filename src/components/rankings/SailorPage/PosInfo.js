@@ -28,12 +28,12 @@ export default function PosInfo({ type, raceType, pos, rating, rank, races }) {
   const lastRegatta = races
     .filter((race) => race.pos == pos && (type == "Women's" ? race.womens : !race.womens) && race.type == raceType)
     .slice(-1)[0]
-    ?.raceID.split('/')[1]
+    ?.raceID.split('/')
   console.log(lastRegatta)
 
   const change = races
     .filter((race) => race.pos == pos && (type == "Women's" ? race.womens : !race.womens) && race.type == raceType)
-    .filter((race) => race.raceID.split('/')[1] == lastRegatta)
+    .filter((race) => race.raceID.split('/')[0] == lastRegatta[0] && race.raceID.split('/')[1] == lastRegatta[1])
     .reduce((sum, race) => sum + Math.round(race.change), 0)
     .toFixed(0)
 
@@ -62,7 +62,7 @@ export default function PosInfo({ type, raceType, pos, rating, rank, races }) {
             </div>
             {/* <div>{lastRegatta}</div> */}
             <div>
-              {type} {raceType} {pos} <RankObj raceType={raceType} type={type} rank={rank} pos={pos.toLowerCase()} />
+              {type} {raceType} race {pos.toLowerCase()} <RankObj raceType={raceType} type={type} rank={rank} pos={pos.toLowerCase()} />
             </div>
           </div>
         </div>

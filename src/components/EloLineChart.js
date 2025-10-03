@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ReferenceLine, Area, ComposedChart } from 'recharts'
 import { useMobileDetect } from '../lib/hooks'
 
 export default function EloLineChart({ data, woman }) {
@@ -309,19 +309,30 @@ export default function EloLineChart({ data, woman }) {
   }
 
   let uniqueRegattas = new Set()
+  let firstRaces = []
   races?.forEach((race) => {
     if (race != undefined) {
       const [season, raceName] = race?.raceID.split('/') // Split the string into [season, raceName, raceNumber]
       const uniqueKey = `${season}/${raceName}` // Create a unique key by combining season and raceName
+      if (!uniqueRegattas.has(uniqueKey)) {
+        firstRaces.push(race?.raceID)
+      }
       uniqueRegattas.add(uniqueKey) // Add the unique key to the Set
     }
   })
   uniqueRegattas = Array.from(uniqueRegattas)
+  firstRaces = Array.from(firstRaces)
+
+  let refLines = firstRaces.map((regatta) => <ReferenceLine x={regatta} strokeDasharray='3 3' />)
+  console.log(refLines)
 
   return (
     <ResponsiveContainer height={isMobile ? 250 : 480}>
-      <LineChart data={races} margin={!isMobile ? { top: 5, right: 5, left: 10, bottom: 130 } : { top: 5, right: 5, left: -10, bottom: -39 }}>
-        <CartesianGrid strokeDasharray='3 3' verticalCoordinatesGenerator={(props) => createRange(65, props.width, (props.width + 40) / 10)} />
+      <ComposedChart data={races} margin={!isMobile ? { top: 5, right: 5, left: 10, bottom: 130 } : { top: 5, right: 5, left: -10, bottom: -39 }}>
+        <CartesianGrid strokeDasharray='3 3' vertical={false} />
+
+        {refLines}
+
         <XAxis dataKey='raceID' tick={<CustomTick />} height={60} interval={0} />
         <YAxis label={!isMobile ? { value: 'Rating', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle' }, offset: 0 } : {}} />
         <Tooltip content={<CustomTooltip />} isAnimationActive={false} />
@@ -339,7 +350,7 @@ export default function EloLineChart({ data, woman }) {
         <Line hide={!activeLines.includes('regAvg')} strokeWidth={2} type='monotone' dataKey='regAvg' stroke='#aaa' dot={false} />
 
         <Legend content={<CustomLegend />} verticalAlign='top' height={isMobile ? 55 : 36} />
-      </LineChart>
+      </ComposedChart>
     </ResponsiveContainer>
   )
 }

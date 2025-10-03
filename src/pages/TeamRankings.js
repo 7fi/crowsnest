@@ -17,7 +17,7 @@ export default function TeamRankings() {
   const [teamRegion, setTeamRegion] = useState('')
   const [loaded, setLoaded] = useState(false)
 
-  const [sort, setSort] = useState('rating')
+  const [sort, setSort] = useState('openrating')
   const [activeSeasons, setActiveSeasons] = useState([])
   const [allSeasons, setAllSeasons] = useState([])
   const teamCodes = useTeamCodes()
@@ -173,7 +173,10 @@ export default function TeamRankings() {
           <RatioBar ratio={pos === 'skipper' ? member.avgSkipperRatio : member.avgCrewRatio} />
         </td>
         <td style={{ textAlign: 'right' }} className='tableColFit'>
-          <RatingNum highest={true} sailor={member} pos={pos} />
+          <RatingNum highest={false} sailor={member} pos={pos} type={'open'} raceType={'fleet'} />
+        </td>
+        <td style={{ textAlign: 'right' }} className='tableColFit'>
+          <RatingNum highest={false} sailor={member} pos={pos} type={'women'} raceType={'fleet'} />
         </td>
         <td style={{ textAlign: 'right' }} className='tableColFit'>
           <RatingNum highest={false} sailor={member} pos={pos} type={'open'} raceType={'team'} />
@@ -223,8 +226,10 @@ export default function TeamRankings() {
           }, 0)
           // console.log(bRaces, aRaces)
           return bRaces - aRaces
-        } else if (sort === 'rating') {
-          return getRating(b, pos) - getRating(a, pos)
+        } else if (sort === 'openrating') {
+          return getRating(b, pos, 'open', 'fleet') - getRating(a, pos, 'open', 'fleet')
+        } else if (sort === 'womenrating') {
+          return getRating(b, pos, 'women', 'fleet') - getRating(a, pos, 'women', 'fleet')
         } else if (sort === 'teamrating') {
           return getRating(b, pos, 'open', 'team') - getRating(a, pos, 'open', 'team')
         } else if (sort === 'wteamrating') {
@@ -277,9 +282,17 @@ export default function TeamRankings() {
                   className=' tableColFit clickable'
                   style={{ minWidth: 75, textAlign: 'right' }}
                   onClick={() => {
-                    setSort('rating')
+                    setSort('openrating')
                   }}>
-                  {sort === 'rating' ? <FaSortDown /> : ''}Rating
+                  {sort === 'openrating' ? <FaSortDown /> : ''}Open FR
+                </th>
+                <th
+                  className=' tableColFit clickable'
+                  style={{ minWidth: 75, textAlign: 'right' }}
+                  onClick={() => {
+                    setSort('womenrating')
+                  }}>
+                  {sort === 'womenrating' ? <FaSortDown /> : ''}Women's FR
                 </th>
                 <th
                   className=' tableColFit clickable'

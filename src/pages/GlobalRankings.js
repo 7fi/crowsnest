@@ -71,7 +71,7 @@ export default function GlobalRankings({ pos, type, raceType }) {
         <div>
           <h2>
             Top 100 {raceType == 'fleet' ? 'Fleet Race' : 'Team Race'} {type[0].toUpperCase()}
-            {type.slice(1)} {pos}s in Spring 25
+            {type.slice(1)} {pos}s
           </h2>
           <div className='flexRowContainer'>
             <Link to={`/rankings/${pos === 'Skipper' ? (raceType == 'fleet' ? 'crew' : 'trcrew') : raceType == 'fleet' ? 'skipper' : 'trskipper'}${type === 'women' ? '/women' : ''}`}>
@@ -113,7 +113,7 @@ export default function GlobalRankings({ pos, type, raceType }) {
               )}
               <th style={{ textAlign: 'right' }}>Rating</th>
             </tr>
-      </thead>
+          </thead>
           <tbody>
             {people
               // .filter((member) => member.seasons[pos.toLowerCase()].includes('f24'))

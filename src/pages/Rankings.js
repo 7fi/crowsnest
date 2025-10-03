@@ -132,7 +132,7 @@ export default function Rankings() {
           {/* <EloLineChart woman={sailor.WomenSkipperRating !== 1000 || sailor.WomenCrewRating !== 1000} data={sailor.races} /> */}
 
           <SailorStatTab
-            titles={['Rating Graph', 'All Races', 'Partners', 'Venues', 'Rival Skippers', 'Rival Crews']}
+            titles={['Rating Graph', 'All Races', 'Partners', 'Venues', 'Rival Skippers', 'Rival Crews', 'Bar Charts']}
             components={[
               <EloLineChart woman={sailor.WomenSkipperRating !== 1000 || sailor.WomenCrewRating !== 1000} data={sailor.races} />, //
               <RaceByRace woman={sailor.WomenSkipperRating !== 1000 || sailor.WomenCrewRating !== 1000} races={sailor.races} showFilter={true} />, //
@@ -140,6 +140,31 @@ export default function Rankings() {
               <VenueResults races={sailor.races} />, //
               <Rivals rivals={sailor.Rivals} pos={'Skipper'} />, //
               <Rivals rivals={sailor.Rivals} pos={'Crew'} />,
+              <>
+                <h2>Rating changes by race, Scores (lower is better) and Percentage (higher is better) by race</h2>
+                <PosNegBarChart showLabels={false} data={sailor.races} dataKey='change' syncID='ranking' title='Change' />
+                <PosNegBarChart showLabels={false} data={sailor.races} dataKey='score' syncID='ranking' title='Score' />
+                {/* <h2>Ratio by race (higher is better)</h2> */}
+                <PosNegBarChart
+                  title='Percentage'
+                  showLabels={true}
+                  data={sailor.races.map((race) => {
+                    if (race.ratio < 0) {
+                      race.ratio = 0
+                    }
+                    if (race.type == 'team') {
+                      if (race.outcome == 'win') {
+                        race.ratio = 1
+                      } else {
+                        race.ratio = 0
+                      }
+                    }
+                    return race
+                  })}
+                  dataKey='ratio'
+                  syncID='ranking'
+                />
+              </>,
             ]}
           />
 
