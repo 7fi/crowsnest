@@ -3,7 +3,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsi
 import { useMobileDetect } from '../lib/hooks'
 
 export default function EloLineChart({ data, woman }) {
-  const [activeLines, setActiveLines] = useState(['crewRating', 'skipperRating', 'womenSkipperRating', 'womenCrewRating', 'tsr', 'tcr', 'wtsr', 'wtcr', 'regAvg']) // 'crewRating', 'skipperRating', 'womenSkipperRating', 'womenCrewRating',
+  const [activeLines, setActiveLines] = useState(['cr', 'sr', 'womenSkipperRating', 'womenCrewRating', 'tsr', 'tcr', 'wtsr', 'wtcr', 'regAvg']) // 'cr', 'skipperRating', 'womenSkipperRating', 'womenCrewRating',
   const [notAvailableLines, setNotAvailableLines] = useState([])
   const [allRaces, setAllRaces] = useState([])
   const [races, setRaces] = useState([])
@@ -40,8 +40,10 @@ export default function EloLineChart({ data, woman }) {
         //   race.skipperElo = race.newRating
         //   return race
         // }
-        if (race.skipperRating == 1000) {
-          race.skipperRating = null
+        race.conf = [24 * (race.srmu + 3 * race.srsig + 1000 / 24), 24 * (race.srmu - 3 * race.srsig + 1000 / 24)]
+
+        if (race.sr == 1000) {
+          race.sr = null
         }
         if (race.crewRating == 1000) {
           race.crewRating = null
@@ -69,17 +71,17 @@ export default function EloLineChart({ data, woman }) {
 
     // mappedRaces.forEach((race) => {
     //   if(race.skipperRating != null && !activeLines.includes('skipperRating')) setActiveLines((prev) => [...prev, 'skipperRating'])
-    //   if(race.crewRating != null && !activeLines.includes('crewRating')) setActiveLines((prev) => [...prev, 'crewRating'])
+    //   if(race.crewRating != null && !activeLines.includes('cr')) setActiveLines((prev) => [...prev, 'cr'])
     //   if(race.womenSkipperRating != null && !activeLines.includes('womenSkipperRating')) setActiveLines((prev) => [...prev, 'womenSkipperRating'])
     //   if(race.womenCrewRating != null && !activeLines.includes('womenCrewRating')) setActiveLines((prev) => [...prev, 'womenCrewRating'])
     // })
 
     mappedRaces.forEach((race) => {
-      if (race.skipperRating != null && !newLines.includes('skipperRating')) {
-        newLines.push('skipperRating')
+      if (race.sr != null && !newLines.includes('sr')) {
+        newLines.push('sr')
       }
-      if (race.crewRating != null && !newLines.includes('crewRating')) {
-        newLines.push('crewRating')
+      if (race.crewRating != null && !newLines.includes('cr')) {
+        newLines.push('cr')
       }
       if (race.womenSkipperRating != null && !newLines.includes('womenSkipperRating')) {
         newLines.push('womenSkipperRating')
@@ -102,16 +104,16 @@ export default function EloLineChart({ data, woman }) {
     })
 
     // Update the state with the new list
-    const unavaiable = ['crewRating', 'skipperRating', 'womenSkipperRating', 'womenCrewRating', 'tsr', 'tcr', 'wtsr', 'wtcr'].filter((line) => !newLines.includes(line) && line != 'regAvg')
+    const unavaiable = ['cr', 'sr', 'womenSkipperRating', 'womenCrewRating', 'tsr', 'tcr', 'wtsr', 'wtcr'].filter((line) => !newLines.includes(line) && line != 'regAvg')
     setActiveLines([...newLines, 'regAvg'])
     setNotAvailableLines(unavaiable)
 
     const extendData = (data) => {
       // Find the first and last valid points
-      const firstValids = data.find((d) => d['skipperRating'] != null)
-      const lastValids = [...data].reverse().find((d) => d['skipperRating'] != null)
-      const firstValidc = data.find((d) => d['crewRating'] != null)
-      const lastValidc = [...data].reverse().find((d) => d['crewRating'] != null)
+      const firstValids = data.find((d) => d['sr'] != null)
+      const lastValids = [...data].reverse().find((d) => d['sr'] != null)
+      const firstValidc = data.find((d) => d['cr'] != null)
+      const lastValidc = [...data].reverse().find((d) => d['cr'] != null)
       if (!firstValids || !lastValids) return data
       if (!firstValidc || !lastValidc) return data
       // let start = { raceID: '/Start/', skipperRating: null, crewRating: null, womenSkipperRating: null, womenCrewRating: null }
@@ -182,7 +184,7 @@ export default function EloLineChart({ data, woman }) {
                   )}
                   <tr>
                     <td>Open Fleet</td>
-                    <td>{payload[0]?.payload?.skipperRating?.toFixed(2)}</td>
+                    <td>{payload[0]?.payload?.sr?.toFixed(2)}</td>
                     <td>{payload[0]?.payload?.crewRating?.toFixed(2)}</td>
                   </tr>
                   <tr>
@@ -207,14 +209,12 @@ export default function EloLineChart({ data, woman }) {
     return null
   }
 
-  const createRange = (start, end, gap) => Array.from({ length: Math.floor((end - start) / gap) + 1 }, (_, i) => start + i * gap)
-
   const updateRaces = (curLines) => {
     setRaces(() => {
       console.log(curLines)
       return allRaces.filter((race) => {
         let include = true
-        if (!curLines.includes('skipperRating')) {
+        if (!curLines.includes('sr')) {
           if (race.type == 'fleet' && !race.womens && race.pos == 'Skipper') {
             include = false
           }
@@ -224,7 +224,7 @@ export default function EloLineChart({ data, woman }) {
             include = false
           }
         }
-        if (!curLines.includes('crewRating')) {
+        if (!curLines.includes('cr')) {
           if (race.type == 'fleet' && !race.womens && race.pos == 'Crew') {
             include = false
           }
@@ -297,7 +297,7 @@ export default function EloLineChart({ data, woman }) {
               />
               {/* Custom label with color */}
               <span style={{ color: entry.payload.stroke, fontWeight: 'bold', opacity: activeLines.includes(entry.value) ? '100%' : '50%' }}>
-                {entry.value == 'crewRating' ? 'Open Crew' : entry.value == 'skipperRating' ? 'Open Skipper' : entry.value == 'womenSkipperRating' ? "Women's Skipper" : entry.value == 'womenCrewRating' ? "Women's Crew" : entry.value == 'tsr' ? 'Open TR Skipper' : entry.value == 'tcr' ? 'Open TR Crew' : entry.value == 'wtsr' ? "Women's TR Skipper" : entry.value == 'wtcr' ? "Women's TR Crew" : 'Regatta Average'}
+                {entry.value == 'cr' ? 'Open Crew' : entry.value == 'sr' ? 'Open Skipper' : entry.value == 'womenSkipperRating' ? "Women's Skipper" : entry.value == 'womenCrewRating' ? "Women's Crew" : entry.value == 'tsr' ? 'Open TR Skipper' : entry.value == 'tcr' ? 'Open TR Crew' : entry.value == 'wtsr' ? "Women's TR Skipper" : entry.value == 'wtcr' ? "Women's TR Crew" : 'Regatta Average'}
               </span>
             </div>
           ) : (
@@ -324,7 +324,6 @@ export default function EloLineChart({ data, woman }) {
   firstRaces = Array.from(firstRaces)
 
   let refLines = firstRaces.map((regatta) => <ReferenceLine x={regatta} strokeDasharray='3 3' />)
-  console.log(refLines)
 
   return (
     <ResponsiveContainer height={isMobile ? 250 : 480}>
@@ -332,13 +331,13 @@ export default function EloLineChart({ data, woman }) {
         <CartesianGrid strokeDasharray='3 3' vertical={false} />
 
         {refLines}
-
+        <Area dataKey='conf' stroke='#6088ff' fill='#6088ff55' />
         <XAxis dataKey='raceID' tick={<CustomTick />} height={60} interval={0} />
         <YAxis label={!isMobile ? { value: 'Rating', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle' }, offset: 0 } : {}} />
         <Tooltip content={<CustomTooltip />} isAnimationActive={false} />
 
-        <Line hide={!activeLines.includes('skipperRating')} strokeWidth={2} type='monotone' dataKey='skipperRating' connectNulls={true} stroke='#6088ff' dot={false} />
-        <Line hide={!activeLines.includes('crewRating')} strokeWidth={2} type='monotone' dataKey='crewRating' connectNulls={true} stroke='#ffc259' dot={false} />
+        <Line hide={!activeLines.includes('sr')} strokeWidth={2} type='monotone' dataKey='sr' connectNulls={true} stroke='#6088ff' dot={false} />
+        <Line hide={!activeLines.includes('cr')} strokeWidth={2} type='monotone' dataKey='cr' connectNulls={true} stroke='#ffc259' dot={false} />
         <Line hide={!activeLines.includes('womenSkipperRating')} strokeWidth={2} type='monotone' dataKey='womenSkipperRating' connectNulls={true} stroke='#ff8585' dot={false} />
         <Line hide={!activeLines.includes('womenCrewRating')} strokeWidth={2} type='monotone' dataKey='womenCrewRating' connectNulls={true} stroke='#60b55e' dot={false} />
 
