@@ -261,10 +261,9 @@ export default function TeamRankings() {
                 <th>Name</th>
                 <th>Year</th>
                 <th></th>
-                {/* <th></th> */}
                 <th
                   className='tableColFit clickable'
-                  style={{ minWidth: 75, textAlign: 'right' }}
+                  style={{ textAlign: 'right' }}
                   onClick={() => {
                     setSort('races')
                   }}>
@@ -272,7 +271,7 @@ export default function TeamRankings() {
                 </th>
                 <th
                   className=' tableColFit clickable'
-                  style={{ minWidth: 113, textAlign: 'right' }}
+                  style={{ textAlign: 'right' }}
                   onClick={() => {
                     setSort('ratio')
                   }}>
@@ -280,35 +279,35 @@ export default function TeamRankings() {
                 </th>
                 <th
                   className=' tableColFit clickable'
-                  style={{ minWidth: 75, textAlign: 'right' }}
+                  style={{ textAlign: 'right' }}
                   onClick={() => {
                     setSort('openrating')
                   }}>
-                  {sort === 'openrating' ? <FaSortDown /> : ''}Open FR
+                  {sort === 'openrating' ? <FaSortDown /> : ''}FR
                 </th>
                 <th
                   className=' tableColFit clickable'
-                  style={{ minWidth: 75, textAlign: 'right' }}
+                  style={{ textAlign: 'right' }}
                   onClick={() => {
                     setSort('womenrating')
                   }}>
-                  {sort === 'womenrating' ? <FaSortDown /> : ''}Women's FR
+                  {sort === 'womenrating' ? <FaSortDown /> : ''}WFR
                 </th>
                 <th
                   className=' tableColFit clickable'
-                  style={{ minWidth: 95, textAlign: 'right' }}
+                  style={{ textAlign: 'right' }}
                   onClick={() => {
                     setSort('teamrating')
                   }}>
-                  {sort === 'teamrating' ? <FaSortDown /> : ''}TR Rating
+                  {sort === 'teamrating' ? <FaSortDown /> : ''}TR
                 </th>
                 <th
                   className=' tableColFit clickable'
-                  style={{ minWidth: 98, textAlign: 'right' }}
+                  style={{ textAlign: 'right' }}
                   onClick={() => {
                     setSort('wteamrating')
                   }}>
-                  {sort === 'wteamrating' ? <FaSortDown /> : ''}Women's TR
+                  {sort === 'wteamrating' ? <FaSortDown /> : ''}WTR
                 </th>
               </tr>
             </thead>

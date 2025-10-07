@@ -104,7 +104,7 @@ export default function EloLineChart({ data, woman }) {
     })
 
     // Update the state with the new list
-    const unavaiable = ['cr', 'sr', 'womenSkipperRating', 'womenCrewRating', 'tsr', 'tcr', 'wtsr', 'wtcr'].filter((line) => !newLines.includes(line) && line != 'regAvg')
+    const unavaiable = ['cr', 'sr', 'womenSkipperRating', 'womenCrewRating', 'tsr', 'tcr', 'wtsr', 'wtcr', 'conf'].filter((line) => !newLines.includes(line) && line != 'regAvg')
     setActiveLines([...newLines, 'regAvg'])
     setNotAvailableLines(unavaiable)
 
@@ -331,7 +331,7 @@ export default function EloLineChart({ data, woman }) {
         <CartesianGrid strokeDasharray='3 3' vertical={false} />
 
         {refLines}
-        <Area dataKey='conf' stroke='#6088ff' fill='#6088ff55' />
+        <Area connectNulls dataKey='conf' stroke='#6088ff' fill='#6088ff55' />
         <XAxis dataKey='raceID' tick={<CustomTick />} height={60} interval={0} />
         <YAxis label={!isMobile ? { value: 'Rating', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle' }, offset: 0 } : {}} />
         <Tooltip content={<CustomTooltip />} isAnimationActive={false} />

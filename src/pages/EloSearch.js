@@ -73,7 +73,7 @@ export default function EloSearch() {
           {Object.keys(sailors)
             .filter((sailor) => {
               if (filterText != '') {
-                return sailor.toLowerCase().includes(filterText.toLowerCase()) || sailors[sailor].team.toLowerCase().includes(filterText.toLowerCase())
+                return sailors[sailor].name.toLowerCase().includes(filterText.toLowerCase()) || sailors[sailor].team.toLowerCase().includes(filterText.toLowerCase())
               }
               return true
             })
