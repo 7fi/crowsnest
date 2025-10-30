@@ -29,3 +29,4 @@ elo calculation/EloScript.py.lprof
 /elo calculation/__pycache__/
 adventures.html
 .env
+/backend/node_modules

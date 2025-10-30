@@ -38,13 +38,13 @@ export default function RankingsHome() {
         <div className='heroBlock'>
           <h1 className='heroTitle'>CrowsNest</h1>
           <h2 className='heroSubtitle'>Home of College Sailing Statistics</h2>
-          <span style={{ color: '#eee' }}>16,057 Sailors | 865,827 Scores | 207 Teams</span>
+          <span style={{ color: '#eee' }}>16,642 Sailors | 893,955 Scores | 207 Teams</span>
           <Link style={{ color: '#eee' }} to={'/rankings/team'}>
-            Last Score Update: 09-28-2025
+            Last Score Update: 10-26-2025
           </Link>
           {/* <span className='heroExclaim'>Team Racing Coming Soon!</span> */}
           <Link className='heroExclaim' to={'/rankings/team'}>
-            We're back!
+            Scores are up!
           </Link>
         </div>
       </div>

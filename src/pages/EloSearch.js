@@ -51,9 +51,10 @@ export default function EloSearch() {
           </Link>
         </div>
         <input className='flexGrowChild' style={{ minWidth: '15rem', maxWidth: '50%', height: '2rem' }} placeholder='Search by name / team *' onChange={filter} />
-        <span className='secondaryText'> * only includes sailors in f24/s25</span>
+        <span className='secondaryText'> * only includes sailors in s25/f25</span>
         <input
           type='checkbox'
+          style={{ right: 15, position: 'absolute' }}
           onChange={(e) => {
             setUseImg(e.target.checked)
             console.log(e.target.checked)
@@ -73,7 +74,7 @@ export default function EloSearch() {
           {Object.keys(sailors)
             .filter((sailor) => {
               if (filterText != '') {
-                return sailor.toLowerCase().includes(filterText.toLowerCase()) || sailors[sailor].team.toLowerCase().includes(filterText.toLowerCase())
+                return sailors[sailor].name.toLowerCase().includes(filterText.toLowerCase()) || sailors[sailor].team.toLowerCase().includes(filterText.toLowerCase())
               }
               return true
             })
