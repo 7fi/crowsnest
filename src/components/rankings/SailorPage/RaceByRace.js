@@ -46,25 +46,31 @@ export default function RaceByRace({ races, woman, showFilter }) {
     }
   }
   const filtered = races.slice(0).filter((race) => {
+    const LFilter = filterText.toLowerCase()
     let isSearched = false
-    if (race.raceID.split('-').join(' ').toLowerCase().includes(filterText.toLowerCase()) || race.partner['name'].toLowerCase().includes(filterText.toLowerCase())) {
+    if (
+      race.regatta.split('-').join(' ').toLowerCase().includes(LFilter) || //
+      race.partnerID.split('-').join(' ').toLowerCase().includes(LFilter)
+      // || race.venue.toLowerCase().includes(LFilter)
+    ) {
       isSearched = true
     }
 
-    let validType = race.womens == activeTypes.includes("Women's") || !race.womens == activeTypes.includes('Open')
+    let validType = race.ratingType.includes('w') == activeTypes.includes("Women's") || !race.ratingType.includes('w') == activeTypes.includes('Open')
     if (!activeTypes.includes("Women's") && !activeTypes.includes('Open')) {
       validType = false
     }
 
-    let validPos = (race.pos == 'Skipper' && activePositions.includes('Skipper')) || (race.pos == 'Crew' && activePositions.includes('Crew'))
+    let validPos = (race.position == 'Skipper' && activePositions.includes('Skipper')) || (race.position == 'Crew' && activePositions.includes('Crew'))
     if (!activePositions.includes('Skipper') && !activePositions.includes('Crew')) {
       validPos = false
     }
 
-    let validRaceType = (race.type == 'fleet' && activeRaceTypes.includes('Fleet')) || (race.type == 'team' && activeRaceTypes.includes('Team Race'))
+    let validRaceType = !race.ratingType.includes('t') == activeRaceTypes.includes('Fleet') || race.ratingType.includes('t') == activeRaceTypes.includes('Team Race')
     if (!activeRaceTypes.includes('Team Race') && !activeRaceTypes.includes('Fleet')) {
       validRaceType = false
     }
+
     return validType && validPos && validRaceType && isSearched
   })
 
@@ -134,7 +140,8 @@ export default function RaceByRace({ races, woman, showFilter }) {
                   return raceNumB - raceNumA
                 })
                 .map((race, i) => {
-                  let date = new Date(race?.date.seconds * 1000)
+                  let date = new Date(race?.date)
+                  let change = race.newRating - race.oldRating
                   return (
                     <tr
                       key={i}
@@ -145,8 +152,8 @@ export default function RaceByRace({ races, woman, showFilter }) {
                       className='clickable'>
                       {isMobile ? <></> : <td className='secondaryText tableColFit tdRightBorder'>{date.toLocaleDateString()}</td>}
                       <td className='' style={{ textTransform: 'capitalize' }}>
-                        {race.raceID.split('/')[1].split('-').join(' ')} - {race.raceID.split('/')[2]}{' '}
-                        {race.type == 'team' ? (
+                        {race.regatta.split('-').join(' ')} - {race.raceNumber + race.division}{' '}
+                        {race.ratingType.includes('t') ? (
                           <>
                             <span style={{ textTransform: 'none' }}> vs </span>
                             <span>
@@ -158,29 +165,29 @@ export default function RaceByRace({ races, woman, showFilter }) {
                         )}
                       </td>
 
-                      <td className='tableColFit'>{race.pos}</td>
+                      <td className='tableColFit'>{race.position}</td>
                       <td className='tableColFit'>
                         {' '}
                         {/*onClick={() => navigate(`/rankings/${race.partner}`)} */}
                         {/* <Link to={`/rankings/${race.partner['link']}`}>{race.partner['name']}</Link> */}
-                        <div>{race.partner['name']}</div>
+                        <div>{race.partnerName}</div>
                       </td>
-                      <td style={{ textAlign: 'right', color: race.type == 'fleet' ? (race.score < race.predicted ? 'green' : race.score > race.predicted ? 'red' : '') : race.outcome == 'win' && race.predicted == 'lose' ? 'green' : race.type == 'fleet' ? (race.score > race.predicted ? 'red' : race.score < race.predicted ? 'green' : '') : race.outcome == 'lose' && race.predicted == 'win' ? 'red' : '' }}>
+                      <td style={{ textAlign: 'right', color: !race.ratingType.includes('t') ? (race.score < race.predicted ? 'green' : race.score > race.predicted ? 'red' : '') : race.outcome == 'win' && race.predicted == 'lose' ? 'green' : !race.ratingType.includes('t') ? (race.score > race.predicted ? 'red' : race.score < race.predicted ? 'green' : '') : race.outcome == 'lose' && race.predicted == 'win' ? 'red' : '' }}>
                         {race.score}
-                        {race.type == 'team' ? (race.outcome == 'win' ? '  ' : '') + ' (' + race.outcome + ')' : ''}
-                        {race.type == 'fleet' ? (race.score == 1 ? 'st' : race.score == 2 ? 'nd' : race.score == 3 ? 'rd' : 'th') : ' '}
+                        {race.ratingType.includes('t') ? (race.outcome == 'win' ? '  ' : '') + ' (' + race.outcome + ')' : ''}
+                        {!race.ratingType.includes('t') ? (race.score == 1 ? 'st' : race.score == 2 ? 'nd' : race.score == 3 ? 'rd' : 'th') : ' '}
                       </td>
                       <td style={{ textAlign: 'right' }}>
                         {race.predicted}
-                        {race.type == 'fleet' ? (race.predicted == 1 ? 'st' : race.predicted == 2 ? 'nd' : race.predicted == 3 ? 'rd' : 'th') : ''}
+                        {!race.ratingType.includes('t') ? (race.predicted == 1 ? 'st' : race.predicted == 2 ? 'nd' : race.predicted == 3 ? 'rd' : 'th') : ''}
                       </td>
-                      <td style={{ textAlign: 'center' }}>{race.type == 'fleet' ? <RatioBar ratio={race.ratio} /> : ''}</td>
+                      <td style={{ textAlign: 'center' }}>{!race.ratingType.includes('t') ? <RatioBar ratio={race.ratio} /> : ''}</td>
                       <td style={{ textAlign: 'right' }} className='tableColFit'>
-                        <RatingNum ratingNum={(race.pos == 'Skipper' ? (race.womens ? (race.type == 'fleet' ? race.womenSkipperRating : race.wtsr) : race.type == 'fleet' ? race.skipperRating : race.tsr) : race.womens ? (race.type == 'fleet' ? race.womenCrewRating : race.wtcr) : race.type == 'fleet' ? race.crewRating : race.tcr) - race.change} type={race.womens ? 'women' : ''} />
+                        <RatingNum ratingNum={race.oldRating} type={race.ratingType.includes('w') ? 'women' : ''} />
                       </td>
-                      <td style={{ color: race.change > 0 ? 'green' : 'red' }}>
-                        {race.change > 0 ? ' +' : ' '}
-                        {race.change.toFixed(0)}
+                      <td style={{ color: change > 0 ? 'green' : 'red' }}>
+                        {change > 0 ? ' +' : ' '}
+                        {change.toFixed(0)}
                       </td>
                     </tr>
                   )

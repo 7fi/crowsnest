@@ -26,10 +26,15 @@ export default function PosInfo({ type, raceType, pos, rating, rank, races }) {
   }
 
   const lastRegatta = races
-    .filter((race) => race.pos == pos && (type == "Women's" ? race.womens : !race.womens) && race.type == raceType)
+    .filter(
+      (race) =>
+        race.position == pos && //
+        (type == "Women's" ? race.ratingType.includes('w') : !race.ratingType.includes('w')) &&
+        race.type == raceType
+    )
     .slice(-1)[0]
     ?.raceID.split('/')
-  console.log(lastRegatta)
+  // console.log(lastRegatta)
 
   const change = races
     .filter((race) => race.pos == pos && (type == "Women's" ? race.womens : !race.womens) && race.type == raceType)
