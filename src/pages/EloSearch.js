@@ -90,7 +90,7 @@ export default function EloSearch() {
               {sailors?.map((sailor, index) => (
                 <tr key={index} onClick={() => nav(`/rankings/${sailor.sailorID}`)}>
                   <td className='tableColFit'>
-                    <div className='flexRowContainer sailorNameRow'>
+                    <div className='flexRowContainer'>
                       <img style={{ display: 'inline', maxHeight: '1.5rem' }} src={`https://scores.collegesailing.org/inc/img/schools/${teamCodes[sailor.teamID]}-40.png`} />
                     </div>
                   </td>

@@ -690,6 +690,7 @@ tr .filterOption:hover {
   top: 55px;
   width: 100%;
   z-index: 3;
+  background-color: var(--bg);
 }
 
 .chartTooltip {

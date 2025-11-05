@@ -172,8 +172,59 @@ app.get('/users/:id', async (req, res) => {
   }
 })
 
+app.get('/users/feed/:id', async (req, res) => {
+  try {
+    const resJson = []
+    const [rows] = await pool.query(
+      `WITH RankedTeams AS ( SELECT  st.*,
+        ROW_NUMBER() OVER (
+            PARTITION BY st.sailorID
+            ORDER BY st.season DESC, st.teamID ASC ) AS rn FROM SailorTeams st)
+SELECT
+    s.sailorID,
+    s.name,
+    s.gender,
+    s.year,
+    s.lastUpdate,
+    rt.season,
+    rt.teamID
+FROM SailorFollows sf
+JOIN Sailors s ON sf.sailorID = s.sailorID
+JOIN RankedTeams rt ON s.sailorID = rt.sailorID AND rt.rn = 1
+WHERE sf.userID = ?;`,
+      [req.params.id]
+    )
+    await Promise.all(
+      rows.map(async (sailor) => {
+        const [recentRaces] = await pool.query(
+          `SELECT season, regatta, sailorID, date, score, predicted, ratingType, oldRating, newRating, position, raceNumber, division, ratio FROM FleetScores fs WHERE fs.sailorID = ? UNION ALL
+SELECT season, regatta, sailorID, date, score, predicted, ratingType, oldRating, newRating, position, raceNumber, raceNumber as x, raceNumber as y FROM TRScores ts WHERE ts.sailorID = ?
+ORDER BY date DESC
+LIMIT 5;`,
+          [sailor.sailorID, sailor.sailorID]
+        )
+        sailor.races = recentRaces
+        resJson.push(sailor)
+      })
+    )
+    res.json(resJson)
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ error: 'Database query failed', dueTo: err.sql, why: err.sqlMessage })
+  }
+})
+
+app.get('/users/username/:id', async (req, res) => {
+  try {
+    const [rows] = await pool.query(`SELECT * FROM Users WHERE username = ?;`, [req.params.id])
+    res.json(rows[0])
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ error: 'Database query failed', dueTo: err.sql, why: err.sqlMessage })
+  }
+})
+
 app.get('/homestats', async (req, res) => {
-  console.log('got request for homestats')
   try {
     const [rows] = await pool.query(`SELECT * FROM HomePageStats`)
     res.json(rows[0])
@@ -201,4 +252,4 @@ app.post('/follow', async (req, res) => {
 })
 
 const PORT = process.env.PORT || 3001
-app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`))
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`))

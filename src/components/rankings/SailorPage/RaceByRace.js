@@ -45,6 +45,7 @@ export default function RaceByRace({ races, woman, showFilter }) {
       }
     }
   }
+  console.log(races)
   const filtered = races
     .slice(0)
     .filter((race) => {
@@ -73,6 +74,7 @@ export default function RaceByRace({ races, woman, showFilter }) {
         validRaceType = false
       }
 
+      console.log(validType, validPos, validRaceType, isSearched)
       return validType && validPos && validRaceType && isSearched
     })
     .sort((b, a) => {
@@ -83,6 +85,7 @@ export default function RaceByRace({ races, woman, showFilter }) {
       }
       return a.raceNumber - b.raceNumber
     })
+  console.log(filtered)
 
   return (
     <>

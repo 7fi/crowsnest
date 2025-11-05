@@ -1,5 +1,5 @@
-// const APIURL = 'http://localhost:3001/'
-const APIURL = 'http://api.crowsnest.club/'
+const APIURL = 'http://localhost:3001/'
+// const APIURL = 'https://api.crowsnest.club/'
 
 export async function getAllSailors() {
   const res = await fetch(APIURL + 'sailors/').then((response) => response.json())
@@ -70,5 +70,14 @@ export async function unFollowUser(targetID, targetName, userID) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ follow: false, targetID: targetID, targetName: targetName, userID: userID }),
   }).then((response) => response.json())
+  return res
+}
+
+export async function getUserByUsername(username) {
+  const res = await fetch(APIURL + 'users/username/' + username).then((response) => response.json())
+  return res
+}
+export async function getUserFeed(userID) {
+  const res = await fetch(APIURL + 'users/feed/' + userID).then((response) => response.json())
   return res
 }

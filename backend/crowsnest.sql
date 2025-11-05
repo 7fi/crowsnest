@@ -1,6 +1,6 @@
-# DROP DATABASE IF EXISTS crowsnest;
-# CREATE DATABASE IF NOT EXISTS crowsnest;
-# USE crowsnest;
+DROP DATABASE IF EXISTS crowsnest;
+CREATE DATABASE IF NOT EXISTS crowsnest;
+USE crowsnest;
 
 # CREATE TABLE Races (
 #     season char(4),
@@ -167,3 +167,5 @@ CREATE TABLE HomePageStats(
     exclaimText tinytext,
     lastUpdate DATETIME DEFAULT CURRENT_TIMESTAMP() ON UPDATE CURRENT_TIMESTAMP()
 );
+INSERT INTO HomePageStats( numSailors, numScores, numTeams, exclaimText)
+VALUES ( 0,0,0,'We\'re back!');
