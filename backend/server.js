@@ -18,6 +18,10 @@ const pool = mysql.createPool({
   database: process.env.DB_NAME,
 })
 
+app.get('/', async (req, res) => {
+  res.send('<p>You found the crowsnest backend API!</p>')
+})
+
 app.get('/sailors', async (req, res) => {
   try {
     const [rows] = await pool.query("SELECT DISTINCT s.sailorID, s.name, s.year, st.teamID FROM Sailors s JOIN SailorTeams st ON s.sailorID = st.sailorID WHERE st.season in ('s25');")
@@ -169,6 +173,7 @@ app.get('/users/:id', async (req, res) => {
 })
 
 app.get('/homestats', async (req, res) => {
+  console.log('got request for homestats')
   try {
     const [rows] = await pool.query(`SELECT * FROM HomePageStats`)
     res.json(rows[0])
