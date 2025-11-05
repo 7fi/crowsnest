@@ -8,34 +8,26 @@ export default function PosNegBarChart({ data, dataKey, showLabels, color, alter
 
   // const data = datax.map((race, index) => ({ race, change: datay[index] }))
 
-  data.forEach(({ raceID }) => {
-    const event = raceID.split('/')[0] + '/' + raceID.split('/')[1]
+  data.forEach(({ season, regatta }) => {
+    const event = season + '/' + regatta
     if (!eventToColor[event]) {
       eventToColor[event] = colors[Object.keys(eventToColor).length % colors.length]
     }
   })
 
-  data = data.sort((a, b) => {
-    let datea = new Date(a.date.seconds * 1000)
-    let dateb = new Date(b.date.seconds * 1000)
-    if (datea.getFullYear() != dateb.getFullYear()) {
-      return datea.getFullYear() - dateb.getFullYear()
-    }
-    if (datea.getMonth() != dateb.getMonth()) {
-      return datea.getMonth() - dateb.getMonth()
-    }
-    if (datea.getDate() != dateb.getDate()) {
-      return datea.getDate() - dateb.getDate()
-    }
-    let raceNumA = parseInt(a.raceID.split('/')[2].slice(0, -1))
-    let raceNumB = parseInt(b.raceID.split('/')[2].slice(0, -1))
-    return raceNumA - raceNumB
-  })
+  // data = data.sort((a, b) => {
+  //   let datea = new Date(a.date)
+  //   let dateb = new Date(b.date)
+  //   if (datea - dateb != 0) {
+  //     return datea - dateb
+  //   }
+  //   return a.raceNumber - b.raceNumber
+  // })
 
   // Custom Tick Component
   const CustomTick = ({ x, y, index }) => {
-    const currentEvent = data[index]?.raceID.split('/')[0] + '/' + data[index]?.raceID.split('/')[1]
-    const previousEvent = index > 0 ? data[index - 1]?.raceID.split('/')[0] + '/' + data[index - 1]?.raceID.split('/')[1] : null
+    const currentEvent = data[index]?.season + '/' + data[index]?.regatta
+    const previousEvent = index > 0 ? data[index - 1]?.season + '/' + data[index - 1]?.regatta : null
 
     // Only render the label if the event is different from the previous one
     if (currentEvent !== previousEvent && showLabels) {
@@ -62,7 +54,7 @@ export default function PosNegBarChart({ data, dataKey, showLabels, color, alter
           <div className='contentBox' style={{ padding: 4, fontSize: '0.8rem', backgroundColor: 'var(--bg)' }}>
             {/* Sailor: {payload[0]?.payload.sailor}
             <br /> */}
-            Position: {payload[0]?.payload.pos}
+            Position: {payload[0]?.payload.position}
             <br />
             Rating Change: {payload[0]?.payload.change.toFixed(2)}
             <br />
@@ -74,7 +66,8 @@ export default function PosNegBarChart({ data, dataKey, showLabels, color, alter
             <br />
             {/* Partner: {payload[0]?.payload.partner}
             <br /> */}
-            Race ID: {payload[0]?.payload?.raceID.split('/')[1]}/{payload[0]?.payload?.raceID.split('/')[2]}
+            Race ID: {payload[0]?.payload?.regatta}/{payload[0]?.payload?.raceNumber}
+            {payload[0]?.payload?.division}
           </div>
         </>
       )
@@ -95,10 +88,10 @@ export default function PosNegBarChart({ data, dataKey, showLabels, color, alter
             return (
               <Cell
                 key={`cell-${index}`}
-                onClick={() => {
-                  navigate(`/rankings/regatta/${entry.raceID}/${entry.pos}`)
-                }}
-                fill={alternate ? colors[(offset + Math.floor(index % 2)) % colors.length] : color ? color : eventToColor[entry.raceID.split('/')[0] + '/' + entry.raceID.split('/')[1]]}
+                // onClick={() => {
+                //   navigate(`/rankings/regatta/${entry.regatta}/${entry.pos}`)
+                // }}
+                fill={alternate ? colors[(offset + Math.floor(index % 2)) % colors.length] : color ? color : eventToColor[entry.season + '/' + entry.regatta]}
               />
             )
           })}

@@ -19,12 +19,12 @@ export default function RatingNum({ sailor, pos, type, highest, ratingNum, raceT
           isWomens = true
         }
       } else {
-        let sr = sailor.skipperRating
-        let wsr = sailor.womenSkipperRating
-        if (sailor.womenSkipperRating === 1000) {
+        let sr = sailor.sr
+        let wsr = sailor.wsr
+        if (sailor.wsr === 1000) {
           wsr = 0
         }
-        if (sailor.skipperRating === 1000) {
+        if (sailor.sr === 1000) {
           sr = 0
         }
         rating = highest ? Math.max(sr, wsr) : type === 'women' ? wsr : sr
@@ -47,12 +47,12 @@ export default function RatingNum({ sailor, pos, type, highest, ratingNum, raceT
           isWomens = true
         }
       } else {
-        let cr = sailor.crewRating
-        let wcr = sailor.womenCrewRating
-        if (sailor.womenCrewRating === 1000) {
+        let cr = sailor.cr
+        let wcr = sailor.wcr
+        if (sailor.wcr === 1000) {
           wcr = 0
         }
-        if (sailor.crewRating === 1000) {
+        if (sailor.cr === 1000) {
           cr = 0
         }
         rating = highest ? Math.max(cr, wcr) : type === 'women' ? wcr : cr

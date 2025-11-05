@@ -5,6 +5,7 @@ import VenueVS from '../components/rankings/VenueVS'
 import Loader from '../components/loader'
 import VSblock from '../components/rankings/VSblock'
 import ProCheck from '../components/rankings/ProCheck'
+import { getSailorInfo } from '../lib/apilib'
 
 export default function VersusRanking() {
   const { sailorAName, sailorBName } = useParams()
@@ -15,24 +16,19 @@ export default function VersusRanking() {
   const [loaded, setLoaded] = useState(false)
 
   useEffect(() => {
-    getSailorElo(sailorAName).then((sa) => {
-      setSailorA([])
-      setARaces([])
-      sa?.docs.forEach((sailor) => {
-        if (sailor != undefined) {
-          setSailorA((sailorA) => [...sailorA, sailor?.data()])
-          setARaces((aRaces) => [...aRaces, ...sailor?.data().races])
-        }
-      })
+    setSailorA([])
+    setARaces([])
+    setSailorB([])
+    setBRaces([])
+
+    getSailorInfo(sailorAName).then((sa) => {
+      setSailorA((sailorA) => [...sailorA, sa.data])
+      setARaces((aRaces) => [...aRaces, ...sa?.fleetScores])
     })
-    getSailorElo(sailorBName)
-      .then((sa) => {
-        setSailorB([])
-        setBRaces([])
-        sa?.docs.forEach((sailor) => {
-          setSailorB((sailorB) => [...sailorB, sailor?.data()])
-          setBRaces((bRaces) => [...bRaces, ...sailor?.data().races])
-        })
+    getSailorInfo(sailorBName)
+      .then((sb) => {
+        setSailorB((sailorB) => [...sailorB, sb.data])
+        setBRaces((bRaces) => [...bRaces, ...sb?.fleetScores])
       })
       .then(() => {
         setLoaded(true)
@@ -47,7 +43,7 @@ export default function VersusRanking() {
             <h2>
               {sailorAName} vs {sailorBName}
             </h2>
-            <VSblock sailorsA={sailorA} sailorsB={sailorB} />
+            {/* <VSblock sailorsA={sailorA} sailorsB={sailorB} /> */}
             <h2>Avg ratio by venue</h2>
             <VenueVS racesA={aRaces} racesB={bRaces} sailorAName={sailorAName} sailorBName={sailorBName} />
           </div>

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { getTop100 } from '../lib/firebase'
+import { getTopSailors } from '../lib/apilib'
 import { Link, useNavigate } from 'react-router-dom'
 import Loader from '../components/loader'
 import useTeamCodes from '../lib/teamCodes'
@@ -17,10 +17,9 @@ export default function GlobalRankings({ pos, type, raceType }) {
 
   useEffect(() => {
     setLoaded(false)
-    console.log(pos)
-    getTop100(type, pos, raceType)
+    getTopSailors(pos.toLowerCase(), raceType.toLowerCase(), type == 'women', 100)
       .then((people) => {
-        setPeople(people.data.sailors)
+        setPeople(people)
       })
       .then(() => setLoaded(true))
   }, [pos, type, raceType])
@@ -31,13 +30,13 @@ export default function GlobalRankings({ pos, type, raceType }) {
   const Person = ({ member }) => {
     return (
       <>
-        <tr className='contentBox clickable' onClick={() => nav(`/rankings/${member.key}`)}>
+        <tr className='contentBox clickable' onClick={() => nav(`/rankings/${member.sailorID}`)}>
           <td className='tdRightBorder tableColFit secondaryText' style={{ color: '#aaa' }}>
             {member.rank}{' '}
           </td>
           <td className='tableColFit'>
             <div className='flexRowContainer'>
-              <img style={{ display: 'inline', maxHeight: '1.5rem' }} src={`https://scores.collegesailing.org/inc/img/schools/${teamCodes[member.team]}-40.png`} />
+              <img style={{ display: 'inline', maxHeight: '1.5rem' }} src={`https://scores.collegesailing.org/inc/img/schools/${teamCodes[member.teamID]}-40.png`} />
             </div>
           </td>
           <td className='tableColFit'>{member.name}</td>
@@ -48,11 +47,11 @@ export default function GlobalRankings({ pos, type, raceType }) {
           ) : (
             <>
               <td>
-                <div className='filterOption' style={{ backgroundColor: regionColors[teamRegions[member.team[member.team.length - 1]]], fontSize: '0.8rem' }}>
-                  {teamRegions[member.team[member.team.length - 1]]}
+                <div className='filterOption' style={{ backgroundColor: regionColors[teamRegions[member.teamID]], fontSize: '0.8rem' }}>
+                  {teamRegions[member.teamID]}
                 </div>
               </td>
-              <td>{member.team[member.team.length - 1]}</td>
+              <td>{member.teamID}</td>
             </>
           )}
           {/* <td></td> */}
@@ -117,8 +116,8 @@ export default function GlobalRankings({ pos, type, raceType }) {
           <tbody>
             {people
               // .filter((member) => member.seasons[pos.toLowerCase()].includes('f24'))
-              .map((person) => (
-                <Person member={person} />
+              .map((person, i) => (
+                <Person member={person} key={i} />
               ))}
           </tbody>
         </table>

@@ -15,14 +15,7 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig)
-//eslint-disable-next-line
-const analytics = getAnalytics(app)
 const db = getFirestore()
-
-const functions = getFunctions()
-const getSchools = httpsCallable(functions, 'getSchools')
-const getRegattas = httpsCallable(functions, 'getRegattas')
-const scrToDb = httpsCallable(functions, 'scrapeToDB')
 
 const getUserWithUsername = async (username) => {
   const q = query(collection(db, 'users'), where('username', '==', username))
@@ -68,44 +61,6 @@ const getEventsForTeam = async (teamName) => {
 async function docExists(id, col) {
   const snap = await getCountFromServer(query(collection(db, col), where(documentId(), '==', id)))
   return !!snap.data().count
-}
-
-const scrapeTeamListToDb = async (district, seasons) => {
-  // getDoc(doc(db, 'vars', 'lastTeamScrape')).then(async (document) => {
-  //   // console.log(Date.now())
-  //   console.log('Been 30 minutes since last scrape?', Date.now() / 1000 - document.data().timestamp.seconds > 30 * 60)
-  //   if (Date.now() / 1000 - document.data().timestamp.seconds > 30 * 60) {
-  //     // console.log()
-  //     let schools = await getSchools({ district: 'NWISA' })
-  //     // console.log(await getRegattas({ schoolLink: schools.data['Bainbridge High School'], season: seasons[0] }))
-  //     console.log(schools.data)
-  //     Object.keys(schools.data).forEach(async (school) => {
-  //       // if (!(await docExists(school, 'techscoreTeams'))) {
-  //       let regattas = {}
-  //       // console.log(`https://scores.hssailing.org${schools.data[school]}${season}`)
-  //       regattas[seasons[0]] = await (await getRegattas({ schoolLink: schools.data[school], season: seasons[0] })).data
-  //       console.log(regattas)
-  //       await setDoc(doc(db, 'techscoreTeams', school), {
-  //         regattas: regattas,
-  //       })
-  //       // } else {
-  //       //   console.log('doc exists')
-  //       // }
-  //     })
-  //     setDoc(doc(db, 'vars', 'lastTeamScrape'), { timestamp: serverTimestamp() })
-  //     // return { data: schools.data }
-  //   }
-  // })
-  scrToDb({ seasons: seasons })
-}
-
-const getSailorElo = async (sailorkey) => {
-  // const q = query(collection(db, 'eloSailors'), where('key', '==', sailorkey))
-  // const docs = await getDocs(q)
-  // console.log('reads: ' + docs.docs.length)
-  // const doc = docs.docs[0]
-  const thisdoc = await getDoc(doc(db, 'eloSailors', sailorkey))
-  return thisdoc
 }
 
 const getAllTeams = async () => {
@@ -260,4 +215,4 @@ const getTeamRanks = async () => {
   }
 }
 
-export { app, getUserWithUsername, getTeamWithName, getTeamWithID, getTeamList, scrapeTeamListToDb, getEventWithID, getEventsForTeam, getUserWithID, getSailorElo, getAllTeams, getTeamElos, getTop100, getRegattaElos, getAllSailors, followUser, unFollowUser, getAllTeamsPredVals, getTeamRanks }
+export { app, getUserWithUsername, getTeamWithName, getTeamWithID, getTeamList, getEventWithID, getEventsForTeam, getUserWithID, getAllTeams, getTeamElos, getTop100, getRegattaElos, getAllSailors, followUser, unFollowUser, getAllTeamsPredVals, getTeamRanks }

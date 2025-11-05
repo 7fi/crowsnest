@@ -63,7 +63,7 @@ export default function Navbar() {
             <Link to={`/rankings/search`}>
               <button>Sailors</button>
             </Link>
-            <div className='hoverafter'>
+            <ul className='hoverafter'>
               <li>
                 <Link to={'/rankings/skipper'}>Top Open Skippers</Link>
               </li>
@@ -88,7 +88,7 @@ export default function Navbar() {
               <li>
                 <Link to={'/rankings/trcrew/women'}>Top Women's TR Crews</Link>
               </li>
-            </div>
+            </ul>
           </li>
           {isMobile ? (
             <></>

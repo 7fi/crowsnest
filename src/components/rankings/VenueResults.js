@@ -20,9 +20,9 @@ export default function VenueResults({ races }) {
     if (!acc[race.venue]) {
       acc[race.venue] = { change: 0, count: 0, ratio: 0 }
     }
-    acc[race.venue].change += race.change
+    acc[race.venue].change += race.newRating - race.oldRating
     acc[race.venue].count += 1
-    if (race.type == 'fleet') {
+    if (!race.ratingType.includes('t')) {
       acc[race.venue].ratio += race.ratio
     } else {
       acc[race.venue].ratio += race.outcome == 'win' ? 1 : 0

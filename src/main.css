@@ -175,7 +175,7 @@ select {
   height: 55px;
   background-color: var(--bg);
   /* border-bottom: 0.2rem solid var(--border); */
-  z-index: 10;
+  z-index: 100;
   box-shadow: 0px 0px 5px#00000044;
 }
 
@@ -210,6 +210,7 @@ select {
 
   border-radius: 0 0 var(--radius) var(--radius);
 }
+
 .hoverafter:hover {
   display: flex;
 }
@@ -217,10 +218,12 @@ select {
 .navbar .hoverbox:hover .hoverafter {
   display: flex;
 }
+
 .hoverafter li {
   padding: 0.3rem 0.4rem;
   width: 100%;
   margin: 0;
+  background-color: var(--bg);
 }
 .hoverafter:hover li:hover {
   padding: 0.3rem 0.4rem;
@@ -686,7 +689,6 @@ tr .filterOption:hover {
   position: sticky;
   top: 55px;
   width: 100%;
-  background-color: var(--bg);
   z-index: 3;
 }
 
@@ -894,4 +896,13 @@ tr .filterOption:hover {
   .recharts-legend-wrapper {
     top: 0px;
   }
+}
+
+.searchBarContainer {
+  position: fixed;
+  width: 100%;
+  left: 0;
+  padding: 15px;
+  background-color: var(--bg);
+  z-index: 10;
 }

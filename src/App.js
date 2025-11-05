@@ -106,7 +106,7 @@ export default function App() {
               <Route path='/drag' element={<TestDrag />} />
               <Route path='/:text' element={<NotFound />} />
             </Routes>
-            {!pathname.includes('/rankings/team') ? <Footer /> : <></>}
+            {!pathname.includes('/rankings/team') && !pathname.includes('/rankings/search') ? <Footer /> : <></>}
             <Toaster position='top-center' reverseOrder={false} />
             <ScrollButton />
             {/* <div onClick={() => window.scrollTo(0, 0)} style={{ position: 'sticky', bottom: -20, right: 0, visibility: window.scrollX > 20 ? 'visible' : 'visible' }}>

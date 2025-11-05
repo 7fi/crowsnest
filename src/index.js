@@ -14,13 +14,13 @@ const options = {
 
 const root = ReactDOM.createRoot(document.getElementById('root'))
 root.render(
-  <React.StrictMode>
-    <PostHogProvider apiKey={process.env.REACT_APP_PUBLIC_POSTHOG_KEY} options={options}>
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
-    </PostHogProvider>
-  </React.StrictMode>
+  // <React.StrictMode>
+  <PostHogProvider apiKey={process.env.REACT_APP_PUBLIC_POSTHOG_KEY} options={options}>
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
+  </PostHogProvider>
+  // </React.StrictMode>
 )
 
 // If you want to start measuring performance in your app, pass a function

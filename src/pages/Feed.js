@@ -5,6 +5,7 @@ import RaceByRace from '../components/rankings/SailorPage/RaceByRace'
 import { Link } from 'react-router-dom'
 import useTeamCodes from '../lib/teamCodes'
 import FollowButton from '../components/rankings/FollowButton'
+import { getSailorInfo } from '../lib/apilib'
 
 export default function Feed() {
   const userData = useUserData()
@@ -16,9 +17,7 @@ export default function Feed() {
       console.log(userData.userVals)
       userData?.userVals?.following?.forEach((follow) => {
         console.log(follow.targetKey)
-        getSailorElo(follow.targetKey).then((sailor) => {
-          console.log(sailor.data())
-          console.log(sailor?.data().races?.slice(0, 5))
+        getSailorInfo(follow.targetKey).then((sailor) => {
           setFollowing((prev) => [...prev, sailor.data()])
         })
       })

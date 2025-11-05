@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { getAllTeams, getTop100 } from '../lib/firebase'
+import { getAllTeams, getHomePageStats } from '../lib/apilib'
 import useTeamCodes from '../lib/teamCodes'
 import RatingNum from '../components/RatingNum'
 import { TbDiamondsFilled } from 'react-icons/tb'
@@ -9,6 +9,7 @@ import { useMobileDetect } from '../lib/hooks'
 
 export default function RankingsHome() {
   const [teams, setTeams] = useState([])
+  const [stats, setStats] = useState({})
   // const [topOpenSkippers, setTopOpenSkippers] = useState([])
   // const [topWomenSkippers, setTopWomenSkippers] = useState([])
   const isMobile = useMobileDetect()
@@ -16,16 +17,12 @@ export default function RankingsHome() {
   const teamCodes = useTeamCodes()
 
   useEffect(() => {
-    getAllTeams().then((teams) => {
-      // console.log(teams.data.teams)
-      setTeams(teams.data.teams)
+    getHomePageStats().then((stats) => {
+      setStats(stats)
     })
-    // getTop100('open', 'Skipper').then((sailors) => {
-    //   setTopOpenSkippers(sailors.data.sailors)
-    // })
-    // getTop100('women', 'Skipper').then((sailors) => {
-    //   setTopWomenSkippers(sailors.data.sailors)
-    // })
+    getAllTeams().then((teams) => {
+      setTeams(teams)
+    })
   }, [])
 
   const nav = useNavigate()
@@ -38,13 +35,15 @@ export default function RankingsHome() {
         <div className='heroBlock'>
           <h1 className='heroTitle'>CrowsNest</h1>
           <h2 className='heroSubtitle'>Home of College Sailing Statistics</h2>
-          <span style={{ color: '#eee' }}>16,128 Sailors | 869,644 Scores | 207 Teams</span>
+          <span style={{ color: '#eee' }}>
+            {stats.numSailors?.toLocaleString()} Sailors | {stats.numScores?.toLocaleString()} Scores | {stats.numTeams} Teams
+          </span>
           <Link style={{ color: '#eee' }} to={'/rankings/team'}>
-            Last Score Update: 10-5-2025
+            Last Score Update: {new Date(stats.lastUpdate).toLocaleDateString()}
           </Link>
           {/* <span className='heroExclaim'>Team Racing Coming Soon!</span> */}
           <Link className='heroExclaim' to={'/rankings/team'}>
-            We're back!
+            {stats.exclaimText}
           </Link>
         </div>
       </div>
@@ -90,20 +89,20 @@ export default function RankingsHome() {
               <tbody>
                 {teams
                   .sort((a, b) => {
-                    return b.topRating - a.topRating
+                    return b.topFleetRating - a.topFleetRating
                   })
                   .slice(0, 10)
                   .map((team, index) => (
-                    <tr key={index} className='clickable' onClick={() => nav(`/rankings/team/${team.name}`)}>
+                    <tr key={index} className='clickable' onClick={() => nav(`/rankings/team/${team.teamName}`)}>
                       <td className='tableColFit' style={{ textAlign: 'right' }}>
                         {index + 1}
                       </td>
                       <td className='tableColFit'>
-                        <img style={{ display: 'inline', maxHeight: '3rem', minHeight: 10, minWidth: '3rem' }} src={`https://scores.collegesailing.org/inc/img/schools/${teamCodes[team.name]}.png`} />
+                        <img style={{ display: 'inline', maxHeight: '3rem', minHeight: 10, minWidth: '3rem' }} src={`https://scores.collegesailing.org/inc/img/schools/${teamCodes[team.teamName]}.png`} />
                       </td>
-                      <td>{team.name}</td>
+                      <td>{team.teamName}</td>
                       <td className='tableColFit'>
-                        <RatingNum ratingNum={team.topRating} />
+                        <RatingNum ratingNum={team.topFleetRating} />
                       </td>
                     </tr>
                   ))}
@@ -122,14 +121,14 @@ export default function RankingsHome() {
                   })
                   .slice(0, 10)
                   .map((team, index) => (
-                    <tr key={index} className='clickable' onClick={() => nav(`/rankings/team/${team.name}`)}>
+                    <tr key={index} className='clickable' onClick={() => nav(`/rankings/team/${team.teamName}`)}>
                       <td className='tableColFit' style={{ textAlign: 'right' }}>
                         {index + 1}
                       </td>
                       <td className='tableColFit'>
-                        <img style={{ display: 'inline', maxHeight: '3rem', minHeight: 10, minWidth: '3rem' }} src={`https://scores.collegesailing.org/inc/img/schools/${teamCodes[team.name]}.png`} />
+                        <img style={{ display: 'inline', maxHeight: '3rem', minHeight: 10, minWidth: '3rem' }} src={`https://scores.collegesailing.org/inc/img/schools/${teamCodes[team.teamName]}.png`} />
                       </td>
-                      <td>{team.name}</td>
+                      <td>{team.teamName}</td>
                       <td className='tableColFit'>
                         <RatingNum ratingNum={team.topWomenRating} type='women' />
                       </td>

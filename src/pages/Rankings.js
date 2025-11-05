@@ -15,13 +15,15 @@ import { AuthCheckLite } from '../components/AuthCheck'
 import FollowButton from '../components/rankings/FollowButton'
 import { UserContext } from '../lib/context'
 import SailorStatTab from '../components/rankings/SailorPage/SailorStatTab'
-import { getSailorInfo } from '../lib/apilib'
+import { getSailorFollows, getSailorInfo, getSailorRivals, getSailorTeams } from '../lib/apilib'
 
 export default function Rankings() {
   const { key } = useParams()
   const [sailor, setSailor] = useState(undefined)
+  const [followCount, setFollowCount] = useState(0)
   const [races, setRaces] = useState([])
   const [teams, setTeams] = useState([])
+  const [rivals, setRivals] = useState({ skipper: [], crew: [] })
   const [loaded, setLoaded] = useState(false)
   const [following, setFollowing] = useState(false)
   const [isUsers, setIsUsers] = useState(false)
@@ -35,37 +37,52 @@ export default function Rankings() {
 
   useEffect(() => {
     getSailorInfo(key).then((dataIn) => {
-      console.log('fetching sailor info from apilib', dataIn)
       setSailor(dataIn.data)
-      setRaces(dataIn.fleetScores)
-      setTeams([])
-      setLoaded(true)
+      let totalRaces = dataIn.fleetScores.concat(dataIn.teamScores)
+      setRaces(
+        totalRaces.sort((a, b) => {
+          let datea = new Date(a.date)
+          let dateb = new Date(b.date)
+          if (datea - dateb != 0) {
+            return datea - dateb
+          }
+          return a.raceNumber - b.raceNumber
+        })
+      )
+      setRegattaCount(
+        dataIn.fleetScores.reduce((acc, race) => {
+          const regattaKey = `${race.season}-${race.regatta}`
+          if (!acc.includes(regattaKey)) {
+            acc.push(regattaKey)
+          }
+          return acc
+        }, []).length
+      )
+      // setLoaded(true)
     })
 
-    // getSailorElo(key).then((tempSailor) => {
-    //   console.log('fetching sailor info from firebase', tempSailor.data())
-    //   setSailor(undefined)
-    //   if (tempSailor !== undefined) {
-    //     setSailor(tempSailor.data())
-    //     setRegattaCount(
-    //       tempSailor.data().races.reduce((set, race) => {
-    //         let splitid = race['raceID'].split('/')
-    //         set.add(splitid[0] + '/' + splitid[1])
-    //         return set
-    //       }, new Set()).size
-    //     )
-    //     // setFollowing(sailor?.followers?.some((fol) => fol.followerUid === userData?.user?.uid))
-    //     // console.log(tempSailor.data())
-    //   }
-    //   setLoaded(true)
-    // })
+    getSailorTeams(key).then((dataIn) => {
+      setTeams(dataIn.map((item) => item.teamID))
+      // setLoaded(true)
+    })
+    getSailorRivals(key).then((dataIn) => {
+      setRivals({
+        skipper: dataIn.filter((rival) => rival.position == 'Skipper'),
+        crew: dataIn.filter((rival) => rival.position == 'Crew'),
+      })
+      // setLoaded(true)
+    })
+    getSailorFollows(key).then((dataIn) => {
+      setFollowCount(dataIn.count)
+      setLoaded(true)
+    })
   }, [key])
 
   useEffect(() => {
     if (userData.user !== undefined) {
-      console.log('checking following')
+      console.log('checking following', userData.userVals?.following, sailor?.sailorID)
       // setFollowing(sailor?.followers?.some((fol) => fol.followerUid === userData?.user?.uid))
-      setFollowing(userData.userVals?.following?.some((fol) => fol.targetKey === sailor?.key))
+      setFollowing(userData.userVals?.following?.includes(sailor?.sailorID))
       setIsUsers(userData.userVals?.tsLink?.split('/')[4] == key)
     }
   }, [key, userData])
@@ -75,8 +92,8 @@ export default function Rankings() {
       {loaded && sailor !== undefined ? (
         <div>
           <div className='flexRowContainer sailorNameRow'>
-            <Link to={`/rankings/team/${teams.slice(-1)}`}>
-              <img style={{ display: 'inline', maxHeight: '3rem' }} src={`https://scores.collegesailing.org/inc/img/schools/${teamCodes[teams[teams.length - 1]]}.png`} />
+            <Link to={`/rankings/team/${teams[0]}`}>
+              <img style={{ display: 'inline', maxHeight: '3rem' }} src={`https://scores.collegesailing.org/inc/img/schools/${teamCodes[teams[0]]}.png`} />
             </Link>
             <h1 style={{ display: 'inline-block' }}>{sailor.name}</h1>
             <AuthCheckLite>
@@ -85,21 +102,22 @@ export default function Rankings() {
             </AuthCheckLite>
           </div>
           <div>
-            {typeof sailor.year === 'number' ? sailor.year : sailor?.year.split('.')[0].includes('*') ? '20' + sailor.year?.split('.')[0].slice(0, 2) : '20' + sailor.year?.split('.')[0].slice(2, 4)} |{' '}
-            {/* {teams.map((teamName, i) => (
-              <Link key={i} to={`/rankings/team/${teamName}`}>
-                {i !== 0 ? ', ' : ''} <span style={{ textDecoration: 'underline' }}>{teamName}</span>
-              </Link>
-            ))}{' '} */}
-            | {races.length} total races | {regattaCount} total regattas | {sailor?.followers ? sailor?.followers?.length : '0'} followers |{' '}
-            {/* {sailor.Links.map((link, index) => (
-              <a key={index} href={`https://scores.collegesailing.org/sailors/${link}/`} target='1'>
-                {index !== 0 ? ', ' : ''} <span style={{ textDecoration: 'underline' }}>Techscore{sailor.Links.length > 1 ? ' ' + (index + 1) : ''}</span>
-              </a>
-            ))}{' '} */}
+            {sailor.year} |{' '}
+            {teams
+              .slice(0)
+              .reverse()
+              .map((teamName, i) => (
+                <Link key={i} to={`/rankings/team/${teamName}`}>
+                  {i !== 0 ? ', ' : ''} <span style={{ textDecoration: 'underline' }}>{teamName}</span>
+                </Link>
+              ))}{' '}
+            | {races.length} total races | {regattaCount} total regattas | {followCount} followers |{' '}
+            <a href={`https://scores.collegesailing.org/sailors/${sailor.sailorID}/`} target='1'>
+              <span style={{ textDecoration: 'underline' }}>Techscore</span>
+            </a>{' '}
             |{' '}
             <span className='secondaryText'>
-              Last updated: {new Date(sailor.lastUpdate.seconds * 1000).toLocaleDateString()} at {new Date(sailor.lastUpdate.seconds * 1000).toLocaleTimeString()}
+              Last updated: {new Date(sailor.lastUpdate).toLocaleDateString()} at {new Date(sailor.lastUpdate).toLocaleTimeString()}
             </span>
             <AuthCheckLite>
               {userData?.userVals?.tsLink ? (
@@ -146,23 +164,32 @@ export default function Rankings() {
             components={[
               <EloLineChart woman={sailor.wsr !== 1000 || sailor.wcr !== 1000} data={races} />, //
               <RaceByRace woman={sailor.wsr !== 1000 || sailor.wcr !== 1000} races={races} showFilter={true} />, //
-              // <PartnerResults races={races} />, //
-              // <VenueResults races={races} />, //
-              // <Rivals rivals={sailor.Rivals} pos={'Skipper'} />, //
-              // <Rivals rivals={sailor.Rivals} pos={'Crew'} />,
+              <PartnerResults races={races} />, //
+              <VenueResults races={races} />, //
+              <Rivals rivals={rivals.skipper} pos={'Skipper'} />, //
+              <Rivals rivals={rivals.crew} pos={'Crew'} />,
               <>
                 <h2>Rating changes by race, Scores (lower is better) and Percentage (higher is better) by race</h2>
-                {/* <PosNegBarChart showLabels={false} data={races} dataKey='change' syncID='ranking' title='Change' />
-                <PosNegBarChart showLabels={false} data={races} dataKey='score' syncID='ranking' title='Score' /> */}
+                <PosNegBarChart
+                  showLabels={false}
+                  data={races.map((race) => {
+                    race.change = race.newRating - race.oldRating
+                    return race
+                  })}
+                  dataKey='change'
+                  syncID='ranking'
+                  title='Change'
+                />
+                <PosNegBarChart showLabels={false} data={races} dataKey='score' syncID='ranking' title='Score' />
                 {/* <h2>Ratio by race (higher is better)</h2> */}
-                {/* <PosNegBarChart
+                <PosNegBarChart
                   title='Percentage'
                   showLabels={true}
                   data={races.map((race) => {
                     if (race.ratio < 0) {
                       race.ratio = 0
                     }
-                    if (race.type == 'team') {
+                    if (race.ratingType.includes('t')) {
                       if (race.outcome == 'win') {
                         race.ratio = 1
                       } else {
@@ -173,7 +200,7 @@ export default function Rankings() {
                   })}
                   dataKey='ratio'
                   syncID='ranking'
-                /> */}
+                />
               </>,
             ]}
           />

@@ -25,25 +25,38 @@ export default function PosInfo({ type, raceType, pos, rating, rank, races }) {
     )
   }
 
-  const lastRegatta = races
+  function getRaceType(race) {
+    if (race.ratingType.includes('t')) {
+      return 'team'
+    } else {
+      return 'fleet'
+    }
+  }
+  function getRaceWomens(race) {
+    if (race.ratingType.includes('w')) {
+      return true
+    } else {
+      return false
+    }
+  }
+
+  const lastRace = races
     .filter(
       (race) =>
         race.position == pos && //
-        (type == "Women's" ? race.ratingType.includes('w') : !race.ratingType.includes('w')) &&
-        race.type == raceType
+        (type == "Women's" ? getRaceWomens(race) : !getRaceWomens(race)) &&
+        getRaceType(race) == raceType
     )
     .slice(-1)[0]
-    ?.raceID.split('/')
-  // console.log(lastRegatta)
 
   const change = races
-    .filter((race) => race.pos == pos && (type == "Women's" ? race.womens : !race.womens) && race.type == raceType)
-    .filter((race) => race.raceID.split('/')[0] == lastRegatta[0] && race.raceID.split('/')[1] == lastRegatta[1])
-    .reduce((sum, race) => sum + Math.round(race.change), 0)
+    .filter((race) => race.position == pos && (type == "Women's" ? getRaceWomens(race) : !getRaceWomens(race)) && getRaceType(race) == raceType)
+    .filter((race) => race.season == lastRace.season && race.regatta == lastRace.regatta)
+    .reduce((sum, race) => sum + Math.round(race.newRating - race.oldRating), 0)
     .toFixed(0)
 
   const peakRating = races
-    .filter((race) => race.pos == pos && (type == "Women's" ? race.womens : !race.womens))
+    .filter((race) => race.position == pos && (type == "Women's" ? getRaceWomens(race) : !getRaceWomens(race)))
     // .sort((a,b) => race)
     .slice(-1)
 

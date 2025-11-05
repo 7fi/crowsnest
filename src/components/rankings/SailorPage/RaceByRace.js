@@ -45,34 +45,44 @@ export default function RaceByRace({ races, woman, showFilter }) {
       }
     }
   }
-  const filtered = races.slice(0).filter((race) => {
-    const LFilter = filterText.toLowerCase()
-    let isSearched = false
-    if (
-      race.regatta.split('-').join(' ').toLowerCase().includes(LFilter) || //
-      race.partnerID.split('-').join(' ').toLowerCase().includes(LFilter)
-      // || race.venue.toLowerCase().includes(LFilter)
-    ) {
-      isSearched = true
-    }
+  const filtered = races
+    .slice(0)
+    .filter((race) => {
+      const LFilter = filterText.toLowerCase()
+      let isSearched = false
+      if (
+        race.regatta.split('-').join(' ').toLowerCase().includes(LFilter) || //
+        race.partnerID.split('-').join(' ').toLowerCase().includes(LFilter)
+        // || race.venue.toLowerCase().includes(LFilter)
+      ) {
+        isSearched = true
+      }
 
-    let validType = race.ratingType.includes('w') == activeTypes.includes("Women's") || !race.ratingType.includes('w') == activeTypes.includes('Open')
-    if (!activeTypes.includes("Women's") && !activeTypes.includes('Open')) {
-      validType = false
-    }
+      let validType = race.ratingType.includes('w') == activeTypes.includes("Women's") || !race.ratingType.includes('w') == activeTypes.includes('Open')
+      if (!activeTypes.includes("Women's") && !activeTypes.includes('Open')) {
+        validType = false
+      }
 
-    let validPos = (race.position == 'Skipper' && activePositions.includes('Skipper')) || (race.position == 'Crew' && activePositions.includes('Crew'))
-    if (!activePositions.includes('Skipper') && !activePositions.includes('Crew')) {
-      validPos = false
-    }
+      let validPos = (race.position == 'Skipper' && activePositions.includes('Skipper')) || (race.position == 'Crew' && activePositions.includes('Crew'))
+      if (!activePositions.includes('Skipper') && !activePositions.includes('Crew')) {
+        validPos = false
+      }
 
-    let validRaceType = !race.ratingType.includes('t') == activeRaceTypes.includes('Fleet') || race.ratingType.includes('t') == activeRaceTypes.includes('Team Race')
-    if (!activeRaceTypes.includes('Team Race') && !activeRaceTypes.includes('Fleet')) {
-      validRaceType = false
-    }
+      let validRaceType = !race.ratingType.includes('t') == activeRaceTypes.includes('Fleet') || race.ratingType.includes('t') == activeRaceTypes.includes('Team Race')
+      if (!activeRaceTypes.includes('Team Race') && !activeRaceTypes.includes('Fleet')) {
+        validRaceType = false
+      }
 
-    return validType && validPos && validRaceType && isSearched
-  })
+      return validType && validPos && validRaceType && isSearched
+    })
+    .sort((b, a) => {
+      let datea = new Date(a.date)
+      let dateb = new Date(b.date)
+      if (datea - dateb != 0) {
+        return datea - dateb
+      }
+      return a.raceNumber - b.raceNumber
+    })
 
   return (
     <>
@@ -122,76 +132,59 @@ export default function RaceByRace({ races, woman, showFilter }) {
           </thead>
           <tbody>
             {filtered.length > 0 ? (
-              filtered
-                .sort((a, b) => {
-                  let datea = new Date(a.date.seconds * 1000)
-                  let dateb = new Date(b.date.seconds * 1000)
-                  if (dateb.getFullYear() != datea.getFullYear()) {
-                    return dateb.getFullYear() - datea.getFullYear()
-                  }
-                  if (dateb.getMonth() != datea.getMonth()) {
-                    return dateb.getMonth() - datea.getMonth()
-                  }
-                  if (dateb.getDate() != datea.getDate()) {
-                    return dateb.getDate() - datea.getDate()
-                  }
-                  let raceNumA = a.type == 'fleet' ? a.raceID.split('/')[2].slice(0, -1) : a.raceID.split('/')[2]
-                  let raceNumB = a.type == 'fleet' ? b.raceID.split('/')[2].slice(0, -1) : b.raceID.split('/')[2]
-                  return raceNumB - raceNumA
-                })
-                .map((race, i) => {
-                  let date = new Date(race?.date)
-                  let change = race.newRating - race.oldRating
-                  return (
-                    <tr
-                      key={i}
-                      onClick={() => {
-                        // navigate(`/rankings/regatta/${race.raceID}/${race.pos}`)
-                        window.open(`https://scores.collegesailing.org/${race.raceID.split('/')[0]}/${race.raceID.split('/')[1]}/full-scores/`, '_blank', 'noopener,noreferrer')
-                      }}
-                      className='clickable'>
-                      {isMobile ? <></> : <td className='secondaryText tableColFit tdRightBorder'>{date.toLocaleDateString()}</td>}
-                      <td className='' style={{ textTransform: 'capitalize' }}>
-                        {race.regatta.split('-').join(' ')} - {race.raceNumber + race.division}{' '}
-                        {race.ratingType.includes('t') ? (
-                          <>
-                            <span style={{ textTransform: 'none' }}> vs </span>
-                            <span>
-                              {race.opponentTeam} {race.opponentNick}
-                            </span>{' '}
-                          </>
-                        ) : (
-                          ''
-                        )}
-                      </td>
+              filtered.map((race, i) => {
+                let date = new Date(race?.date)
+                let change = race.newRating - race.oldRating
+                return (
+                  <tr
+                    key={i}
+                    onClick={() => {
+                      // navigate(`/rankings/regatta/${race.raceID}/${race.pos}`)
+                      window.open(`https://scores.collegesailing.org/${race.season}/${race.regatta}/full-scores/`, '_blank', 'noopener,noreferrer')
+                    }}
+                    className='clickable'>
+                    {isMobile ? <></> : <td className='secondaryText tableColFit tdRightBorder'>{date.toLocaleDateString()}</td>}
+                    <td className='' style={{ textTransform: 'capitalize' }}>
+                      {race.regatta.split('-').join(' ')} - {race.raceNumber + '' + (race.division ? race.division : '')}{' '}
+                      {race.ratingType.includes('t') ? (
+                        <>
+                          <span style={{ textTransform: 'none' }}> vs </span>
+                          <span>
+                            {race.opponentTeam} {race.opponentNick}
+                          </span>{' '}
+                        </>
+                      ) : (
+                        ''
+                      )}
+                    </td>
 
-                      <td className='tableColFit'>{race.position}</td>
-                      <td className='tableColFit'>
-                        {' '}
-                        {/*onClick={() => navigate(`/rankings/${race.partner}`)} */}
-                        {/* <Link to={`/rankings/${race.partner['link']}`}>{race.partner['name']}</Link> */}
-                        <div>{race.partnerName}</div>
-                      </td>
-                      <td style={{ textAlign: 'right', color: !race.ratingType.includes('t') ? (race.score < race.predicted ? 'green' : race.score > race.predicted ? 'red' : '') : race.outcome == 'win' && race.predicted == 'lose' ? 'green' : !race.ratingType.includes('t') ? (race.score > race.predicted ? 'red' : race.score < race.predicted ? 'green' : '') : race.outcome == 'lose' && race.predicted == 'win' ? 'red' : '' }}>
-                        {race.score}
-                        {race.ratingType.includes('t') ? (race.outcome == 'win' ? '  ' : '') + ' (' + race.outcome + ')' : ''}
-                        {!race.ratingType.includes('t') ? (race.score == 1 ? 'st' : race.score == 2 ? 'nd' : race.score == 3 ? 'rd' : 'th') : ' '}
-                      </td>
-                      <td style={{ textAlign: 'right' }}>
-                        {race.predicted}
-                        {!race.ratingType.includes('t') ? (race.predicted == 1 ? 'st' : race.predicted == 2 ? 'nd' : race.predicted == 3 ? 'rd' : 'th') : ''}
-                      </td>
-                      <td style={{ textAlign: 'center' }}>{!race.ratingType.includes('t') ? <RatioBar ratio={race.ratio} /> : ''}</td>
-                      <td style={{ textAlign: 'right' }} className='tableColFit'>
-                        <RatingNum ratingNum={race.oldRating} type={race.ratingType.includes('w') ? 'women' : ''} />
-                      </td>
-                      <td style={{ color: change > 0 ? 'green' : 'red' }}>
-                        {change > 0 ? ' +' : ' '}
-                        {change.toFixed(0)}
-                      </td>
-                    </tr>
-                  )
-                })
+                    <td className='tableColFit'>{race.position}</td>
+                    <td className='tableColFit'>
+                      {' '}
+                      {/*onClick={() => navigate(`/rankings/${race.partner}`)} */}
+                      {/* <Link to={`/rankings/${race.partner['link']}`}>{race.partner['name']}</Link> */}
+                      <div>{race.partnerName}</div>
+                    </td>
+                    <td style={{ textAlign: 'right', color: !race.ratingType.includes('t') ? (race.score < race.predicted ? 'green' : race.score > race.predicted ? 'red' : '') : race.outcome == 'win' && race.predicted == 'lose' ? 'green' : !race.ratingType.includes('t') ? (race.score > race.predicted ? 'red' : race.score < race.predicted ? 'green' : '') : race.outcome == 'lose' && race.predicted == 'win' ? 'red' : '' }}>
+                      {race.score}
+                      {race.ratingType.includes('t') ? (race.outcome == 'win' ? '  ' : '') + ' (' + race.outcome + ')' : ''}
+                      {!race.ratingType.includes('t') ? (race.score == 1 ? 'st' : race.score == 2 ? 'nd' : race.score == 3 ? 'rd' : 'th') : ' '}
+                    </td>
+                    <td style={{ textAlign: 'right' }}>
+                      {race.predicted}
+                      {!race.ratingType.includes('t') ? (race.predicted == 1 ? 'st' : race.predicted == 2 ? 'nd' : race.predicted == 3 ? 'rd' : 'th') : ''}
+                    </td>
+                    <td style={{ textAlign: 'center' }}>{!race.ratingType.includes('t') ? <RatioBar ratio={race.ratio} /> : ''}</td>
+                    <td style={{ textAlign: 'right' }} className='tableColFit'>
+                      <RatingNum ratingNum={race.oldRating} type={race.ratingType.includes('w') ? 'women' : ''} />
+                    </td>
+                    <td style={{ color: change > 0 ? 'green' : 'red' }}>
+                      {change > 0 ? ' +' : ' '}
+                      {change.toFixed(0)}
+                    </td>
+                  </tr>
+                )
+              })
             ) : (
               <span style={{ width: '80%', position: 'absolute', textAlign: 'center', margin: 20 }}>No races match this filter!</span>
             )}

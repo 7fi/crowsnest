@@ -1,4 +1,4 @@
-import { getAllTeams } from '../lib/firebase'
+import { getAllTeams } from '../lib/apilib'
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import Loader from '../components/loader'
@@ -30,9 +30,9 @@ export default function EloTeams() {
     setLoaded(false)
     getAllTeams()
       .then((tempTeams) => {
-        let teams = tempTeams.data.teams
-        setTeams(teams)
-        let regions = tempTeams.data.teams.map((team) => team.region).filter((value, index, self) => self.indexOf(value) === index)
+        console.log(tempTeams)
+        setTeams(tempTeams)
+        let regions = tempTeams.map((team) => team.region).filter((value, index, self) => self.indexOf(value) === index)
         if (linkRegion == null) {
           setActiveRegions(regions)
         } else {
@@ -69,7 +69,7 @@ export default function EloTeams() {
   const filtered = teams
     .filter((team) => {
       if (filterText !== '') {
-        return team.name.toLowerCase().includes(filterText.toLowerCase())
+        return team.teamName.toLowerCase().includes(filterText.toLowerCase())
       }
       return true
     })
@@ -84,12 +84,12 @@ export default function EloTeams() {
       if (reverse) [a, b] = [b, a]
       if (sort === 'ratio') return b.avgRatio - a.avgRatio
       else if (sort === 'members') return b.memberCount - a.memberCount
-      else if (sort === 'rating') return b.avg - a.avg
+      else if (sort === 'rating') return b.avgRating - a.avgRating
       else if (sort === 'women') return b.topWomenRating - a.topWomenRating
-      else if (sort === 'team') return b.topRatingTR - a.topRatingTR
-      else if (sort === 'womensteam') return b.topWomenRatingTR - a.topWomenRatingTR
+      else if (sort === 'team') return b.topTeamRating - a.topTeamRating
+      else if (sort === 'womensteam') return b.topWomenTeamRating - a.topWomenTeamRating
       // sort === 'top'
-      else return b.topRating - a.topRating
+      else return b.topFleetRating - a.topFleetRating
     })
 
   return (
@@ -209,9 +209,9 @@ export default function EloTeams() {
             <tbody className='teamsTable'>
               {filtered.length > 0 ? (
                 filtered.map((team, index) => (
-                  <tr key={index} className='clickable' onClick={() => navigate(`/rankings/team/${team.name}`)}>
+                  <tr key={index} className='clickable' onClick={() => navigate(`/rankings/team/${team.teamID}`)}>
                     <td className='tableColFit tdRightBorder'>
-                      {(sort === 'rating' ? team.avg !== 0 : sort === 'women' ? team.topWomenRating !== 0 : sort === 'members' ? team.memberCount !== 0 : sort === 'ratio' ? team.avgRatio !== 0 : sort === 'team' ? team.topRatingTR !== 0 : team.topRating !== 0) ? (
+                      {(sort === 'rating' ? team.avgRating !== 0 : sort === 'women' ? team.topWomenRating !== 0 : sort === 'members' ? team.memberCount !== 0 : sort === 'ratio' ? team.avgRatio !== 0 : sort === 'team' ? team.topTeamRating !== 0 : team.topFleetRating !== 0) ? (
                         index + 1
                       ) : (
                         <span className='secondaryText' style={{ textAlign: 'center' }}>
@@ -220,28 +220,28 @@ export default function EloTeams() {
                       )}
                     </td>
                     <td className='tableColFit'>
-                      <img style={{ display: 'inline', maxHeight: '2rem' }} src={`https://scores.collegesailing.org/inc/img/schools/${teamCodes[team.name]}.png`} />
+                      <img style={{ display: 'inline', maxHeight: '2rem' }} src={`https://scores.collegesailing.org/inc/img/schools/${teamCodes[team.teamID]}.png`} />
                     </td>
 
-                    <td className='tableColFit'>{team.name}</td>
+                    <td className='tableColFit'>{team.teamName}</td>
                     <td className=''>
                       <div className='filterOption' style={{ backgroundColor: RegionColors[team.region] }}>
                         {team.region}
                       </div>
                     </td>
                     <td style={{ textAlign: 'right' }}>
-                      <RatingNum ratingNum={team.topRating} />
+                      <RatingNum ratingNum={team.topFleetRating} />
                     </td>
                     <td style={{ textAlign: 'right' }}>
                       <RatingNum ratingNum={team.topWomenRating} type={'women'} />
                     </td>
                     <td style={{ textAlign: 'right' }}>
-                      <RatingNum ratingNum={team.topRatingTR} type={'open'} />
+                      <RatingNum ratingNum={team.topTeamRating} type={'open'} />
                     </td>
                     <td style={{ textAlign: 'right' }}>
-                      <RatingNum ratingNum={team.topWomenRatingTR} type={'women'} />
+                      <RatingNum ratingNum={team.topWomenTeamRating} type={'women'} />
                     </td>
-                    <td style={{ textAlign: 'right' }}>{team.avg.toFixed(0)}</td>
+                    <td style={{ textAlign: 'right' }}>{team.avgRating.toFixed(0)}</td>
 
                     <td style={{ textAlign: 'right' }}>
                       <div className='ratioBarBg'>

@@ -13,13 +13,13 @@ export default function PartnerResults({ races }) {
   // Step 1: Calculate total change and count for each partner
   const partnerStats = races.reduce((acc, race) => {
     // TODO: Switch link to key when sailors get re-uploaded
-    let key = race.partner['key']
+    let key = race.partnerID
     if (!acc[key]) {
-      acc[key] = { key: race.partner['key'], name: race.partner['name'], change: 0, count: 0, ratio: 0 }
+      acc[key] = { key: race.partnerID, name: race.partnerName, change: 0, count: 0, ratio: 0 }
     }
-    acc[key].change += race.change
+    acc[key].change += race.newRating - race.oldRating
     acc[key].count += 1
-    if (race.type == 'fleet') {
+    if (!race.ratingType.includes('t')) {
       acc[key].ratio += race.ratio
     } else {
       acc[key].ratio += race.outcome == 'win' ? 1 : 0

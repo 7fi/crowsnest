@@ -2,9 +2,9 @@ import { useEffect, useState } from 'react'
 import { FaSortDown, FaSortUp } from 'react-icons/fa'
 import { useNavigate } from 'react-router-dom'
 import RatioBar from '../RatioBar'
+import { all } from 'axios'
 
 export default function Rivals({ rivals, pos }) {
-  const posRivals = rivals[pos]
   const [byRaces, setByRaces] = useState(true)
   const [reverse, setReverse] = useState(false)
   const [allSeasons, setAllSeasons] = useState([])
@@ -12,24 +12,20 @@ export default function Rivals({ rivals, pos }) {
   const nav = useNavigate()
 
   useEffect(() => {
-    if (posRivals != undefined) {
-      const allSeasons = Object.keys(posRivals).flatMap((rival) => [...Object.keys(posRivals[rival]['races'])])
-      const uniqueSeasons = [...new Set(allSeasons)].sort((a, b) => {
-        if (parseInt(a.slice(1, 3)) - parseInt(b.slice(1, 3)) != 0) {
-          return parseInt(a.slice(1, 3)) - parseInt(b.slice(1, 3))
-        } else if (a.slice(0, 1) == 's' && b.slice(0, 1) == 'f') {
-          return -1
-        } else {
-          return 1
+    if (rivals != undefined) {
+      const allSeasons = rivals.reduce((acc, rival) => {
+        if (!acc.includes(rival.season)) {
+          acc.push(rival.season)
         }
-      })
-      // setActiveSeasons([uniqueSeasons[uniqueSeasons.length - 1]])
-      setActiveSeasons(uniqueSeasons)
-      setAllSeasons(uniqueSeasons)
+        return acc
+      }, [])
+
+      setActiveSeasons(allSeasons)
+      setAllSeasons(allSeasons)
     }
   }, [rivals, pos])
 
-  if (posRivals == undefined) {
+  if (rivals == undefined) {
     return <></>
   }
 
@@ -100,77 +96,59 @@ export default function Rivals({ rivals, pos }) {
             </tr>
           </thead>
           <tbody>
-            {Object.keys(posRivals)
-              .filter(
-                (rival) =>
-                  Object.keys(posRivals[rival]['wins']).reduce((sum, key) => {
-                    if (activeSeasons.includes(key)) {
-                      sum += posRivals[rival]['races'][key]
+            {(() => {
+              // group filtered rivals by rivalID and sum counts
+              const grouped = rivals
+                .filter((r) => activeSeasons.includes(r.season))
+                .reduce((acc, r) => {
+                  const id = r.rivalID
+                  if (!acc[id]) {
+                    acc[id] = {
+                      rivalID: id,
+                      name: r.rivalName,
+                      team: r.rivalTeam,
+                      totalRaces: 0,
+                      totalWins: 0,
                     }
-                    return sum
-                  }, 0) > 0
-              )
-              .sort((a, b) => {
-                if (reverse) [a, b] = [b, a]
-                let aRaces = Object.keys(posRivals[a]['races']).reduce((sum, key) => {
-                  if (activeSeasons.includes(key)) {
-                    sum += posRivals[a]['races'][key]
                   }
-                  return sum
-                }, 0)
-                let aWins = Object.keys(posRivals[a]['wins']).reduce((sum, key) => {
-                  if (activeSeasons.includes(key)) {
-                    sum += posRivals[a]['wins'][key]
-                  }
-                  return sum
-                }, 0)
-                let bRaces = Object.keys(posRivals[b]['races']).reduce((sum, key) => {
-                  if (activeSeasons.includes(key)) {
-                    sum += posRivals[b]['races'][key]
-                  }
-                  return sum
-                }, 0)
-                let bWins = Object.keys(posRivals[b]['wins']).reduce((sum, key) => {
-                  if (activeSeasons.includes(key)) {
-                    sum += posRivals[b]['wins'][key]
-                  }
-                  return sum
-                }, 0)
-                let aRatio = aWins / aRaces
-                let bRatio = bWins / bRaces
+                  acc[id].totalRaces += r.raceCount || 0
+                  acc[id].totalWins += r.winCount || 0
+                  return acc
+                }, {})
 
-                if (byRaces || bRatio == aRatio) return bRaces - aRaces
-                return bRatio - aRatio
-              })
-              .map((rival, index) => {
-                const keys = Object.keys(posRivals[rival]['wins'])
-                const rivalRaces = keys.reduce((sum, key) => {
-                  if (activeSeasons.includes(key)) {
-                    sum += posRivals[rival]['races'][key]
+              return Object.values(grouped)
+                .filter((g) => g.totalRaces > 0)
+                .sort((a, b) => {
+                  const aRatio = a.totalWins / a.totalRaces
+                  const bRatio = b.totalWins / b.totalRaces
+
+                  if (byRaces) {
+                    // primary: races (honor reverse), tiebreaker: ratio DESC always
+                    const raceDiff = b.totalRaces - a.totalRaces
+                    if (raceDiff !== 0) return reverse ? -raceDiff : raceDiff
+                    return bRatio - aRatio
+                  } else {
+                    // primary: ratio (honor reverse), tiebreaker: races DESC always
+                    const ratioDiff = bRatio - aRatio
+                    if (ratioDiff !== 0) return reverse ? -ratioDiff : ratioDiff
+                    const raceDiff = a.totalRaces - b.totalRaces
+                    return raceDiff
                   }
-                  return sum
-                }, 0)
-
-                const rivalWins = keys.reduce((sum, key) => {
-                  if (activeSeasons.includes(key)) {
-                    sum += posRivals[rival]['wins'][key]
-                  }
-                  return sum
-                }, 0)
-
-                const ratio = rivalWins / rivalRaces
-
-                return (
-                  <tr key={index} onClick={() => nav(`/rankings/${rival}`)} className='clickable'>
-                    <td>{posRivals[rival].name}</td>
-                    <td className='tableColFit'>{posRivals[rival].team}</td>
-                    <td style={{ textAlign: 'right' }}>{rivalRaces}</td>
-                    <td style={{ textAlign: 'center' }}>
-                      <RatioBar ratio={ratio} />
-                    </td>
-                  </tr>
-                )
-              })}
+                })
+                .map((rival) => {
+                  const ratio = rival.totalWins / rival.totalRaces
+                  return (
+                    <tr key={rival.rivalID} onClick={() => nav(`/rankings/${rival.rivalID}`)} className='clickable'>
+                      <td>{rival.name}</td>
+                      <td className='tableColFit'>{rival.team}</td>
+                      <td style={{ textAlign: 'right' }}>{rival.totalRaces}</td>
+                      <td style={{ textAlign: 'center' }}>
+                        <RatioBar ratio={ratio} />
+                      </td>
+                    </tr>
+                  )
+                })
+            })()}
           </tbody>
         </table>
       </div>

@@ -1,4 +1,4 @@
-import { getTeamElos } from '../lib/firebase'
+import { getTeam } from '../lib/apilib'
 import { useEffect, useState } from 'react'
 import { Link, useParams, useNavigate } from 'react-router-dom'
 import Loader from '../components/loader'
@@ -25,15 +25,15 @@ export default function TeamRankings() {
   const debug = false
 
   useEffect(() => {
-    getTeamElos(teamName).then((tempTeam) => {
+    getTeam(teamName).then((tempTeam) => {
+      if (tempTeam == undefined) return
       console.log(tempTeam)
-      const members = tempTeam.data.members.filter((member) => member.teams[member.teams.length - 1] === teamName)
-      setTeamMembers(members)
-      setRating(tempTeam.data.avg)
+      setTeamMembers(tempTeam.members)
+      setRating(tempTeam.data.avgRating)
       setTeamLink(tempTeam.data.link)
       setTeamRegion(tempTeam.data.region)
 
-      const allSeasons = members.flatMap((member) => [...member?.seasons.skipper, ...member?.seasons.crew])
+      const allSeasons = tempTeam.members.map((member) => member.season)
       const uniqueSeasons = [...new Set(allSeasons)].sort((a, b) => {
         if (parseInt(a.slice(1, 3)) - parseInt(b.slice(1, 3)) !== 0) {
           return parseInt(a.slice(1, 3)) - parseInt(b.slice(1, 3))
@@ -72,12 +72,12 @@ export default function TeamRankings() {
           rating = Math.max(tsr, wtsr)
         }
       } else {
-        let sr = member.skipperRating
-        let wsr = member.womenSkipperRating
-        if (member.womenSkipperRating === 1000) {
+        let sr = member.sr
+        let wsr = member.wsr
+        if (member.wsr === 1000) {
           wsr = 0
         }
-        if (member.skipperRating === 1000) {
+        if (member.sr === 1000) {
           sr = 0
         }
         if (type !== undefined) {
@@ -137,10 +137,10 @@ export default function TeamRankings() {
     const navigate = useNavigate()
     // let rating = getRating(member, pos)
 
-    // const rating = pos === 'skipper' ? (member.womenSkipperRating !== 1000 ? Math.max(member.skipperRating, member.womenSkipperRating).toFixed(0) : member.skipperRating.toFixed(0)) : member.womenCrewRating !== 1000 ? Math.max(member.crewRating, member.womenCrewRating).toFixed(0) : member.crewRating.toFixed(0)
+    // const rating = pos === 'skipper' ? (member.wsr !== 1000 ? Math.max(member.sr, member.wsr).toFixed(0) : member.sr.toFixed(0)) : member.womenCrewRating !== 1000 ? Math.max(member.crewRating, member.womenCrewRating).toFixed(0) : member.crewRating.toFixed(0)
     // console.log(member)
     return (
-      <tr key={index} className='clickable' onClick={() => navigate(`/rankings/${member.key}`)}>
+      <tr key={index} className='clickable' onClick={() => navigate(`/rankings/${member.sailorID}`)}>
         <td className='tdRightBorder tableColFit' style={{ textAlign: 'right' }}>
           {index + 1}
         </td>
@@ -160,13 +160,7 @@ export default function TeamRankings() {
         </td>
         {/* <td className='secondaryText'>{member.gender === 'F' ? 'W' : ''}</td> */}
         <td className='tableColFit' style={{ textAlign: 'right' }}>
-          {activeSeasons.reduce((total, season) => {
-            const newPos = pos === 'skipper' ? 'Skipper' : 'Crew'
-            if (member.raceCount[season] !== undefined && member.raceCount[season][newPos]) {
-              return total + member.raceCount[season][newPos]
-            }
-            return total // If the season is not in the seasonRaces object, we ignore it
-          }, 0)}
+          {member.numRaces}
         </td>
         {/* <td style={{ textAlign: 'right' }}>{pos === 'skipper' ? member.avgSkipperRatio.toFixed(3) : member.avgCrewRatio.toFixed(3)}</td> */}
         <td style={{ textAlign: 'center' }}>
@@ -200,32 +194,46 @@ export default function TeamRankings() {
   }
 
   const PosList = ({ members, pos }) => {
-    const newMembers = members.filter((member) => member.seasons[pos].length > 0)
+    const newMembers = members.filter((member) => member.position == pos)
     const filtered = newMembers
+      .map((member) => {
+        // accumulate numRaces across the activeSeasons before filtering so totals reflect all selected seasons
+        // sum raceCount for all entries in `members` that match this sailor (by sailorID or name+pos) and are in an active season
+        const key = member.sailorID ? `${member.sailorID}` : `${member.name}_${pos}`
+        const numRaces = members.reduce((total, m) => {
+          const mKey = m.sailorID ? `${m.sailorID}` : `${m.name}_${pos}`
+          if (mKey === key && activeSeasons.includes(m.season)) {
+            return total + (m.raceCount || 0)
+          }
+          return total
+        }, 0)
+        return { ...member, numRaces }
+      })
       .filter((member) => {
-        return member?.seasons[pos]?.some((season) => activeSeasons.includes(season))
+        // reset seen set when active seasons change
+        if (!PosList._seenKey || PosList._seenKey !== activeSeasons.join(',')) {
+          PosList._seen = new Set()
+          PosList._seenKey = activeSeasons.join(',')
+        }
+
+        // require that the member has at least one of the active seasons
+        let hasSeason = activeSeasons.includes(member.season)
+        if (!hasSeason) return false
+
+        // dedupe entries (by sailorID when present, otherwise name+pos)
+        const key = member.sailorID ? `${member.sailorID}` : `${member.name}_${pos}`
+        if (PosList._seen.has(key)) return false
+        PosList._seen.add(key)
+
+        return true
       })
       .sort((a, b) => {
         if (sort === 'ratio') {
-          if (pos === 'skipper') return b.avgSkipperRatio - a.avgSkipperRatio
-          return b.avgCrewRatio - a.avgCrewRatio
         } else if (sort === 'races') {
-          let bRaces = activeSeasons.reduce((total, season) => {
-            const newPos = pos === 'skipper' ? 'Skipper' : 'Crew'
-            if (b.raceCount[season] !== undefined && b.raceCount[season][newPos]) {
-              return total + b.raceCount[season][newPos]
-            }
-            return total // If the season is not in the seasonRaces object, we ignore it
-          }, 0)
-          let aRaces = activeSeasons.reduce((total, season) => {
-            const newPos = pos === 'skipper' ? 'Skipper' : 'Crew'
-            if (a.raceCount[season] !== undefined && a.raceCount[season][newPos]) {
-              return total + a.raceCount[season][newPos]
-            }
-            return total // If the season is not in the seasonRaces object, we ignore it
-          }, 0)
-          // console.log(bRaces, aRaces)
-          return bRaces - aRaces
+          // use the accumulated numRaces
+          return (b.numRaces || 0) - (a.numRaces || 0)
+        } else if (sort === 'openrating') {
+          return b.raceCount - a.raceCount
         } else if (sort === 'openrating') {
           return getRating(b, pos, 'open', 'fleet') - getRating(a, pos, 'open', 'fleet')
         } else if (sort === 'womenrating') {
@@ -247,8 +255,10 @@ export default function TeamRankings() {
     const womenRankingMembers = filtered
       .slice(0)
       .sort((a, b) => getRating(b, pos, 'women') - getRating(a, pos, 'women'))
-      .filter((member) => member.cross > 20 && member.outLinks > 70 && member.seasons[pos].includes(allSeasons.slice(-1)[0]) && (pos === 'skipper' ? member.womenSkipperRating !== 1000 : member.womenCrewRating !== 1000))
+      .filter((member) => member.cross > 20 && member.outLinks > 70 && member.seasons[pos].includes(allSeasons.slice(-1)[0]) && (pos === 'skipper' ? member.wsr !== 1000 : member.womenCrewRating !== 1000))
       .slice(0, 2)
+
+    console.log(filtered)
 
     return (
       <>
