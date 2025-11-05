@@ -1,4 +1,5 @@
-const APIURL = 'http://localhost:3001/api/'
+// const APIURL = 'http://localhost:3001/'
+const APIURL = 'http://api.crowsnest.club/'
 
 export async function getAllSailors() {
   const res = await fetch(APIURL + 'sailors/').then((response) => response.json())

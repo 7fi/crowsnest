@@ -18,9 +18,9 @@ const pool = mysql.createPool({
   database: process.env.DB_NAME,
 })
 
-app.get('/api/sailors', async (req, res) => {
+app.get('/sailors', async (req, res) => {
   try {
-    const [rows] = await pool.query("SELECT DISTINCT s.sailorID, s.name, s.year, st.teamID FROM Sailors s JOIN SailorTeams st ON s.sailorID = st.sailorID WHERE st.season in ('s25','f24');")
+    const [rows] = await pool.query("SELECT DISTINCT s.sailorID, s.name, s.year, st.teamID FROM Sailors s JOIN SailorTeams st ON s.sailorID = st.sailorID WHERE st.season in ('s25');")
     res.json(rows)
   } catch (err) {
     console.error(err)
@@ -28,7 +28,7 @@ app.get('/api/sailors', async (req, res) => {
   }
 })
 
-app.get('/api/search/:query', async (req, res) => {
+app.get('/search/:query', async (req, res) => {
   const { query } = req.params
   if (!query) return res.json([])
   try {
@@ -40,7 +40,7 @@ app.get('/api/search/:query', async (req, res) => {
   }
 })
 
-app.get('/api/sailors/top', async (req, res) => {
+app.get('/sailors/top', async (req, res) => {
   const { pos, raceType, women, count } = req.query
   // if (!pos || !raceType || !womens) return res.json([])
 
@@ -67,7 +67,7 @@ app.get('/api/sailors/top', async (req, res) => {
   }
 })
 
-app.get('/api/sailors/:id', async (req, res) => {
+app.get('/sailors/:id', async (req, res) => {
   try {
     const [rows] = await pool.query('SELECT * FROM Sailors WHERE sailorID = ?', [req.params.id])
     if (rows.length === 0) {
@@ -84,7 +84,7 @@ app.get('/api/sailors/:id', async (req, res) => {
   }
 })
 
-app.get('/api/teams', async (req, res) => {
+app.get('/teams', async (req, res) => {
   try {
     const [rows] = await pool.query(`SELECT t.teamID as teamID, teamName, topFleetRating, topWomenRating, topTeamRating,
        topWomenTeamRating, avgRating, avgRatio, region, link,
@@ -99,7 +99,7 @@ app.get('/api/teams', async (req, res) => {
   }
 })
 
-app.get('/api/teams/:id', async (req, res) => {
+app.get('/teams/:id', async (req, res) => {
   try {
     const [rows] = await pool.query(
       `SELECT * FROM Sailors s JOIN SailorTeams st on s.sailorID = st.sailorID
@@ -118,7 +118,7 @@ app.get('/api/teams/:id', async (req, res) => {
   }
 })
 
-app.get('/api/sailors/teams/:id', async (req, res) => {
+app.get('/sailors/teams/:id', async (req, res) => {
   try {
     const [rows] = await pool.query(`SELECT DISTINCT teamID FROM SailorTeams WHERE sailorID = ?;`, [req.params.id])
     res.json(rows)
@@ -128,7 +128,7 @@ app.get('/api/sailors/teams/:id', async (req, res) => {
   }
 })
 
-app.get('/api/users/follows/:id', async (req, res) => {
+app.get('/users/follows/:id', async (req, res) => {
   try {
     const [rows] = await pool.query(`SELECT * FROM SailorFollows WHERE userID = ?;`, [req.params.id])
     res.json(rows)
@@ -138,7 +138,7 @@ app.get('/api/users/follows/:id', async (req, res) => {
   }
 })
 
-app.get('/api/sailors/follows/:id', async (req, res) => {
+app.get('/sailors/follows/:id', async (req, res) => {
   try {
     const [rows] = await pool.query(`SELECT COUNT(*) as count FROM SailorFollows WHERE sailorID = ?;`, [req.params.id])
     res.json(rows[0])
@@ -148,7 +148,7 @@ app.get('/api/sailors/follows/:id', async (req, res) => {
   }
 })
 
-app.get('/api/sailors/rivals/:id', async (req, res) => {
+app.get('/sailors/rivals/:id', async (req, res) => {
   try {
     const [rows] = await pool.query(`SELECT * FROM SailorRivals WHERE sailorID = ?;`, [req.params.id])
     res.json(rows)
@@ -158,7 +158,7 @@ app.get('/api/sailors/rivals/:id', async (req, res) => {
   }
 })
 
-app.get('/api/users/:id', async (req, res) => {
+app.get('/users/:id', async (req, res) => {
   try {
     const [rows] = await pool.query(`SELECT * FROM Users WHERE userID = ?;`, [req.params.id])
     res.json(rows[0])
@@ -168,7 +168,7 @@ app.get('/api/users/:id', async (req, res) => {
   }
 })
 
-app.get('/api/homestats', async (req, res) => {
+app.get('/homestats', async (req, res) => {
   try {
     const [rows] = await pool.query(`SELECT * FROM HomePageStats`)
     res.json(rows[0])
@@ -178,7 +178,7 @@ app.get('/api/homestats', async (req, res) => {
   }
 })
 
-app.post('/api/follow', async (req, res) => {
+app.post('/follow', async (req, res) => {
   const { follow, targetID, targetName, userID } = req.body
   if (follow == undefined || targetID == undefined || userID == undefined) return
 

@@ -1,6 +1,6 @@
-DROP DATABASE IF EXISTS crowsnest;
-CREATE DATABASE IF NOT EXISTS crowsnest;
-USE crowsnest;
+# DROP DATABASE IF EXISTS crowsnest;
+# CREATE DATABASE IF NOT EXISTS crowsnest;
+# USE crowsnest;
 
 # CREATE TABLE Races (
 #     season char(4),
