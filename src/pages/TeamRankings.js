@@ -202,11 +202,15 @@ export default function TeamRankings() {
         const key = member.sailorID ? `${member.sailorID}` : `${member.name}_${pos}`
         const numRaces = members.reduce((total, m) => {
           const mKey = m.sailorID ? `${m.sailorID}` : `${m.name}_${pos}`
-          if (mKey === key && activeSeasons.includes(m.season)) {
+          if (mKey === key && activeSeasons.includes(m.season) && m.teamID === teamName) {
             return total + (m.raceCount || 0)
           }
           return total
         }, 0)
+        if (member.sailorID == 'carter-anderson') {
+          console.log(member.season)
+          console.log(numRaces)
+        }
         return { ...member, numRaces }
       })
       .filter((member) => {
@@ -232,8 +236,6 @@ export default function TeamRankings() {
         } else if (sort === 'races') {
           // use the accumulated numRaces
           return (b.numRaces || 0) - (a.numRaces || 0)
-        } else if (sort === 'openrating') {
-          return b.raceCount - a.raceCount
         } else if (sort === 'openrating') {
           return getRating(b, pos, 'open', 'fleet') - getRating(a, pos, 'open', 'fleet')
         } else if (sort === 'womenrating') {

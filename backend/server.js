@@ -180,27 +180,27 @@ app.get('/users/feed/:id', async (req, res) => {
         ROW_NUMBER() OVER (
             PARTITION BY st.sailorID
             ORDER BY st.season DESC, st.teamID ASC ) AS rn FROM SailorTeams st)
-SELECT
-    s.sailorID,
-    s.name,
-    s.gender,
-    s.year,
-    s.lastUpdate,
-    rt.season,
-    rt.teamID
-FROM SailorFollows sf
-JOIN Sailors s ON sf.sailorID = s.sailorID
-JOIN RankedTeams rt ON s.sailorID = rt.sailorID AND rt.rn = 1
-WHERE sf.userID = ?;`,
+        SELECT
+            s.sailorID,
+            s.name,
+            s.gender,
+            s.year,
+            s.lastUpdate,
+            rt.season,
+            rt.teamID
+        FROM SailorFollows sf
+        JOIN Sailors s ON sf.sailorID = s.sailorID
+        JOIN RankedTeams rt ON s.sailorID = rt.sailorID AND rt.rn = 1
+        WHERE sf.userID = ?;`,
       [req.params.id]
     )
     await Promise.all(
       rows.map(async (sailor) => {
         const [recentRaces] = await pool.query(
           `SELECT season, regatta, sailorID, date, score, predicted, ratingType, oldRating, newRating, position, raceNumber, division, ratio FROM FleetScores fs WHERE fs.sailorID = ? UNION ALL
-SELECT season, regatta, sailorID, date, score, predicted, ratingType, oldRating, newRating, position, raceNumber, raceNumber as x, raceNumber as y FROM TRScores ts WHERE ts.sailorID = ?
-ORDER BY date DESC
-LIMIT 5;`,
+          SELECT season, regatta, sailorID, date, score, predicted, ratingType, oldRating, newRating, position, raceNumber, raceNumber as x, raceNumber as y FROM TRScores ts WHERE ts.sailorID = ?
+          ORDER BY date DESC
+          LIMIT 5;`,
           [sailor.sailorID, sailor.sailorID]
         )
         sailor.races = recentRaces
@@ -217,7 +217,11 @@ LIMIT 5;`,
 app.get('/users/username/:id', async (req, res) => {
   try {
     const [rows] = await pool.query(`SELECT * FROM Users WHERE username = ?;`, [req.params.id])
-    res.json(rows[0])
+    if (rows.length > 0) {
+      res.json(rows[0])
+    } else {
+      res.json([])
+    }
   } catch (err) {
     console.error(err)
     res.status(500).json({ error: 'Database query failed', dueTo: err.sql, why: err.sqlMessage })
@@ -235,18 +239,86 @@ app.get('/homestats', async (req, res) => {
 })
 
 app.post('/follow', async (req, res) => {
-  const { follow, targetID, targetName, userID } = req.body
-  if (follow == undefined || targetID == undefined || userID == undefined) return
+  const { targetID, targetName, userID } = req.body
+  if (targetID == undefined || userID == undefined) return
 
   try {
-    if (follow) {
-      const [rows] = await pool.query(`INSERT IGNORE INTO SailorFollows (sailorID, sailorName, userID) VALUES (?,?,?)`, [targetID, targetName, userID])
-    } else {
-      const [rows] = await pool.query(`DELETE IGNORE FROM SailorFollows WHERE sailorID = ? AND userID = ?`, [targetID, userID])
-    }
+    const [rows] = await pool.query(`INSERT IGNORE INTO SailorFollows (sailorID, sailorName, userID) VALUES (?,?,?)`, [targetID, targetName, userID])
     res.status(201)
   } catch (err) {
     console.error(err)
+    res.status(500).json({ error: 'Database query failed', dueTo: err.sql, why: err.sqlMessage })
+  }
+})
+app.delete('/follow', async (req, res) => {
+  const { targetID, targetName, userID } = req.body
+  if (targetID == undefined || userID == undefined) return
+
+  try {
+    const [rows] = await pool.query(`DELETE FROM SailorFollows WHERE sailorID = ? AND userID = ?`, [targetID, userID])
+
+    res.status(201)
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ error: 'Database query failed', dueTo: err.sql, why: err.sqlMessage })
+  }
+})
+
+app.put('/link', async (req, res) => {
+  const { userID, techscoreID, techscoreLink } = req.body
+  if (userID == undefined || techscoreID == undefined || techscoreLink == undefined) {
+    res.status(400)
+    return
+  }
+  try {
+    const [rows] = await pool.query(
+      `UPDATE Users SET techscoreLink = ?,
+                 techscoreID = ?
+      WHERE userID = ?;`,
+      [techscoreLink, techscoreID, userID]
+    )
+  } catch (err) {
+    console.err(err)
+    res.status(500).json({ error: 'Database query failed', dueTo: err.sql, why: err.sqlMessage })
+  }
+})
+
+app.delete('/link', async (req, res) => {
+  const { userID, techscoreID, techscoreLink } = req.body
+  if (userID == undefined || techscoreID == undefined || techscoreLink == undefined) {
+    res.status(400)
+    return
+  }
+  try {
+    const [rows] = await pool.query(
+      `UPDATE Users SET techscoreLink = '',
+                 techscoreID = 0
+      WHERE userID = ?;`,
+      [userID]
+    )
+  } catch (err) {
+    console.err(err)
+    res.status(500).json({ error: 'Database query failed', dueTo: err.sql, why: err.sqlMessage })
+  }
+})
+
+app.post('/create/account', async (req, res) => {
+  const { userID, username, photoURL, displayName } = req.body
+  if ((userID == undefined || username == undefined || photoURL == undefined, displayName == undefined)) {
+    res.status(400)
+    return
+  }
+  // Do username + displayname validation here?
+
+  try {
+    const [rows] = await pool.query(
+      `UPDATE Users SET techscoreLink = ?,
+                 techscoreID = ?
+      WHERE userID = ?;`,
+      [techscoreLink, techscoreID, userID]
+    )
+  } catch (err) {
+    console.err(err)
     res.status(500).json({ error: 'Database query failed', dueTo: err.sql, why: err.sqlMessage })
   }
 })

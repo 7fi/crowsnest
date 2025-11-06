@@ -1,5 +1,5 @@
-const APIURL = 'http://localhost:3001/'
-// const APIURL = 'https://api.crowsnest.club/'
+// const APIURL = 'http://localhost:3001/'
+const APIURL = 'https://api.crowsnest.club/'
 
 export async function getAllSailors() {
   const res = await fetch(APIURL + 'sailors/').then((response) => response.json())
@@ -59,16 +59,16 @@ export async function followUser(targetID, targetName, userID) {
   const res = await fetch(APIURL + 'follow', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ follow: true, targetID: targetID, targetName: targetName, userID: userID }),
+    body: JSON.stringify({ targetID: targetID, targetName: targetName, userID: userID }),
   }).then((response) => response.json())
   return res
 }
 
 export async function unFollowUser(targetID, targetName, userID) {
   const res = await fetch(APIURL + 'follow', {
-    method: 'POST',
+    method: 'DELETE',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ follow: false, targetID: targetID, targetName: targetName, userID: userID }),
+    body: JSON.stringify({ targetID: targetID, targetName: targetName, userID: userID }),
   }).then((response) => response.json())
   return res
 }
@@ -77,7 +77,17 @@ export async function getUserByUsername(username) {
   const res = await fetch(APIURL + 'users/username/' + username).then((response) => response.json())
   return res
 }
+
 export async function getUserFeed(userID) {
   const res = await fetch(APIURL + 'users/feed/' + userID).then((response) => response.json())
+  return res
+}
+
+export async function createUserAccount(userID, username, photoURL, displayName) {
+  const res = await fetch(APIURL + 'create/account', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username: username, photoURL: photoURL, displayName: displayName, userID: userID }),
+  }).then((response) => response.json())
   return res
 }

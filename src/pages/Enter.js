@@ -8,6 +8,7 @@ import SignOutButton from '../components/login/SignOutButton'
 import EmailSignInForm from '../components/login/EmailSignInForm'
 import { useNavigate } from 'react-router'
 import posthog from 'posthog-js'
+import { createUserAccount, getUserByUsername } from '../lib/apilib'
 
 export default function Enter() {
   const { user, userVals } = useContext(UserContext)
@@ -39,11 +40,10 @@ function UsernameForm() {
   const [displaynameValue, setdisplaynameValue] = useState('')
   const [isValid, setIsValid] = useState(false)
   const [loading, setLoading] = useState(false)
-  const debug = false
+  const debug = true
 
   const { user, userVals } = useContext(UserContext)
 
-  const db = getFirestore()
   const navigate = useNavigate()
 
   const onChangeUsername = (e) => {
@@ -76,10 +76,8 @@ function UsernameForm() {
   const checkUsername = useCallback(
     debounce(async (username) => {
       if (username.length >= 3) {
-        let docRef = doc(db, 'usernames', username)
-        const docSnap = await getDoc(docRef)
-        console.log('Read executed!', docSnap.exists())
-        setIsValid(!docSnap.exists())
+        const res = await getUserByUsername(username)
+        setIsValid(res.length == 0)
         setLoading(false)
       }
     }, 500),
@@ -93,15 +91,9 @@ function UsernameForm() {
   const onSubmit = async (e) => {
     e.preventDefault()
 
-    const userDoc = doc(db, 'users', user.uid)
-    const usernameDoc = doc(db, 'usernames', usernameValue)
+    const res = await createUserAccount(user.uid, usernameValue, user.photoURL, displaynameValue)
+    console.log(res)
 
-    const batch = writeBatch(db)
-
-    batch.set(userDoc, { username: usernameValue, photoURL: user.photoURL, displayName: displaynameValue, teams: [] })
-    batch.set(usernameDoc, { uid: user.uid })
-
-    await batch.commit()
     posthog.identify(user.uid, { name: usernameValue })
     navigate(`/profile/${usernameValue}`)
   }

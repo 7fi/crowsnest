@@ -2,17 +2,9 @@ DROP DATABASE IF EXISTS crowsnest;
 CREATE DATABASE IF NOT EXISTS crowsnest;
 USE crowsnest;
 
-# CREATE TABLE Races (
-#     season char(4),
-#     regatta varchar(100),
-#     raceNumber INT,
-#     division char(1),
-#     PRIMARY KEY(season,regatta,raceNumber,division)
-# );
-
 DROP TABLE IF EXISTS Teams;
 CREATE TABLE Teams(
-  teamID char(50) PRIMARY KEY,
+  teamID varchar(50) PRIMARY KEY,
   teamName varchar(50),
   topFleetRating INT,
   topWomenRating INT,
@@ -26,7 +18,7 @@ CREATE TABLE Teams(
 
 DROP TABLE IF EXISTS Sailors;
 CREATE TABLE Sailors(
-  sailorID char(50) PRIMARY KEY,
+  sailorID varchar(50) PRIMARY KEY,
   name varchar(50),
   gender char(2),
   sr INT,
@@ -55,36 +47,42 @@ CREATE TABLE Sailors(
     lastUpdate DATETIME DEFAULT CURRENT_TIMESTAMP() ON UPDATE CURRENT_TIMESTAMP()
 );
 
+DROP TABLE IF EXISTS SailorTSLinks;
+CREATE TABLE SailorTSLinks (
+    sailorID varchar(50),
+    techscoreID INT,
+    techscoreLink varchar(100),
+    PRIMARY KEY (sailorID, techscoreLink)
+);
+
 DROP TABLE IF EXISTS SailorTeams;
 CREATE TABLE SailorTeams(
-    sailorID char(50),
-    teamID char(50),
+    sailorID varchar(50),
+    teamID varchar(50),
     season char(3),
     position char(7),
     raceCount INT,
-    PRIMARY KEY(sailorID,teamID, season, position),
-    CONSTRAINT FOREIGN KEY (sailorID) REFERENCES Sailors(sailorID),
-    CONSTRAINT FOREIGN KEY (teamID) REFERENCES Teams(teamID)
+    PRIMARY KEY(sailorID,teamID, season, position)
+#     CONSTRAINT FOREIGN KEY (sailorID) REFERENCES Sailors(sailorID),
+#     CONSTRAINT FOREIGN KEY (teamID) REFERENCES Teams(teamID)
 );
 
 DROP TABLE IF EXISTS SailorFollows;
 CREATE TABLE SailorFollows(
-  sailorID char(50),
-  sailorName char(50),
+  sailorID varchar(50),
+  sailorName varchar(50),
   userID char(32),
   PRIMARY KEY(sailorID, userID),
-  CONSTRAINT FOREIGN KEY (sailorID) REFERENCES Sailors(sailorID)
-#,CONSTRAINT FOREIGN KEY (userID) references Users(userID)
+  CONSTRAINT FOREIGN KEY (sailorID) REFERENCES Sailors(sailorID),
+  CONSTRAINT FOREIGN KEY (userID) references Users(userID)
 );
-
-
 
 DROP TABLE IF EXISTS SailorRivals;
 CREATE TABLE SailorRivals(
-    sailorID char(100),
-    rivalID char(50),
-    rivalName char(100),
-    rivalTeam char(50),
+    sailorID varchar(100),
+    rivalID varchar(50),
+    rivalName varchar(100),
+    rivalTeam varchar(50),
     position char(10),
     season char(3),
     raceCount SMALLINT,
@@ -100,9 +98,9 @@ CREATE TABLE FleetScores(
     regatta varchar(100),
     raceNumber INT,
     division char(1),
-    sailorID char(50),
-    partnerID char(50),
-    partnerName char(100),
+    sailorID varchar(50),
+    partnerID varchar(50),
+    partnerName varchar(100),
     score INT,
     predicted INT,
     ratio float,
@@ -126,11 +124,11 @@ CREATE TABLE TRScores(
     regatta varchar(100),
     raceNumber INT,
     round varchar(30),
-    sailorID char(50),
-    partnerID char(50),
-    partnerName char(100),
-    opponentTeam char(50),
-    opponentNick char(50),
+    sailorID varchar(50),
+    partnerID varchar(50),
+    partnerName varchar(100),
+    opponentTeam varchar(50),
+    opponentNick varchar(50),
     score char(10),
     outcome char(4),
     predicted char(4),
@@ -155,6 +153,7 @@ CREATE TABLE Users(
     techscoreLink varchar(100),
     techscoreID INT,
     photoURL varchar(200),
+    deleted BOOLEAN DEFAULT FALSE,
     pro BOOLEAN DEFAULT FALSE
 );
 
@@ -167,5 +166,6 @@ CREATE TABLE HomePageStats(
     exclaimText tinytext,
     lastUpdate DATETIME DEFAULT CURRENT_TIMESTAMP() ON UPDATE CURRENT_TIMESTAMP()
 );
+
 INSERT INTO HomePageStats( numSailors, numScores, numTeams, exclaimText)
 VALUES ( 0,0,0,'We\'re back!');

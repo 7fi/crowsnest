@@ -1,13 +1,10 @@
 import { useEffect, useState, useMemo } from 'react'
 import { useAuthState } from 'react-firebase-hooks/auth'
-
 import { getAuth } from 'firebase/auth'
-import { getFirestore, onSnapshot, doc } from 'firebase/firestore'
 import { getUserData, getUserFollows } from './apilib'
 
 export function useUserData() {
   const auth = getAuth()
-  const db = getFirestore()
   const [user] = useAuthState(auth)
   const [userVals, setUserVals] = useState({
     username: null,
@@ -38,7 +35,7 @@ export function useUserData() {
     }
 
     return unsubscribe
-  }, [user, db])
+  }, [user])
 
   // Memoize the return value so it’s stable between renders
   const memoized = useMemo(() => ({ user, userVals }), [user, userVals])

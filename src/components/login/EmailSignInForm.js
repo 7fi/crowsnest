@@ -43,6 +43,7 @@ export default function EmailSignInForm() {
         // const user = userCredential.user
       })
       .catch((error) => {
+        console.error(error)
         // const errorCode = error.code
         // const errorMessage = error.message
         toast.error(error.message)
@@ -56,11 +57,12 @@ export default function EmailSignInForm() {
         // const user = userCredential.user
       })
       .catch((error) => {
+        console.error(error)
         // const errorCode = error.code
         // const errorMessage = error.message
         toast.error(error.message)
       })
-    navigate('/')
+    // navigate('/enter')
   }
 
   return (
