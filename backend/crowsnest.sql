@@ -150,8 +150,8 @@ CREATE TABLE Users(
     userID char(32),
     username varchar(30),
     displayName varchar(50),
-    techscoreLink varchar(100),
-    techscoreID INT,
+    techscoreLink varchar(100) DEFAULT '',
+    techscoreID INT DEFAULT 0,
     photoURL varchar(200),
     deleted BOOLEAN DEFAULT FALSE,
     pro BOOLEAN DEFAULT FALSE

@@ -164,7 +164,7 @@ app.get('/sailors/rivals/:id', async (req, res) => {
 
 app.get('/users/:id', async (req, res) => {
   try {
-    const [rows] = await pool.query(`SELECT * FROM Users WHERE userID = ?;`, [req.params.id])
+    const [rows] = await pool.query(`SELECT * FROM Users WHERE userID = ? AND deleted = FALSE;`, [req.params.id])
     res.json(rows[0])
   } catch (err) {
     console.error(err)
@@ -190,8 +190,10 @@ app.get('/users/feed/:id', async (req, res) => {
             rt.teamID
         FROM SailorFollows sf
         JOIN Sailors s ON sf.sailorID = s.sailorID
-        JOIN RankedTeams rt ON s.sailorID = rt.sailorID AND rt.rn = 1
-        WHERE sf.userID = ?;`,
+        JOIN RankedTeams rt ON s.sailorID = rt.sailorID
+        JOIN Users u ON sf.userID = u.userID
+         AND rt.rn = 1
+        WHERE sf.userID = ? AND u.deleted = FALSE;`,
       [req.params.id]
     )
     await Promise.all(
@@ -216,7 +218,7 @@ app.get('/users/feed/:id', async (req, res) => {
 
 app.get('/users/username/:id', async (req, res) => {
   try {
-    const [rows] = await pool.query(`SELECT * FROM Users WHERE username = ?;`, [req.params.id])
+    const [rows] = await pool.query(`SELECT * FROM Users WHERE username = ? AND deleted = FALSE;`, [req.params.id])
     if (rows.length > 0) {
       res.json(rows[0])
     } else {
@@ -302,7 +304,7 @@ app.delete('/link', async (req, res) => {
   }
 })
 
-app.post('/create/account', async (req, res) => {
+app.post('/users', async (req, res) => {
   const { userID, username, photoURL, displayName } = req.body
   if ((userID == undefined || username == undefined || photoURL == undefined, displayName == undefined)) {
     res.status(400)
@@ -311,12 +313,22 @@ app.post('/create/account', async (req, res) => {
   // Do username + displayname validation here?
 
   try {
-    const [rows] = await pool.query(
-      `UPDATE Users SET techscoreLink = ?,
-                 techscoreID = ?
-      WHERE userID = ?;`,
-      [techscoreLink, techscoreID, userID]
-    )
+    const [rows] = await pool.query(`INSERT INTO Users (userID, username, displayName, photoURL) Values(?,?,?,?) `, [userID, username, displayName, photoURL])
+  } catch (err) {
+    console.err(err)
+    res.status(500).json({ error: 'Database query failed', dueTo: err.sql, why: err.sqlMessage })
+  }
+})
+
+app.delete('/users', async (req, res) => {
+  const { userID } = req.body
+  if (userID == undefined) {
+    res.status(400)
+    return
+  }
+
+  try {
+    const [rows] = await pool.query(`UPDATE Users SET deleted = TRUE WHERE userID = ? `, [userID])
   } catch (err) {
     console.err(err)
     res.status(500).json({ error: 'Database query failed', dueTo: err.sql, why: err.sqlMessage })

@@ -84,10 +84,18 @@ export async function getUserFeed(userID) {
 }
 
 export async function createUserAccount(userID, username, photoURL, displayName) {
-  const res = await fetch(APIURL + 'create/account', {
+  const res = await fetch(APIURL + 'users', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ username: username, photoURL: photoURL, displayName: displayName, userID: userID }),
+  }).then((response) => response.json())
+  return res
+}
+export async function deleteUserAccount(userID) {
+  const res = await fetch(APIURL + 'users', {
+    method: 'DELETE',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ userID: userID }),
   }).then((response) => response.json())
   return res
 }
