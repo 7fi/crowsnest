@@ -111,12 +111,12 @@ export default function TeamRankings() {
           rating = Math.max(tcr, wtcr)
         }
       } else {
-        let cr = member.crewRating
-        let wcr = member.womenCrewRating
-        if (member.womenCrewRating === 1000) {
+        let cr = member.cr
+        let wcr = member.wcr
+        if (member.wcr === 1000) {
           wcr = 0
         }
-        if (member.crewRating === 1000) {
+        if (member.cr === 1000) {
           cr = 0
         }
         if (type !== undefined) {
@@ -137,10 +137,10 @@ export default function TeamRankings() {
     const navigate = useNavigate()
     // let rating = getRating(member, pos)
 
-    // const rating = pos === 'skipper' ? (member.wsr !== 1000 ? Math.max(member.sr, member.wsr).toFixed(0) : member.sr.toFixed(0)) : member.womenCrewRating !== 1000 ? Math.max(member.crewRating, member.womenCrewRating).toFixed(0) : member.crewRating.toFixed(0)
+    // const rating = pos === 'skipper' ? (member.wsr !== 1000 ? Math.max(member.sr, member.wsr).toFixed(0) : member.sr.toFixed(0)) : member.wcr !== 1000 ? Math.max(member.cr, member.wcr).toFixed(0) : member.cr.toFixed(0)
     // console.log(member)
     return (
-      <tr key={index} className='clickable' onClick={() => navigate(`/rankings/${member.sailorID}`)}>
+      <tr key={index} className='clickable' onClick={() => navigate(`/sailors/${member.sailorID}`)}>
         <td className='tdRightBorder tableColFit' style={{ textAlign: 'right' }}>
           {index + 1}
         </td>
@@ -257,7 +257,7 @@ export default function TeamRankings() {
     const womenRankingMembers = filtered
       .slice(0)
       .sort((a, b) => getRating(b, pos, 'women') - getRating(a, pos, 'women'))
-      .filter((member) => member.cross > 20 && member.outLinks > 70 && member.seasons[pos].includes(allSeasons.slice(-1)[0]) && (pos === 'skipper' ? member.wsr !== 1000 : member.womenCrewRating !== 1000))
+      .filter((member) => member.cross > 20 && member.outLinks > 70 && member.seasons[pos].includes(allSeasons.slice(-1)[0]) && (pos === 'skipper' ? member.wsr !== 1000 : member.wcr !== 1000))
       .slice(0, 2)
 
     console.log(filtered)
@@ -343,7 +343,7 @@ export default function TeamRankings() {
       {loaded ? (
         <div style={{ padding: 15 }}>
           <div className='teamPageHeader'>
-            <Link to={'/rankings/team'} className='secondaryText'>
+            <Link to={'/teams'} className='secondaryText'>
               {'<'} All Teams
             </Link>
             <div className='flexRowContainer' style={{ alignItems: 'center' }}>
@@ -355,7 +355,7 @@ export default function TeamRankings() {
               </h1>
             </div>
 
-            <Link to={{ pathname: `/rankings/team`, search: `?region=${teamRegion}` }}>
+            <Link to={{ pathname: `/teams`, search: `?region=${teamRegion}` }}>
               <span className='filterOption' style={{ backgroundColor: regionColors[teamRegion] }}>
                 {teamRegion}
               </span>{' '}

@@ -38,11 +38,11 @@ export default function RankingsHome() {
           <span style={{ color: '#eee' }}>
             {stats.numSailors?.toLocaleString()} Sailors | {stats.numScores?.toLocaleString()} Scores | {stats.numTeams} Teams
           </span>
-          <Link style={{ color: '#eee' }} to={'/rankings/team'}>
+          <Link style={{ color: '#eee' }} to={'/teams'}>
             Last Score Update: {new Date(stats.lastUpdate).toLocaleDateString()}
           </Link>
           {/* <span className='heroExclaim'>Team Racing Coming Soon!</span> */}
-          <Link className='heroExclaim' to={'/rankings/team'}>
+          <Link className='heroExclaim' to={'/sailors'}>
             {stats.exclaimText}
           </Link>
         </div>
@@ -82,7 +82,7 @@ export default function RankingsHome() {
         </div>
         <div className='responsiveRowCol'>
           <div className='flexGrowChild contentBox' style={{ minHeight: 'fit-content' }}>
-            <h2 style={{ margin: 10 }} onClick={() => nav(`/rankings/team`)} className='clickable'>
+            <h2 style={{ margin: 10 }} onClick={() => nav(`/teams`)} className='clickable'>
               Top Open Fleet Racing Teams
             </h2>
             <table className='raceByRaceTable'>
@@ -93,7 +93,7 @@ export default function RankingsHome() {
                   })
                   .slice(0, 10)
                   .map((team, index) => (
-                    <tr key={index} className='clickable' onClick={() => nav(`/rankings/team/${team.teamName}`)}>
+                    <tr key={index} className='clickable' onClick={() => nav(`/teams/${team.teamName}`)}>
                       <td className='tableColFit' style={{ textAlign: 'right' }}>
                         {index + 1}
                       </td>
@@ -110,7 +110,7 @@ export default function RankingsHome() {
             </table>
           </div>
           <div className='flexGrowChild contentBox' style={{ minHeight: 'fit-content' }}>
-            <h2 style={{ margin: 10 }} onClick={() => nav(`/rankings/team`)} className='clickable'>
+            <h2 style={{ margin: 10 }} onClick={() => nav(`/teams`)} className='clickable'>
               Top Women's Fleet Racing Teams
             </h2>
             <table className='raceByRaceTable'>
@@ -121,7 +121,7 @@ export default function RankingsHome() {
                   })
                   .slice(0, 10)
                   .map((team, index) => (
-                    <tr key={index} className='clickable' onClick={() => nav(`/rankings/team/${team.teamName}`)}>
+                    <tr key={index} className='clickable' onClick={() => nav(`/teams/${team.teamName}`)}>
                       <td className='tableColFit' style={{ textAlign: 'right' }}>
                         {index + 1}
                       </td>
@@ -195,6 +195,8 @@ export default function RankingsHome() {
               !
             </div> */}
             <div className='contentBox flexGrowChild'>
+              We have
+              <br />
               Data from 2016 onwards has been scraped from techscore and processed to assign each individual sailor a rating value. These ratings change based on performance in regattas, and the strength of the opponents.
               <br />
               <br />

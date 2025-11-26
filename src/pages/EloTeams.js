@@ -209,7 +209,7 @@ export default function EloTeams() {
             <tbody className='teamsTable'>
               {filtered.length > 0 ? (
                 filtered.map((team, index) => (
-                  <tr key={index} className='clickable' onClick={() => navigate(`/rankings/team/${team.teamID}`)}>
+                  <tr key={index} className='clickable' onClick={() => navigate(`/teams/${team.teamID}`)}>
                     <td className='tableColFit tdRightBorder'>
                       {(sort === 'rating' ? team.avgRating !== 0 : sort === 'women' ? team.topWomenRating !== 0 : sort === 'members' ? team.memberCount !== 0 : sort === 'ratio' ? team.avgRatio !== 0 : sort === 'team' ? team.topTeamRating !== 0 : team.topFleetRating !== 0) ? (
                         index + 1

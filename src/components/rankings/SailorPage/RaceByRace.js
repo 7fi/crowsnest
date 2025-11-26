@@ -162,8 +162,8 @@ export default function RaceByRace({ races, woman, showFilter }) {
                     <td className='tableColFit'>{race.position}</td>
                     <td className='tableColFit'>
                       {' '}
-                      {/*onClick={() => navigate(`/rankings/${race.partner}`)} */}
-                      {/* <Link to={`/rankings/${race.partner['link']}`}>{race.partner['name']}</Link> */}
+                      {/*onClick={() => navigate(`/sailors/${race.partner}`)} */}
+                      {/* <Link to={`/sailors/${race.partner['link']}`}>{race.partner['name']}</Link> */}
                       <div>{race.partnerName}</div>
                     </td>
                     <td style={{ textAlign: 'right', color: !race.ratingType.includes('t') ? (race.score < race.predicted ? 'green' : race.score > race.predicted ? 'red' : '') : race.outcome == 'win' && race.predicted == 'lose' ? 'green' : !race.ratingType.includes('t') ? (race.score > race.predicted ? 'red' : race.score < race.predicted ? 'green' : '') : race.outcome == 'lose' && race.predicted == 'win' ? 'red' : '' }}>

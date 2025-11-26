@@ -85,7 +85,7 @@ export default function PartnerResults({ races }) {
       <tbody>
         {sortedPartners.map((partner, index) =>
           partner.key != 'Unknown' ? (
-            <tr key={index} className='clickable' style={{ margin: '5px' }} onClick={() => navigate(`/rankings/${partner.key}`)}>
+            <tr key={index} className='clickable' style={{ margin: '5px' }} onClick={() => navigate(`/sailors/${partner.key}`)}>
               <td className='tdRightBorder tableColFit secondaryText'>{index + 1}</td>
               <td>{partner.name}</td>
               <td style={{ textAlign: 'right' }} className='tableColFit'>

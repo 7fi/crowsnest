@@ -10,7 +10,7 @@ For now it is focused on college sailing, as it is an area that is lacking in pr
 
 All scores from techscore in 2016 onward have been scraped to our database and analyzed with our modified elo ranking system to create a system for ranking college sailors.
 
-[All teams ranking](https://crowsnest.club/rankings/team)
+[All teams ranking](https://crowsnest.club/team)
 
 There are several pages that can be explored including rankings for the top 100 skippers and crews, rankings for sailors within teams, and individual pages for each sailor.
 

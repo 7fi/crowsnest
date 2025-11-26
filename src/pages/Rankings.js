@@ -92,7 +92,7 @@ export default function Rankings() {
       {loaded && sailor !== undefined ? (
         <div>
           <div className='flexRowContainer sailorNameRow'>
-            <Link to={`/rankings/team/${teams[0]}`}>
+            <Link to={`/teams/${teams[0]}`}>
               <img style={{ display: 'inline', maxHeight: '3rem' }} src={`https://scores.collegesailing.org/inc/img/schools/${teamCodes[teams[0]]}.png`} />
             </Link>
             <h1 style={{ display: 'inline-block' }}>{sailor.name}</h1>
@@ -107,7 +107,7 @@ export default function Rankings() {
               .slice(0)
               .reverse()
               .map((teamName, i) => (
-                <Link key={i} to={`/rankings/team/${teamName}`}>
+                <Link key={i} to={`/teams/${teamName}`}>
                   {i !== 0 ? ', ' : ''} <span style={{ textDecoration: 'underline' }}>{teamName}</span>
                 </Link>
               ))}{' '}
@@ -143,15 +143,15 @@ export default function Rankings() {
           <br />
           {/* Elos and Rankings */}
           <div className='responsiveRowCol ratingStatContainer'>
-            <PosInfo raceType={'fleet'} races={races} type='Open' pos='Skipper' rating={sailor.sr} rank={sailor.sRank} />
-            <PosInfo raceType={'fleet'} races={races} type='Open' pos='Crew' rating={sailor.cr} rank={sailor.cRank} />
-            <PosInfo raceType={'fleet'} races={races} type="Women's" pos='Skipper' rating={sailor.wsr} rank={sailor.wsRank} />
-            <PosInfo raceType={'fleet'} races={races} type="Women's" pos='Crew' rating={sailor.wcr} rank={sailor.wcRank} />
+            <PosInfo isUsers={isUsers} raceType={'fleet'} races={races} type='Open' pos='Skipper' rating={sailor.sr} rank={sailor.sRank} />
+            <PosInfo isUsers={isUsers} raceType={'fleet'} races={races} type='Open' pos='Crew' rating={sailor.cr} rank={sailor.cRank} />
+            <PosInfo isUsers={isUsers} raceType={'fleet'} races={races} type="Women's" pos='Skipper' rating={sailor.wsr} rank={sailor.wsRank} />
+            <PosInfo isUsers={isUsers} raceType={'fleet'} races={races} type="Women's" pos='Crew' rating={sailor.wcr} rank={sailor.wcRank} />
 
-            <PosInfo raceType={'team'} races={races} type='Open' pos='Skipper' rating={sailor.tsr} rank={sailor.SkipperRankTR} />
-            <PosInfo raceType={'team'} races={races} type='Open' pos='Crew' rating={sailor.tcr} rank={sailor.CrewRankTR} />
-            <PosInfo raceType={'team'} races={races} type="Women's" pos='Skipper' rating={sailor.wtsr} rank={sailor.WomenSkipperRankTR} />
-            <PosInfo raceType={'team'} races={races} type="Women's" pos='Crew' rating={sailor.wtcr} rank={sailor.WomenCrewRankTR} />
+            <PosInfo isUsers={isUsers} raceType={'team'} races={races} type='Open' pos='Skipper' rating={sailor.tsr} rank={sailor.tsRank} />
+            <PosInfo isUsers={isUsers} raceType={'team'} races={races} type='Open' pos='Crew' rating={sailor.tcr} rank={sailor.tcRank} />
+            <PosInfo isUsers={isUsers} raceType={'team'} races={races} type="Women's" pos='Skipper' rating={sailor.wtsr} rank={sailor.wtsRank} />
+            <PosInfo isUsers={isUsers} raceType={'team'} races={races} type="Women's" pos='Crew' rating={sailor.wtcr} rank={sailor.wtcRank} />
           </div>
           {/* <span style={{ color: '#ccc', left: 30 }}> * in s25</span> */}
 

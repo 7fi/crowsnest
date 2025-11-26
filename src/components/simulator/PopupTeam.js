@@ -51,7 +51,7 @@ export default function PopupTeam({ team, closeWindow, visible, selected, setSel
     >
       <div className='popupWindow'>
         <div className='popupBar'>
-          <Link to={`/rankings/team/${team.name}`}>
+          <Link to={`/teams/${team.name}`}>
             <h2>{team.name}</h2>
           </Link>
           <button onClick={closeWindow} className='popupX'>
@@ -66,13 +66,13 @@ export default function PopupTeam({ team, closeWindow, visible, selected, setSel
                   <option>{skipper.name}</option>
                 ))}
               </select>
-              {/* <Link to={`/rankings/${member.key}`}>{member.name}</Link>  */}
+              {/* <Link to={`/sailors/${member.key}`}>{member.name}</Link>  */}
               {ord(member.mu, member.sigma, 1000).toFixed(0)} {member.mu} {member.sigma}
             </div>
           ))}
           {selected?.crew?.map((member) => (
             <div>
-              <Link to={`/rankings/${member.key}`}>{member.name}</Link> {ord(member.mu, member.sigma, 1000).toFixed(0)}
+              <Link to={`/sailors/${member.key}`}>{member.name}</Link> {ord(member.mu, member.sigma, 1000).toFixed(0)}
             </div>
           ))}
         </div>

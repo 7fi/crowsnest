@@ -257,7 +257,7 @@ export default function SSTeams() {
               ))}
               {filtered.length > 0 ? (
                 filtered.slice(0, 36).map((team, index) => (
-                  <tr key={index} className='clickable' onClick={() => navigate(`/rankings/team/${team.name}`)}>
+                  <tr key={index} className='clickable' onClick={() => navigate(`/teams/${team.name}`)}>
                     <td className='' style={{ width: 100, paddingLeft: 30 }}>
                       <img style={{ display: 'inline', maxHeight: '2.3rem' }} src={`https://scores.collegesailing.org/inc/img/schools/${teamCodes[team.name]}.png`} />
                     </td>

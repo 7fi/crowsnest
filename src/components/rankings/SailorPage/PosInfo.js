@@ -2,10 +2,10 @@ import { Link } from 'react-router-dom'
 import { ProCheckLite } from '../ProCheck'
 import RatingNum from '../../RatingNum'
 
-export default function PosInfo({ type, raceType, pos, rating, rank, races }) {
+export default function PosInfo({ isUsers, type, raceType, pos, rating, rank, races }) {
   const RankObj = ({ type, rank, pos, raceType }) => {
     return (
-      <ProCheckLite feature='ranks'>
+      <ProCheckLite disable={isUsers} feature='ranks'>
         {rank != 0 ? (
           <span>
             <Link style={{ textDecoration: 'underline' }} to={`/rankings/${raceType == 'fleet' ? pos : 'tr' + pos}${type == "Women's" ? '/women' : ''}`}>
@@ -13,10 +13,9 @@ export default function PosInfo({ type, raceType, pos, rating, rank, races }) {
             </Link>
 
             {/* for{' '} */}
-            {/* <Link style={{ textDecoration: 'underline' }} to={`/rankings/${raceType == 'fleet' ? pos : 'tr' + pos}${type == "Women's" ? '/women' : ''}`}>
+            {/* <Link style={{ textDecoration: 'underline' }} to={`/sailors/${raceType == 'fleet' ? pos : 'tr' + pos}${type == "Women's" ? '/women' : ''}`}>
               {type.toLowerCase()} {pos}s
             </Link> */}
-            {/* * */}
           </span>
         ) : (
           <span className='secondaryText'> (unranked) </span>

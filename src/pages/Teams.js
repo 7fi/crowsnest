@@ -24,7 +24,7 @@ export default function Teams() {
         <ul className='teamsList'>
           {teams.map((team) => (
             <li>
-              <Link to={`/team/${team}`} className='text-titlecase'>
+              <Link to={`/teams/${team}`} className='text-titlecase'>
                 {team}
               </Link>
             </li>

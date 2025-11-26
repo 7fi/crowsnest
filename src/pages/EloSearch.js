@@ -7,6 +7,7 @@ import Loader from '../components/loader'
 
 export default function EloSearch() {
   const [sailors, setSailors] = useState([])
+  const [defaultSailors, setDefaultSailors] = useState([])
   const teamCodes = useTeamCodes()
   const [loading, setLoading] = useState(true)
   const [query, setQuery] = useState('')
@@ -30,10 +31,15 @@ export default function EloSearch() {
 
   useEffect(() => {
     if (query === '') {
-      getTopSailors('skipper', 'fleet', false).then((data) => {
-        setSailors(data)
-        setLoading(false)
-      })
+      if (defaultSailors.length == 0) {
+        getTopSailors('skipper', 'fleet', false).then((data) => {
+          setSailors(data)
+          setDefaultSailors(data)
+          setLoading(false)
+        })
+      } else {
+        setSailors(defaultSailors)
+      }
     } else {
       setLoading(true)
       fetchResults(query)
@@ -46,32 +52,6 @@ export default function EloSearch() {
   return (
     <div style={{ margin: 15 }}>
       <div className='responsiveRowCol searchBarContainer'>
-        {/* <div className='flexRowContainer flexWrap'>
-          <Link to={'/rankings/skipper'}>
-            <button className='buttonBG'>Top Open Skippers</button>
-          </Link>
-          <Link to={'/rankings/crew'}>
-            <button className='buttonBG'>Top Open Crews</button>
-          </Link>
-          <Link to={'/rankings/skipper/women'}>
-            <button className='buttonBG'>Top Women's Skippers</button>
-          </Link>
-          <Link to={'/rankings/crew/women'}>
-            <button className='buttonBG'>Top Women's Crews</button>
-          </Link>
-          <Link to={'/rankings/trskipper'}>
-            <button className='buttonBG'>Top Open TR Skippers</button>
-          </Link>
-          <Link to={'/rankings/trcrew'}>
-            <button className='buttonBG'>Top Open TR Crews</button>
-          </Link>
-          <Link to={'/rankings/trskipper/women'}>
-            <button className='buttonBG'>Top W TR Skippers</button>
-          </Link>
-          <Link to={'/rankings/trcrew/women'}>
-            <button className='buttonBG'>Top W TR Crews</button>
-          </Link>
-        </div> */}
         <input className='flexGrowChild' style={{ minWidth: '15rem', height: '2rem' }} placeholder='Search by name / team' value={query} onChange={(e) => setQuery(e.target.value)} />
       </div>
       {!loading ? (
@@ -88,7 +68,7 @@ export default function EloSearch() {
 
             <tbody className='teamsTable'>
               {sailors?.map((sailor, index) => (
-                <tr key={index} onClick={() => nav(`/rankings/${sailor.sailorID}`)}>
+                <tr key={index} onClick={() => nav(`/sailors/${sailor.sailorID}`)}>
                   <td className='tableColFit'>
                     <div className='flexRowContainer'>
                       <img style={{ display: 'inline', maxHeight: '1.5rem' }} src={`https://scores.collegesailing.org/inc/img/schools/${teamCodes[sailor.teamID]}-40.png`} />

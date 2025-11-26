@@ -46,7 +46,7 @@ export default function Events() {
         {Object.keys(team).length > 0 ? (
           <>
             <div className='contentBox flexRowContainer'>
-              <Link to={`/team/${team?.teamName}`}>
+              <Link to={`/teams/${team?.teamName}`}>
                 <span className='text-title text-titlecase'>{team?.teamName}</span>
               </Link>
             </div>

@@ -138,7 +138,7 @@ export default function Rivals({ rivals, pos }) {
                 .map((rival) => {
                   const ratio = rival.totalWins / rival.totalRaces
                   return (
-                    <tr key={rival.rivalID} onClick={() => nav(`/rankings/${rival.rivalID}`)} className='clickable'>
+                    <tr key={rival.rivalID} onClick={() => nav(`/sailors/${rival.rivalID}`)} className='clickable'>
                       <td>{rival.name}</td>
                       <td className='tableColFit'>{rival.team}</td>
                       <td style={{ textAlign: 'right' }}>{rival.totalRaces}</td>

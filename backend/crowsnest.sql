@@ -147,7 +147,7 @@ CREATE TABLE TRScores(
 
 DROP TABLE IF EXISTS Users;
 CREATE TABLE Users(
-    userID char(32),
+    userID char(32) PRIMARY KEY,
     username varchar(30),
     displayName varchar(50),
     techscoreLink varchar(100) DEFAULT '',

@@ -33,17 +33,17 @@ export default function Feed() {
           .map((sailor, i) => (
             <div key={i} className='contentBox'>
               <div className='flexRowContainer' style={{ alignItems: 'center' }}>
-                <Link to={`/rankings/team/${sailor.teamID}`}>
+                <Link to={`/teams/${sailor.teamID}`}>
                   <img style={{ display: 'inline', maxHeight: '3rem' }} src={`https://scores.collegesailing.org/inc/img/schools/${teamCodes[sailor.teamID]}.png`} />
                 </Link>
                 <div className='responsiveRowCol' style={{ gap: 10 }}>
                   <h3 style={{ margin: 0 }}>
-                    <Link to={`/rankings/${sailor.sailorID}`}>{sailor.name}</Link>
+                    <Link to={`/sailors/${sailor.sailorID}`}>{sailor.name}</Link>
                   </h3>
                   <div>
                     {' '}
                     {sailor.Year} |{' '}
-                    <Link style={{ textDecoration: 'underline' }} to={`/rankings/team/${sailor.teamID}`}>
+                    <Link style={{ textDecoration: 'underline' }} to={`/teams/${sailor.teamID}`}>
                       {sailor.teamID}
                     </Link>{' '}
                     {/* | Followers: {sailor.followers ? sailor?.followers?.length : '0'} */}

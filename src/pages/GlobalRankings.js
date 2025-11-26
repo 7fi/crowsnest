@@ -30,7 +30,7 @@ export default function GlobalRankings({ pos, type, raceType }) {
   const Person = ({ member }) => {
     return (
       <>
-        <tr className='contentBox clickable' onClick={() => nav(`/rankings/${member.sailorID}`)}>
+        <tr className='contentBox clickable' onClick={() => nav(`/sailors/${member.sailorID}`)}>
           <td className='tdRightBorder tableColFit secondaryText' style={{ color: '#aaa' }}>
             {member.rank}{' '}
           </td>
@@ -73,14 +73,14 @@ export default function GlobalRankings({ pos, type, raceType }) {
             {type.slice(1)} {pos}s
           </h2>
           <div className='flexRowContainer'>
-            <Link to={`/rankings/${pos === 'Skipper' ? (raceType == 'fleet' ? 'crew' : 'trcrew') : raceType == 'fleet' ? 'skipper' : 'trskipper'}${type === 'women' ? '/women' : ''}`}>
+            <Link to={`/sailors/${pos === 'Skipper' ? (raceType == 'fleet' ? 'crew' : 'trcrew') : raceType == 'fleet' ? 'skipper' : 'trskipper'}${type === 'women' ? '/women' : ''}`}>
               <button>See {pos === 'Skipper' ? 'Crews' : 'Skippers'}</button>
             </Link>{' '}
-            <Link to={`/rankings/${pos === 'Skipper' ? (raceType == 'fleet' ? 'skipper' : 'trskipper') : raceType == 'fleet' ? 'crew' : 'trcrew'}${type === 'women' ? '' : '/women'}`}>
+            <Link to={`/sailors/${pos === 'Skipper' ? (raceType == 'fleet' ? 'skipper' : 'trskipper') : raceType == 'fleet' ? 'crew' : 'trcrew'}${type === 'women' ? '' : '/women'}`}>
               {' '}
               <button>See {type === 'women' ? 'Open' : "Women's"}</button>
             </Link>
-            <Link to={`/rankings/${raceType === 'fleet' ? 'tr' + pos.toLowerCase() : pos.toLowerCase()}${type === 'women' ? '/women' : ''}`}>
+            <Link to={`/sailors/${raceType === 'fleet' ? 'tr' + pos.toLowerCase() : pos.toLowerCase()}${type === 'women' ? '/women' : ''}`}>
               {' '}
               <button>See {raceType === 'fleet' ? 'Team Race' : 'Fleet Race'}</button>
             </Link>

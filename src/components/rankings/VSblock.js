@@ -46,7 +46,7 @@ export default function VSblock({ sailorsA, sailorsB }) {
           <span>Team</span>
         </div>
         {[...sailorsA, ...sailorsB].map((sailor, jindex) => (
-          <Link key={jindex} to={`/rankings/${sailor.pos}/${sailor.Name}`}>
+          <Link key={jindex} to={`/sailors/${sailor.pos}/${sailor.Name}`}>
             <div className='contentBox comparisonBox'>
               <span>{sailor.Name}</span>
               <span>{sailor.Rating}</span>

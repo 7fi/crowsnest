@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 export default function Footer() {
   return (
     <div className='footerContainer secondaryText flexRowContainer'>
-      <span>©CrowsNest 2025</span>
+      <span>©CrowsNest {new Date().getFullYear()}</span>
       <Link to={'/about'}>About</Link>
       <a href='https://instagram.com/crowsnest.club/'>Instagram</a>
       <a href='https://discord.gg/RxVhg2aUQE'>Discord</a>

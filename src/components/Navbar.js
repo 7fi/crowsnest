@@ -55,12 +55,12 @@ export default function Navbar() {
               </Link>
             </li> */}
           <li>
-            <Link to={`/rankings/team`}>
+            <Link to={`/teams`}>
               <button>Teams</button>
             </Link>
           </li>
           <li className='hoverbox'>
-            <Link to={`/rankings/search`}>
+            <Link to={`/sailors`}>
               <button>Sailors</button>
             </Link>
             <ul className='hoverafter'>
@@ -102,7 +102,7 @@ export default function Navbar() {
           {userVals.tsLink ? (
             <li>
               <button>
-                <Link to={`/rankings/${userVals?.tsLink?.split('/')[4]}`}>{userVals?.displayName}</Link>
+                <Link to={`/sailors/${userVals?.tsLink?.split('/')[4]}`}>{userVals?.displayName}</Link>
               </button>
             </li>
           ) : (

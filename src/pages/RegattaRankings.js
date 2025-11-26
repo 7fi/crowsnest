@@ -77,7 +77,7 @@ export default function RegattaRankings() {
     }
     // Step 2: Generate race elements based on the sorted list
     const raceElements = sortedPeople.map((sailor, index) => (
-      <tr key={index} className='clickable' onClick={() => navigate(`/rankings/${sailor.key}`)}>
+      <tr key={index} className='clickable' onClick={() => navigate(`/sailors/${sailor.key}`)}>
         <td>{sailor.name}</td>
         <td>{sailor.team}</td>
         <td style={{ color: sailor.score < sailor.predicted ? 'green' : sailor.score > sailor.predicted ? 'red' : '' }}>
@@ -154,7 +154,7 @@ export default function RegattaRankings() {
             .sort((a, b) => b.totalRatingChange - a.totalRatingChange)
 
             .map((person, index) => (
-              <Link to={`/rankings/${person.key}`} key={index}>
+              <Link to={`/sailors/${person.key}`} key={index}>
                 <div className='raceEntryAlignedFull contentBox'>
                   <span>{person.name}</span> <span>{person.team}</span>
                   <span>{person.newRating.toFixed(0)}</span>

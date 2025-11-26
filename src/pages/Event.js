@@ -58,7 +58,7 @@ export default function Event() {
             <span>
               <strong>Sport:</strong> {pageEvent?.sport}
             </span>
-            <Link to={`/team/${team}`} className='text-titlecase'>
+            <Link to={`/teams/${team}`} className='text-titlecase'>
               <span>
                 <strong>Team:</strong>{' '}
               </span>
