@@ -27,12 +27,12 @@ export default function GlobalRankings({ pos, type, raceType }) {
   const nav = useNavigate()
   const teamCodes = useTeamCodes()
 
-  const Person = ({ member }) => {
+  const Person = ({ member, index }) => {
     return (
       <>
         <tr className='contentBox clickable' onClick={() => nav(`/sailors/${member.sailorID}`)}>
           <td className='tdRightBorder tableColFit secondaryText' style={{ color: '#aaa' }}>
-            {member.rank}{' '}
+            {index + 1}{' '}
           </td>
           <td className='tableColFit'>
             <div className='flexRowContainer'>
@@ -117,7 +117,7 @@ export default function GlobalRankings({ pos, type, raceType }) {
             {people
               // .filter((member) => member.seasons[pos.toLowerCase()].includes('f24'))
               .map((person, i) => (
-                <Person member={person} key={i} />
+                <Person member={person} key={i} index={i} />
               ))}
           </tbody>
         </table>

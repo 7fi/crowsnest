@@ -12,9 +12,11 @@
   --sucess: #3ee13e;
   --women: #faa;
 
+  --border-size: 0.1rem;
   --radius: 7px;
-  --font: 'Inter';
-  /* --font: 'Roboto'; */
+  /* --font: 'Inter'; */
+  --font: 'Rubik';
+  /* --font: 'Lato'; */
 }
 /* Dark mode */
 [data-theme='dark'] {
@@ -98,7 +100,7 @@ input {
   color: inherit;
 }
 input {
-  border: var(--border) 0.2rem solid;
+  border: var(--border) var(--border-size) solid;
 }
 
 button {
@@ -121,11 +123,16 @@ button:disabled {
 select {
   border-radius: var(--radius);
   background-color: transparent;
-  border: var(--border) 0.2rem solid;
+  border: var(--border) var(--border-size) solid;
+}
+.border {
+  border: var(--border) var(--border-size) solid;
+  border-radius: var(--radius);
+  padding: 0.5rem;
 }
 
 .contentBox {
-  /* border: var(--border) 0.2rem solid; */
+  /* border: var(--border) var(--border-size) solid; */
   border-radius: var(--radius);
   /* background-color: var(--component-bg); */
   box-shadow: 0px 0px 5px #0000001a;
@@ -140,7 +147,7 @@ select {
   margin: 0.5rem;
 }
 .contentBox2 {
-  border: var(--border) 0.2rem solid;
+  border: var(--border) var(--border-size) solid;
   border-radius: var(--radius);
   /* background-color: var(--component-bg); */
   padding: 1rem;
@@ -148,7 +155,7 @@ select {
 }
 
 .contentBox4 {
-  /* border: var(--border) 0.2rem solid; */
+  /* border: var(--border) var(--border-size) solid; */
   border-radius: var(--radius);
   background-color: var(--component-bg);
   padding: 1rem;
@@ -265,6 +272,7 @@ select {
 .text-title {
   font-size: 2rem;
   font-weight: 700;
+  font-family: 'Rubik';
 }
 .text-subtitle {
   font-size: 1.2rem;
@@ -398,7 +406,7 @@ select {
   gap: 10px;
   position: relative;
   /* background-color: var(--med); */
-  border: var(--border) 0.2rem solid;
+  border: var(--border) var(--border-size) solid;
   text-align: center;
   font-family: inherit;
   /* font-weight: 700; */
@@ -525,7 +533,7 @@ select {
 .raceByRaceTable {
   width: 100%;
   border-collapse: collapse;
-  /* border: var(--border) 0.2rem solid;
+  /* border: var(--border) var(--border-size) solid;
   border-radius: var(--radius); */
 }
 .raceByRaceBox {
@@ -558,6 +566,9 @@ tr:hover td {
 .tdRightBorder {
   border-right: 1px solid var(--border);
 }
+.tdLeftBorder {
+  border-left: 1px solid var(--border);
+}
 tbody:not(.ssbody) tr {
   border-bottom: 1px solid var(--border);
 }
@@ -585,7 +596,7 @@ tbody:not(.ssbody) tr:nth-child(even) {
 .ratioBarBg {
   width: 100px;
   height: 100%;
-  border: var(--border) 0.2rem solid;
+  border: var(--border) var(--border-size) solid;
   /* background-color: var(--border); */
   border-radius: var(--radius);
   overflow: visible;
@@ -633,7 +644,7 @@ tr .filterOption:hover {
 }
 
 .tabButton {
-  border: var(--border) 0.2rem solid;
+  border: var(--border) var(--border-size) solid;
 }
 
 .filterHeader {

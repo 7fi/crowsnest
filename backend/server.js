@@ -115,7 +115,15 @@ app.get('/teams/:id', async (req, res) => {
         WHERE teamID = ?;`,
       [req.params.id]
     )
-    res.json({ members: rows, data: info[0] })
+    const [regattas] = await pool.query(
+      `SELECT Distinct fs.regatta, fs.date
+      FROM FleetScores fs
+      JOIN SailorTeams st ON fs.sailorID = st.sailorID
+      WHERE st.teamID = ?
+      ORDER BY fs.date DESC;`,
+      [req.params.id]
+    )
+    res.json({ members: rows, data: info[0], regattas: regattas })
   } catch (err) {
     console.error(err)
     res.status(500).json({ error: 'Database query failed', dueTo: err.sql, why: err.sqlMessage })

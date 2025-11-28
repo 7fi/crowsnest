@@ -141,7 +141,7 @@ export default function TeamRankings() {
     // console.log(member)
     return (
       <tr key={index} className='clickable' onClick={() => navigate(`/sailors/${member.sailorID}`)}>
-        <td className='tdRightBorder tableColFit' style={{ textAlign: 'right' }}>
+        <td className='tdRightBorder tdLeftBorder tableColFit' style={{ textAlign: 'right' }}>
           {index + 1}
         </td>
         {debug ? (
@@ -154,16 +154,16 @@ export default function TeamRankings() {
         )}
         <td className='tableColFit'>{decodeURIComponent(member.name)}</td>
         <td className='tableColFit'>{member.year.split('.')[0].includes('*') ? member.year.split('.')[0].slice(0, 2) : member.year.split('.')[0].slice(2, 4)}</td>
-        <td style={{ textAlign: 'left', minWidth: 50 }}>
+        {/* <td style={{ textAlign: 'left', minWidth: 50 }}>
           {rankingOpen ? <TiStarFullOutline style={{ bottom: -5 }} className='secondaryText' /> : ''}
           {rankingWomen ? <TiStarFullOutline className='secondaryText' color='var(--women)' /> : ''}
-        </td>
+        </td> */}
         {/* <td className='secondaryText'>{member.gender === 'F' ? 'W' : ''}</td> */}
-        <td className='tableColFit' style={{ textAlign: 'right' }}>
+        <td className='tableColFit' style={{ textAlign: 'left' }}>
           {member.numRaces}
         </td>
         {/* <td style={{ textAlign: 'right' }}>{pos === 'skipper' ? member.avgSkipperRatio.toFixed(3) : member.avgCrewRatio.toFixed(3)}</td> */}
-        <td style={{ textAlign: 'center' }}>
+        <td className='tableColFit' style={{ textAlign: 'center' }}>
           <RatioBar ratio={pos === 'skipper' ? member.avgSkipperRatio : member.avgCrewRatio} />
         </td>
         <td style={{ textAlign: 'right' }} className='tableColFit'>
@@ -178,6 +178,7 @@ export default function TeamRankings() {
         <td style={{ textAlign: 'right' }} className='tableColFit'>
           <RatingNum highest={false} sailor={member} pos={pos} type={'women'} raceType={'team'} />
         </td>
+        <td className='tdRightBorder'></td>
       </tr>
     )
   }
@@ -264,7 +265,8 @@ export default function TeamRankings() {
 
     return (
       <>
-        <div className='flexGrowChild'>
+        <div className=''>
+          {/*flexGrowChild */}
           <h2>{pos.slice(0, 1).toUpperCase() + pos.slice(1)}s</h2>
           <table className='raceByRaceTable' style={{ fontSize: '0.9rem' }}>
             <thead>
@@ -272,55 +274,56 @@ export default function TeamRankings() {
                 <th></th>
                 <th>Name</th>
                 <th>Year</th>
-                <th></th>
+                {/* <th></th> */}
                 <th
                   className='tableColFit clickable'
-                  style={{ textAlign: 'right' }}
+                  style={{ minWidth: 68 }}
                   onClick={() => {
                     setSort('races')
                   }}>
-                  {sort === 'races' ? <FaSortDown /> : ''}Races
+                  Races{sort === 'races' ? <FaSortDown /> : ''}
                 </th>
                 <th
                   className=' tableColFit clickable'
-                  style={{ textAlign: 'right' }}
+                  // style={{ textAlign: 'right' }}
                   onClick={() => {
                     setSort('ratio')
                   }}>
-                  {sort === 'ratio' ? <FaSortDown /> : ''}Avg Win %
+                  Avg Win %{sort === 'ratio' ? <FaSortDown /> : ''}
                 </th>
                 <th
                   className=' tableColFit clickable'
-                  style={{ textAlign: 'right' }}
+                  // style={{ textAlign: 'right' }}
                   onClick={() => {
                     setSort('openrating')
                   }}>
-                  {sort === 'openrating' ? <FaSortDown /> : ''}FR
+                  FR{sort === 'openrating' ? <FaSortDown /> : ''}
                 </th>
                 <th
                   className=' tableColFit clickable'
-                  style={{ textAlign: 'right' }}
+                  // style={{ textAlign: 'right' }}
                   onClick={() => {
                     setSort('womenrating')
                   }}>
-                  {sort === 'womenrating' ? <FaSortDown /> : ''}WFR
+                  WFR{sort === 'womenrating' ? <FaSortDown /> : ''}
                 </th>
                 <th
                   className=' tableColFit clickable'
-                  style={{ textAlign: 'right' }}
+                  // style={{ textAlign: 'right' }}
                   onClick={() => {
                     setSort('teamrating')
                   }}>
-                  {sort === 'teamrating' ? <FaSortDown /> : ''}TR
+                  TR{sort === 'teamrating' ? <FaSortDown /> : ''}
                 </th>
                 <th
                   className=' tableColFit clickable'
-                  style={{ textAlign: 'right' }}
+                  // style={{ textAlign: 'right' }}
                   onClick={() => {
                     setSort('wteamrating')
                   }}>
-                  {sort === 'wteamrating' ? <FaSortDown /> : ''}WTR
+                  WTR{sort === 'wteamrating' ? <FaSortDown /> : ''}
                 </th>
+                <th> </th>
               </tr>
             </thead>
             <tbody>
