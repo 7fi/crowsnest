@@ -1,12 +1,15 @@
 import { useEffect, useMemo, useState } from 'react'
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ReferenceLine, Area, ComposedChart } from 'recharts'
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ReferenceLine, Area, ComposedChart, ReferenceArea } from 'recharts'
 import { useMobileDetect } from '../lib/hooks'
+import { getRegDifficulty } from './rankings/SailorPage/RaceByRace'
 
 export default function EloLineChart({ data, woman }) {
   const [activeLines, setActiveLines] = useState(['cr', 'sr', 'wsr', 'wcr', 'tsr', 'tcr', 'wtsr', 'wtcr', 'regAvg'])
   const [notAvailableLines, setNotAvailableLines] = useState([])
   const [allRaces, setAllRaces] = useState([]) // original mapped races (unsliced)
   const isMobile = useMobileDetect()
+
+  // example of banded chart for rating confidence? https://recharts.github.io/en-US/examples/BandedChart/
 
   // rating keys (all possible)
   const allKeys = ['sr', 'cr', 'wsr', 'wcr', 'tsr', 'tcr', 'wtsr', 'wtcr']
@@ -137,13 +140,13 @@ export default function EloLineChart({ data, woman }) {
     if (index === displayRaces.length) return null
     const currentEvent = displayRaces[index]?.season + '/' + displayRaces[index]?.regatta
     const previousEvent = index > 0 ? displayRaces[index - 1]?.season + '/' + displayRaces[index - 1]?.regatta : null
-    if (currentEvent !== previousEvent) {
-      return (
-        <text fill='var(--text)' x={x} y={y + 10} transform={`rotate(45, ${x}, ${y + 10})`} className='chartLabel'>
-          {currentEvent}
-        </text>
-      )
-    }
+    // if (currentEvent !== previousEvent) {
+    //   return (
+    //     <text fill='var(--text)' x={x} y={y + 10} transform={`rotate(90, ${x}, ${y + 10})`} className='chartLabel'>
+    //       {currentEvent}
+    //     </text>
+    //   )
+    // }
     return null
   }
 
@@ -277,29 +280,81 @@ export default function EloLineChart({ data, woman }) {
     return firstRaces.map((race, i) => <ReferenceLine key={i} x={race} strokeDasharray='3 3' />)
   }, [displayRaces])
 
+  const regattaAreas = useMemo(() => {
+    if (!displayRaces.length) return []
+
+    const areas = []
+    let start = 0
+
+    for (let i = 1; i < displayRaces.length; i++) {
+      const prev = displayRaces[i - 1]
+      const curr = displayRaces[i]
+      const prevKey = `${prev.season}/${prev.regatta}`
+      const currKey = `${curr.season}/${curr.regatta}`
+
+      if (prevKey !== currKey) {
+        // previous regatta ended at i-1
+        areas.push({
+          start: displayRaces[start].raceID,
+          end: displayRaces[i].raceID,
+          rank: getRegDifficulty(displayRaces[start].regAvg),
+        })
+        start = i
+      }
+    }
+
+    // push final regatta
+    const lastIndex = displayRaces.length - 1
+    areas.push({
+      start: displayRaces[start].raceID,
+      end: displayRaces[lastIndex].raceID,
+      rank: getRegDifficulty(displayRaces[start].regAvg),
+    })
+
+    return areas
+  }, [displayRaces])
+
+  const yMin = useMemo(() => {
+    if (!displayRaces.length) return 0
+
+    let min = Infinity
+
+    for (const r of displayRaces) {
+      // check all possible rating numeric keys
+      for (const key of allKeys) {
+        if (r[key] != null && r[key] < min) min = r[key]
+      }
+      if (r.regAvg != null && r.regAvg < min) min = r.regAvg
+    }
+
+    return min === Infinity ? 0 : min
+  }, [displayRaces])
+
+  console.log(regattaAreas)
+
   // If displayRaces is empty, we can show an empty chart gracefully
   return (
-    <ResponsiveContainer height={isMobile ? 250 : 480}>
-      <ComposedChart data={displayRaces} margin={!isMobile ? { top: 5, right: 5, left: 10, bottom: 130 } : { top: 5, right: 5, left: -10, bottom: -39 }}>
+    <ResponsiveContainer height={250}>
+      <ComposedChart data={displayRaces} margin={{ top: 5, right: 5, left: 20, bottom: -55 }}>
+        {regattaAreas.map((area, i) => (
+          <ReferenceArea key={'hi' + i} x1={area.start} x2={area.end} y1={yMin - 100} y2={yMin - 35} stroke='none' fill={area.rank} />
+        ))}
         <CartesianGrid strokeDasharray='3 3' vertical={false} />
         {refLines}
         <Area connectNulls dataKey='conf' stroke='#6088ff' fill='#6088ff55' legendType='none' />
         <XAxis dataKey='raceID' tick={<CustomTick />} height={60} interval={0} />
+        {/* tick={<CustomTick />} */}
         <YAxis
-          label={
-            !isMobile
-              ? {
-                  value: 'Rating',
-                  angle: -90,
-                  position: 'insideLeft',
-                  style: { textAnchor: 'middle' },
-                  offset: 0,
-                }
-              : {}
-          }
+          domain={['dataMin - 100', 'dataMax + 100']}
+          label={{
+            value: 'Rating',
+            angle: -90,
+            position: 'insideLeft',
+            style: { textAnchor: 'middle' },
+            offset: 0,
+          }}
         />
         <Tooltip content={<CustomTooltip />} isAnimationActive={false} />
-
         {/* Render lines for all rating keys but they'll only have values for visible races.
             hide property remains so users can toggle lines visually */}
         <Line hide={!activeLines.includes('sr')} strokeWidth={2} type='monotone' dataKey='sr' connectNulls stroke='#6088ff' dot={false} />
@@ -310,10 +365,8 @@ export default function EloLineChart({ data, woman }) {
         <Line hide={!activeLines.includes('tcr')} strokeWidth={2} type='monotone' dataKey='tcr' connectNulls stroke='#77dd84' dot={false} />
         <Line hide={!activeLines.includes('wtsr')} strokeWidth={2} type='monotone' dataKey='wtsr' connectNulls stroke='#ef8b60' dot={false} />
         <Line hide={!activeLines.includes('wtcr')} strokeWidth={2} type='monotone' dataKey='wtcr' connectNulls stroke='#8956e1' dot={false} />
-
         {/* Always-on regAvg line: not selectable, still shown if present in displayRaces */}
         <Line strokeWidth={2} type='monotone' dataKey='regAvg' stroke='#aaa' dot={false} />
-
         <Legend content={<CustomLegend />} verticalAlign='top' height={isMobile ? 55 : 36} />
       </ComposedChart>
     </ResponsiveContainer>

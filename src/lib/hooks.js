@@ -284,6 +284,19 @@ export function useTeamRegions() {
     'Case Western': 'MCSA',
     Oklahoma: 'SEISA',
     Gonzaga: 'PCCSC',
+    Salisbury: 'MAISA',
+    'Santa Barbara City': 'PCCSC',
+    'Johnson and Wales': 'NEISA',
+    Fenway: 'NEISA',
+    'Illinois (Chicago)': 'MCSA',
+    Lawrence: 'MCSA',
+    'Puget Sound': 'NWICSA',
+    'College Sailing': 'GUEST',
+    'Landing School': 'NEISA',
+    'North Florida': 'SAISA',
+    'Cal Poly Maritime': 'PCCSC',
+    'Florida Int': 'SAISA',
+    'Ole Miss': 'SEISA',
   }
   return teamRegions
 }

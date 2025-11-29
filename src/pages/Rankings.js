@@ -10,12 +10,13 @@ import useTeamCodes from '../lib/teamCodes'
 import Rivals from '../components/rankings/SailorPage/Rivals'
 import PartnerResults from '../components/rankings/SailorPage/PartnerResults'
 import PosInfo from '../components/rankings/SailorPage/PosInfo'
-import { useMobileDetect, useUserData } from '../lib/hooks'
+import { useMobileDetect, useTeamRegions, useUserData } from '../lib/hooks'
 import { AuthCheckLite } from '../components/AuthCheck'
 import FollowButton from '../components/rankings/FollowButton'
 import { UserContext } from '../lib/context'
 import SailorStatTab from '../components/rankings/SailorPage/SailorStatTab'
 import { getSailorFollows, getSailorInfo, getSailorRivals, getSailorTeams } from '../lib/apilib'
+import useRegionColors from '../lib/regionColors'
 
 export default function Rankings() {
   const { key } = useParams()
@@ -32,6 +33,8 @@ export default function Rankings() {
   const teamCodes = useTeamCodes()
   const isMobile = useMobileDetect()
   const userData = useUserData()
+  const regionColors = useRegionColors()
+  const teamRegions = useTeamRegions()
 
   // 7 6 2 1 5 4 3 8
 
@@ -64,6 +67,7 @@ export default function Rankings() {
     getSailorTeams(key).then((dataIn) => {
       setTeams(dataIn.map((item) => item.teamID))
       // setLoaded(true)
+      document.querySelector(':root').style.setProperty('--highlight1', regionColors[teamRegions[dataIn[0].teamID]])
     })
     getSailorRivals(key).then((dataIn) => {
       setRivals({

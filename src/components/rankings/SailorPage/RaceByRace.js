@@ -129,6 +129,7 @@ export default function RaceByRace({ races, woman, showFilter }) {
               <th>Percentage</th>
               <th>Rating</th>
               <th>Change</th>
+              {/* <th>RegAvg</th> */}
             </tr>
           </thead>
           <tbody>
@@ -139,12 +140,19 @@ export default function RaceByRace({ races, woman, showFilter }) {
                 return (
                   <tr
                     key={i}
+                    // style={{ backgroundColor: getRegDifficulty(race.regAvg) }}
                     onClick={() => {
                       // navigate(`/rankings/regatta/${race.raceID}/${race.pos}`)
                       window.open(`https://scores.collegesailing.org/${race.season}/${race.regatta}/full-scores/`, '_blank', 'noopener,noreferrer')
                     }}
                     className='clickable'>
-                    {isMobile ? <></> : <td className='secondaryText tableColFit tdRightBorder'>{date.toLocaleDateString()}</td>}
+                    {isMobile ? (
+                      <></>
+                    ) : (
+                      <td style={{ backgroundColor: getRegDifficulty(race.regAvg) + '33' }} className='secondaryText tableColFit tdRightBorder'>
+                        {date.toLocaleDateString()}
+                      </td>
+                    )}
                     <td className='' style={{ textTransform: 'capitalize' }}>
                       {race.regatta.split('-').join(' ')} - {race.raceNumber + '' + (race.division ? race.division : '')}{' '}
                       {race.ratingType.includes('t') ? (
@@ -183,6 +191,7 @@ export default function RaceByRace({ races, woman, showFilter }) {
                       {change > 0 ? ' +' : ' '}
                       {change.toFixed(0)}
                     </td>
+                    {/* <td></td> */}
                   </tr>
                 )
               })
@@ -194,4 +203,16 @@ export default function RaceByRace({ races, woman, showFilter }) {
       </div>
     </>
   )
+}
+
+const mapRange = (value, oldMin, oldMax, newMin, newMax) => {
+  return ((value - oldMin) / (oldMax - oldMin)) * (newMax - newMin) + newMin
+}
+export function getRegDifficulty(avgRating) {
+  const ranks = ['iron', 'silver', 'gold', 'diamond', 'immortal']
+  const rankColors = ['#686868', '#bcbcbc', '#ffcc00', '#3c9eee', '#bc0a0aff']
+  const rankEmojis = ['🟫', '⬜', '🟨', '💎', '☠️']
+  let newNum = Math.floor(mapRange(avgRating, 800, 1550, 0, 4))
+  if (avgRating > 1500) console.log(avgRating, newNum)
+  return rankColors[newNum]
 }

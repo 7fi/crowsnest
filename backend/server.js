@@ -120,7 +120,8 @@ app.get('/teams/:id', async (req, res) => {
       FROM FleetScores fs
       JOIN SailorTeams st ON fs.sailorID = st.sailorID
       WHERE st.teamID = ?
-      ORDER BY fs.date DESC;`,
+      ORDER BY fs.date DESC
+      LIMIT 50;`,
       [req.params.id]
     )
     res.json({ members: rows, data: info[0], regattas: regattas })
@@ -339,6 +340,29 @@ app.delete('/users', async (req, res) => {
     const [rows] = await pool.query(`UPDATE Users SET deleted = TRUE WHERE userID = ? `, [userID])
   } catch (err) {
     console.err(err)
+    res.status(500).json({ error: 'Database query failed', dueTo: err.sql, why: err.sqlMessage })
+  }
+})
+
+app.get('/regattas/race', async (req, res) => {
+  const { season, regatta, raceNum, division, position } = req.query
+
+  try {
+    const [rows] = await pool.query(
+      `SELECT * 
+      FROM FleetScores 
+      WHERE season = ?
+          AND regatta = ?
+          AND raceNumber = ?
+          AND division = ?
+          AND position = ?
+      LIMIT 100;`,
+      [season, regatta, raceNum, division, position]
+    )
+
+    res.json({ scores: rows })
+  } catch (err) {
+    console.error(err)
     res.status(500).json({ error: 'Database query failed', dueTo: err.sql, why: err.sqlMessage })
   }
 })

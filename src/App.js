@@ -96,9 +96,9 @@ export default function App() {
               {/* <Route path='/rankings/:sailorAName/vs/:sailorBName' element={<VersusRanking />} /> */}
               <Route path='/teams' element={<EloTeams />} />
               <Route path='/teams/:teamName' element={<TeamRankings />} />
-              {/* <Route path='/rankings/regatta/:season/:regattaName' element={<RegattaRankings />} />
-              <Route path='/rankings/regatta/:season/:regattaName/:raceNum' element={<RegattaRankings />} />
-              <Route path='/rankings/regatta/:season/:regattaName/:raceNum/:pos' element={<RegattaRankings />} /> */}
+              <Route path='/regattas/:season/:regattaName' element={<RegattaRankings />} />
+              <Route path='/regattas/:season/:regattaName/:raceNum' element={<RegattaRankings />} />
+              <Route path='/regattas/:season/:regattaName/:raceNum/:pos' element={<RegattaRankings />} />
               {/* <Route path='/rankings/simulator' element={<Simulator />} />
               <Route path='/rankings/screenshot' element={<SSTeams />} />
               <Route path='/rankings/history' element={<History />} /> */}

@@ -11,27 +11,37 @@ export default function RegattaRankings() {
   const [activeTab, setActiveTab] = useState('')
   const [position, setPosition] = useState('Skipper')
   const [divisions, setDivs] = useState(['A', 'B'])
-  const [loaded, setLoaded] = useState(false)
+  const [loaded, setLoaded] = useState(true)
+
+  const [raceNumber, setRacenumber] = useState(raceNum)
+  const [curDiv, setCurDiv] = useState('combined')
 
   useEffect(() => {
-    getRegattaElos(`${season}/${regattaName}`)
-      .then((sailors) => {
-        setSailors(sailors?.data?.sailors)
-        setRaceIDs(sailors?.data?.raceIDs)
-        setActiveTab(sailors?.data?.raceIDs[0].split('/')[2])
-        if (raceNum) {
-          setActiveTab(raceNum)
-        }
-        if (pos) {
-          if (pos.toLowerCase() == 'skipper') {
-            setPosition('Skipper')
-          } else if (pos.toLowerCase() == 'crew') {
-            setPosition('Crew')
-          }
-        }
-      })
-      .then(() => setLoaded(true))
-  }, [season, regattaName])
+    // getRegattaElos(`${season}/${regattaName}`)
+    //   .then((sailors) => {
+    //     setSailors(sailors?.data?.sailors)
+    //     setRaceIDs(sailors?.data?.raceIDs)
+    //     setActiveTab(sailors?.data?.raceIDs[0].split('/')[2])
+    //     if (raceNum) {
+    //       setActiveTab(raceNum)
+    //     }
+    //     if (pos) {
+    //       if (pos.toLowerCase() == 'skipper') {
+    //         setPosition('Skipper')
+    //       } else if (pos.toLowerCase() == 'crew') {
+    //         setPosition('Crew')
+    //       }
+    //     }
+    //   })
+    //   .then(() => setLoaded(true))
+
+    getRaceScores(season, regattaName, raceNumber, curDiv, pos).then((scores) => console.log(scores))
+
+    if (raceNum.includes('A') || raceNum.includes('B') || raceNum.includes('C')) {
+      setCurDiv(raceNum.slice(-1))
+      setRacenumber(raceNum.slice(0, -1))
+    }
+  }, [season, regattaName, raceNum, pos])
 
   useEffect(() => {
     raceIDs.some((id) => {
@@ -43,7 +53,7 @@ export default function RegattaRankings() {
   }, [activeTab])
 
   const navigate = useNavigate()
-  navigate('/rankings')
+  // navigate('/rankings')
 
   const RaceBreakdown = ({ raceID, sailors, pos }) => {
     const filteredPeople = sailors.filter((person) => person.races.some((race) => race.raceID === raceID) && person.Position == pos)
@@ -215,6 +225,11 @@ export default function RegattaRankings() {
   const TabComponent = ({ raceIDs, pos }) => {
     return (
       <>
+        {season}
+        {regattaName}
+        {raceNumber}
+        {curDiv}
+        {pos}
         <div className='' style={{ margin: 15 }}>
           <div>
             {raceIDs.map((id) => {
@@ -255,6 +270,6 @@ export default function RegattaRankings() {
     )
   }
 
-  // return <>{loaded ? <TabComponent raceIDs={raceIDs} pos={position} /> : <Loader show={!loaded} />}</>
-  return <div>Regatta page is currently being rewritten... </div>
+  return <>{loaded ? <TabComponent raceIDs={raceIDs} pos={position} /> : <Loader show={!loaded} />}</>
+  // return <div>Regatta page is currently being rewritten... </div>
 }

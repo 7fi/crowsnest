@@ -15,6 +15,7 @@ export default function TeamRankings() {
   const [teamMembers, setTeamMembers] = useState([])
   const [teamLink, setTeamLink] = useState('')
   const [teamRegion, setTeamRegion] = useState('')
+  const [recentRegattas, setRecentRegattas] = useState([])
   const [loaded, setLoaded] = useState(false)
 
   const [sort, setSort] = useState('openrating')
@@ -32,6 +33,7 @@ export default function TeamRankings() {
       setRating(tempTeam.data.avgRating)
       setTeamLink(tempTeam.data.link)
       setTeamRegion(tempTeam.data.region)
+      setRecentRegattas(tempTeam.regattas)
 
       const allSeasons = tempTeam.members.map((member) => member.season)
       const uniqueSeasons = [...new Set(allSeasons)].sort((a, b) => {
@@ -395,6 +397,14 @@ export default function TeamRankings() {
           <span className='secondaryText'>
             <TiStarFullOutline /> means that this sailor is used in the calculation of this teams rating. Requires a certain number of races vs out of conference sailors.{' '}
           </span>
+          <div>
+            <h2>Recent Regattas:</h2>
+            {recentRegattas.slice(0, 10).map((reg, i) => (
+              <a key={i} className='text-titlecase' href={`https://scores.collegesailing.org/${reg.regatta}`}>
+                {new Date(reg.date).toLocaleDateString()} {reg.regatta.replaceAll('-', ' ')}
+              </a>
+            ))}
+          </div>
         </div>
       ) : (
         <Loader show={!loaded} />
