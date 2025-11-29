@@ -354,8 +354,8 @@ app.get('/regattas', async (req, res) => {
       JOIN Sailors s ON s.sailorID = fs.sailorID
       WHERE fs.season = ?
           AND st.season = ?
-          AND regatta = ?
-          AND position = 'Skipper'
+          AND fs.regatta = ?
+          AND fs.position = 'Skipper'
       LIMIT 500;`,
       [season, season, regatta]
     )
