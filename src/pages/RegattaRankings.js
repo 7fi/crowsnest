@@ -4,11 +4,10 @@ import { getRegattaElos } from '../lib/firebase'
 import PosNegBarChart from '../components/PosNegBarChart'
 import Loader from '../components/loader'
 import { getRaceScores } from '../lib/apilib'
+import useTeamCodes from '../lib/teamCodes'
 
 export default function RegattaRankings() {
   const { season, regattaName, raceNum, pos } = useParams()
-  const [sailors, setSailors] = useState([])
-  const [raceIDs, setRaceIDs] = useState([])
   const [activeTab, setActiveTab] = useState('')
   const [position, setPosition] = useState('Skipper')
   const [divisions, setDivs] = useState(['A', 'B'])
@@ -17,6 +16,8 @@ export default function RegattaRankings() {
   const [raceNumber, setRacenumber] = useState(raceNum)
   const [curDiv, setCurDiv] = useState('combined')
   const [scores, setScores] = useState([])
+
+  const teamCodes = useTeamCodes()
 
   useEffect(() => {
     let newDiv = curDiv
@@ -38,25 +39,17 @@ export default function RegattaRankings() {
       .then(() => setLoaded(true))
   }, [season, regattaName, raceNum, pos])
 
-  useEffect(() => {
-    raceIDs.some((id) => {
-      if (id.slice(-1) == 'C') {
-        setDivs(['A', 'B', 'C'])
-        return true
-      }
-    })
-  }, [activeTab])
-
   const navigate = useNavigate()
 
-  const SingleTab = ({ raceIDs, pos }) => {
+  const SingleTab = () => {
     return (
       <>
         <div>
           <table>
             <thead>
               <tr>
-                <th>ID</th>
+                <th></th>
+                <th>Name</th>
                 <th>Partner</th>
                 <th>Score</th>
                 <th>Predicted</th>
@@ -71,7 +64,12 @@ export default function RegattaRankings() {
                   let change = score.newRating - score.oldRating
                   return (
                     <tr key={i}>
-                      <td>{score.sailorID}</td>
+                      <td>
+                        <div className='flexRowContainer'>
+                          <img style={{ display: 'inline', maxHeight: '1.5rem' }} src={`https://scores.collegesailing.org/inc/img/schools/${teamCodes[score.teamID]}-40.png`} />
+                        </div>
+                      </td>
+                      <td>{score.name}</td>
                       <td>{score.partnerName}</td>
                       <td style={{ textAlign: 'right', color: !score.ratingType.includes('t') ? (score.score < score.predicted ? 'green' : score.score > score.predicted ? 'red' : '') : score.outcome == 'win' && score.predicted == 'lose' ? 'green' : !score.ratingType.includes('t') ? (score.score > score.predicted ? 'red' : score.score < score.predicted ? 'green' : '') : score.outcome == 'lose' && score.predicted == 'win' ? 'red' : '' }}>
                         {score.score}
@@ -97,6 +95,6 @@ export default function RegattaRankings() {
     )
   }
 
-  return <>{loaded ? <SingleTab raceIDs={raceIDs} pos={position} /> : <Loader show={!loaded} />}</>
+  return <>{loaded ? <SingleTab /> : <Loader show={!loaded} />}</>
   // return <div>Regatta page is currently being rewritten... </div>
 }

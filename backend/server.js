@@ -353,6 +353,7 @@ app.get('/regattas/race', async (req, res) => {
       FROM FleetScores fs JOIN SailorTeams st ON fs.sailorID = st.sailorID
       JOIN Sailors s ON s.sailorID = fs.sailorID
       WHERE fs.season = ?
+          AND st.season = ?
           AND regatta = ?
           AND raceNumber = ?
           AND division = ?
