@@ -349,14 +349,15 @@ app.get('/regattas/race', async (req, res) => {
 
   try {
     const [rows] = await pool.query(
-      `SELECT * 
-      FROM FleetScores 
-      WHERE season = ?
+      `SELECT DISTINCT fs.sailorID, s.name, fs.score, fs.predicted, fs.partnerID, fs.partnerName, fs.newRating, fs.oldRating, fs.ratingType, fs.regAvg, st.teamID
+      FROM FleetScores fs JOIN SailorTeams st ON fs.sailorID = st.sailorID
+      JOIN Sailors s ON s.sailorID = fs.sailorID
+      WHERE fs.season = ?
           AND regatta = ?
           AND raceNumber = ?
           AND division = ?
-          AND position = ?
-      LIMIT 100;`,
+          AND fs.position = ?
+      LIMIT 50;`,
       [season, regatta, raceNum, division, position]
     )
 

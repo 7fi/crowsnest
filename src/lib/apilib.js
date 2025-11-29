@@ -107,6 +107,7 @@ export async function deleteUserAccount(userID) {
 }
 
 export async function getRaceScores(season, regatta, raceNumber, division, pos) {
+  console.log(season, regatta, raceNumber, division, pos)
   const res = await fetch(APIURL + `regattas/race` + `?season=${season}&regatta=${regatta}&raceNum=${raceNumber}&division=${division}&position=${pos}`).then((response) => response.json())
   return res
 }
