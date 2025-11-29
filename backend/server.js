@@ -359,7 +359,7 @@ app.get('/regattas/race', async (req, res) => {
           AND division = ?
           AND fs.position = ?
       LIMIT 50;`,
-      [season, regatta, raceNum, division, position]
+      [season, season, regatta, raceNum, division, position]
     )
 
     res.json({ scores: rows })
