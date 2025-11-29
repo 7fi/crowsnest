@@ -356,7 +356,7 @@ app.get('/regattas', async (req, res) => {
           AND st.season = ?
           AND regatta = ?
       LIMIT 500;`,
-      [season, season, regatta, raceNum, division, position]
+      [season, season, regatta]
     )
 
     res.json({ scores: rows })

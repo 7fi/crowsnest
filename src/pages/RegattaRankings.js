@@ -16,6 +16,7 @@ export default function RegattaRankings() {
   const [raceNumber, setRacenumber] = useState(raceNum)
   const [curDiv, setCurDiv] = useState('combined')
   const [scores, setScores] = useState([])
+  const [allScores, setAllScores] = useState([])
 
   const teamCodes = useTeamCodes()
 
@@ -37,16 +38,15 @@ export default function RegattaRankings() {
         setScores(scores.scores)
       })
       .then(() => setLoaded(true))
-  }, [season, regattaName, raceNum])
 
-  useEffect(() => {
     let divs = new Set()
     scores.forEach((score) => {
       divs.add(score.division)
+      console.log(score)
     })
-    setDivs(divs.values())
-    console.log(divs)
-  }, [activeTab])
+    setDivs([...divs])
+    console.log([...divs])
+  }, [season, regattaName, raceNum])
 
   const navigate = useNavigate()
 
