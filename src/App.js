@@ -98,7 +98,7 @@ export default function App() {
               <Route path='/teams/:teamName' element={<TeamRankings />} />
               <Route path='/regattas/:season/:regattaName' element={<RegattaRankings />} />
               <Route path='/regattas/:season/:regattaName/:raceNum' element={<RegattaRankings />} />
-              <Route path='/regattas/:season/:regattaName/:raceNum/:pos' element={<RegattaRankings />} />
+              {/* <Route path='/regattas/:season/:regattaName/:raceNum/:pos' element={<RegattaRankings />} /> */}
               {/* <Route path='/rankings/simulator' element={<Simulator />} />
               <Route path='/rankings/screenshot' element={<SSTeams />} />
               <Route path='/rankings/history' element={<History />} /> */}

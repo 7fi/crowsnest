@@ -344,12 +344,34 @@ app.delete('/users', async (req, res) => {
   }
 })
 
+app.get('/regattas', async (req, res) => {
+  const { season, regatta } = req.query
+
+  try {
+    const [rows] = await pool.query(
+      `SELECT DISTINCT fs.sailorID, s.name, fs.division, fs.score, fs.predicted, fs.partnerID, fs.partnerName, fs.newRating, fs.oldRating, fs.ratingType, fs.regAvg, st.teamID
+      FROM FleetScores fs JOIN SailorTeams st ON fs.sailorID = st.sailorID
+      JOIN Sailors s ON s.sailorID = fs.sailorID
+      WHERE fs.season = ?
+          AND st.season = ?
+          AND regatta = ?
+      LIMIT 500;`,
+      [season, season, regatta, raceNum, division, position]
+    )
+
+    res.json({ scores: rows })
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ error: 'Database query failed', dueTo: err.sql, why: err.sqlMessage })
+  }
+})
+
 app.get('/regattas/race', async (req, res) => {
   const { season, regatta, raceNum, division, position } = req.query
 
   try {
     const [rows] = await pool.query(
-      `SELECT DISTINCT fs.sailorID, s.name, fs.score, fs.predicted, fs.partnerID, fs.partnerName, fs.newRating, fs.oldRating, fs.ratingType, fs.regAvg, st.teamID
+      `SELECT DISTINCT fs.sailorID, s.name, fs.division, fs.score, fs.predicted, fs.partnerID, fs.partnerName, fs.newRating, fs.oldRating, fs.ratingType, fs.regAvg, st.teamID
       FROM FleetScores fs JOIN SailorTeams st ON fs.sailorID = st.sailorID
       JOIN Sailors s ON s.sailorID = fs.sailorID
       WHERE fs.season = ?

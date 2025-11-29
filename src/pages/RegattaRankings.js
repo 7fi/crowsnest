@@ -7,7 +7,7 @@ import { getRaceScores } from '../lib/apilib'
 import useTeamCodes from '../lib/teamCodes'
 
 export default function RegattaRankings() {
-  const { season, regattaName, raceNum, pos } = useParams()
+  const { season, regattaName, raceNum } = useParams()
   const [activeTab, setActiveTab] = useState('')
   const [position, setPosition] = useState('Skipper')
   const [divisions, setDivs] = useState(['A', 'B'])
@@ -31,13 +31,22 @@ export default function RegattaRankings() {
       setRacenumber(newRaceNumber)
     }
 
-    getRaceScores(season, regattaName, newRaceNumber, newDiv, pos)
+    getRaceScores(season, regattaName, newRaceNumber, newDiv, 'Skipper')
       .then((scores) => {
         console.log(scores.scores)
         setScores(scores.scores)
       })
       .then(() => setLoaded(true))
-  }, [season, regattaName, raceNum, pos])
+  }, [season, regattaName, raceNum])
+
+  useEffect(() => {
+    let divs = new Set()
+    scores.forEach((score) => {
+      divs.add(score.division)
+    })
+    setDivs(divs.values())
+    console.log(divs)
+  }, [activeTab])
 
   const navigate = useNavigate()
 
@@ -45,12 +54,17 @@ export default function RegattaRankings() {
     return (
       <>
         <div>
+          <div>
+            {divisions.map((div) => (
+              <span>{div}</span>
+            ))}
+          </div>
           <table>
             <thead>
               <tr>
                 <th></th>
-                <th>Name</th>
-                <th>Partner</th>
+                <th>Skipper</th>
+                <th>Crew</th>
                 <th>Score</th>
                 <th>Predicted</th>
                 <th>Rating</th>
@@ -69,8 +83,12 @@ export default function RegattaRankings() {
                           <img style={{ display: 'inline', maxHeight: '1.5rem' }} src={`https://scores.collegesailing.org/inc/img/schools/${teamCodes[score.teamID]}-40.png`} />
                         </div>
                       </td>
-                      <td>{score.name}</td>
-                      <td>{score.partnerName}</td>
+                      <td className='clickable' onClick={() => navigate(`/sailors/${score.sailorID}`)}>
+                        {score.name}
+                      </td>
+                      <td className='clickable' onClick={() => navigate(`/sailors/${score.partnerID}`)}>
+                        {score.partnerName}
+                      </td>
                       <td style={{ textAlign: 'right', color: !score.ratingType.includes('t') ? (score.score < score.predicted ? 'green' : score.score > score.predicted ? 'red' : '') : score.outcome == 'win' && score.predicted == 'lose' ? 'green' : !score.ratingType.includes('t') ? (score.score > score.predicted ? 'red' : score.score < score.predicted ? 'green' : '') : score.outcome == 'lose' && score.predicted == 'win' ? 'red' : '' }}>
                         {score.score}
                         {score.ratingType.includes('t') ? (score.outcome == 'win' ? '  ' : '') + ' (' + score.outcome + ')' : ''}
