@@ -135,12 +135,17 @@ export default function TeamRankings() {
     return rating
   }
 
-  const TeamMember = ({ index, member, pos, rankingOpen, rankingWomen }) => {
+  const TeamMember = ({ index, member, pos }) => {
     const navigate = useNavigate()
     // let rating = getRating(member, pos)
 
     // const rating = pos === 'skipper' ? (member.wsr !== 1000 ? Math.max(member.sr, member.wsr).toFixed(0) : member.sr.toFixed(0)) : member.wcr !== 1000 ? Math.max(member.cr, member.wcr).toFixed(0) : member.cr.toFixed(0)
     // console.log(member)
+    const rankingOpen = (member.rankType.split('.').includes('sr') && pos == 'skipper') || (member.rankType.split('.').includes('cr') && pos == 'crew')
+    const rankingWomen = (member.rankType.split('.').includes('wsr') && pos == 'skipper') || (member.rankType.split('.').includes('wcr') && pos == 'crew')
+
+    console.log(member.name, rankingOpen, rankingWomen, member.rankType)
+
     return (
       <tr key={index} className='clickable' onClick={() => navigate(`/sailors/${member.sailorID}`)}>
         <td className='tdRightBorder tdLeftBorder tableColFit' style={{ textAlign: 'right' }}>
@@ -155,11 +160,11 @@ export default function TeamRankings() {
           <></>
         )}
         <td className='tableColFit'>{decodeURIComponent(member.name)}</td>
-        <td className='tableColFit'>{member.year.split('.')[0].includes('*') ? member.year.split('.')[0].slice(0, 2) : member.year.split('.')[0].slice(2, 4)}</td>
-        {/* <td style={{ textAlign: 'left', minWidth: 50 }}>
+        <td className=''>{member.year.split('.')[0].includes('*') ? member.year.split('.')[0].slice(0, 2) : member.year.split('.')[0].slice(2, 4)}</td>
+        <td style={{ textAlign: 'left', minWidth: 50 }}>
           {rankingOpen ? <TiStarFullOutline style={{ bottom: -5 }} className='secondaryText' /> : ''}
           {rankingWomen ? <TiStarFullOutline className='secondaryText' color='var(--women)' /> : ''}
-        </td> */}
+        </td>
         {/* <td className='secondaryText'>{member.gender === 'F' ? 'W' : ''}</td> */}
         <td className='tableColFit' style={{ textAlign: 'left' }}>
           {member.numRaces}
@@ -168,6 +173,7 @@ export default function TeamRankings() {
         <td className='tableColFit' style={{ textAlign: 'center' }}>
           <RatioBar ratio={pos === 'skipper' ? member.avgSkipperRatio : member.avgCrewRatio} />
         </td>
+        <td></td>
         <td style={{ textAlign: 'right' }} className='tableColFit'>
           <RatingNum highest={false} sailor={member} pos={pos} type={'open'} raceType={'fleet'} />
         </td>
@@ -180,7 +186,7 @@ export default function TeamRankings() {
         <td style={{ textAlign: 'right' }} className='tableColFit'>
           <RatingNum highest={false} sailor={member} pos={pos} type={'women'} raceType={'team'} />
         </td>
-        <td className='tdRightBorder'></td>
+        {/* <td className='tdRightBorder'></td> */}
       </tr>
     )
   }
@@ -251,23 +257,9 @@ export default function TeamRankings() {
         return 0
       })
 
-    const openrankingMembers = filtered
-      .slice(0)
-      .sort((a, b) => getRating(b, pos, 'open') - getRating(a, pos, 'open'))
-      .filter((member) => member.cross > 20 && member.outLinks > 70 && member.seasons[pos].includes(allSeasons.slice(-1)[0]))
-      .slice(0, 3)
-
-    const womenRankingMembers = filtered
-      .slice(0)
-      .sort((a, b) => getRating(b, pos, 'women') - getRating(a, pos, 'women'))
-      .filter((member) => member.cross > 20 && member.outLinks > 70 && member.seasons[pos].includes(allSeasons.slice(-1)[0]) && (pos === 'skipper' ? member.wsr !== 1000 : member.wcr !== 1000))
-      .slice(0, 2)
-
-    console.log(filtered)
-
     return (
       <>
-        <div className=''>
+        <div className='flexGrowChild'>
           {/*flexGrowChild */}
           <h2>{pos.slice(0, 1).toUpperCase() + pos.slice(1)}s</h2>
           <table className='raceByRaceTable' style={{ fontSize: '0.9rem' }}>
@@ -276,7 +268,7 @@ export default function TeamRankings() {
                 <th></th>
                 <th>Name</th>
                 <th>Year</th>
-                {/* <th></th> */}
+                <th className='tableColFit'></th>
                 <th
                   className='tableColFit clickable'
                   style={{ minWidth: 68 }}
@@ -293,6 +285,7 @@ export default function TeamRankings() {
                   }}>
                   Avg Win %{sort === 'ratio' ? <FaSortDown /> : ''}
                 </th>
+                <th></th>
                 <th
                   className=' tableColFit clickable'
                   // style={{ textAlign: 'right' }}
@@ -325,12 +318,12 @@ export default function TeamRankings() {
                   }}>
                   WTR{sort === 'wteamrating' ? <FaSortDown /> : ''}
                 </th>
-                <th> </th>
+                {/* <th> </th> */}
               </tr>
             </thead>
             <tbody>
               {filtered.length > 0 ? (
-                filtered.map((member, index) => <TeamMember index={index} key={member.name + member.pos} member={member} pos={pos} rankingOpen={openrankingMembers.includes(member)} rankingWomen={womenRankingMembers.includes(member)} />)
+                filtered.map((member, index) => <TeamMember index={index} key={member.name + member.pos} member={member} pos={pos} />)
               ) : (
                 <tr>
                   <span style={{ width: '50%', position: 'absolute', textAlign: 'center', margin: 20 }}>Please select at least one season!</span>

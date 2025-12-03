@@ -1,8 +1,8 @@
 import posthog from 'posthog-js'
 import { getAuth, signOut } from 'firebase/auth'
 
-// const APIURL = 'http://localhost:3001/'
-const APIURL = 'https://api.crowsnest.club/'
+const APIURL = 'http://localhost:3001/'
+// const APIURL = 'https://api.crowsnest.club/'
 
 export async function getAllSailors() {
   const res = await fetch(APIURL + 'sailors/').then((response) => response.json())
@@ -106,13 +106,12 @@ export async function deleteUserAccount(userID) {
   return res
 }
 
-// export async function getRaceScores(season, regatta, raceNumber, division, pos) {
-//   console.log(season, regatta, raceNumber, division, pos)
-//   const res = await fetch(APIURL + `regattas/race` + `?season=${season}&regatta=${regatta}&raceNum=${raceNumber}&division=${division}&position=${pos}`).then((response) => response.json())
-//   return res
-// }
 export async function getRaceScores(season, regatta, raceNumber, division, pos) {
   console.log(season, regatta, raceNumber, division, pos)
+  const res = await fetch(APIURL + `regattas/race` + `?season=${season}&regatta=${regatta}&raceNum=${raceNumber}&division=${division}&position=${pos}`).then((response) => response.json())
+  return res
+}
+export async function getRegattaScores(season, regatta) {
   const res = await fetch(APIURL + `regattas` + `?season=${season}&regatta=${regatta}`).then((response) => response.json())
   return res
 }

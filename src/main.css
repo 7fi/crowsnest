@@ -272,7 +272,6 @@ select {
 .text-title {
   font-size: 2rem;
   font-weight: 700;
-  font-family: 'Rubik';
 }
 .text-subtitle {
   font-size: 1.2rem;
@@ -540,6 +539,20 @@ select {
   max-height: 500px;
   overflow: scroll;
 }
+.raceSailorsTooltip {
+  position: absolute;
+  background-color: var(--bg);
+  display: none;
+  flex-direction: column;
+  padding: 0.4rem;
+}
+.scoreEntry:hover {
+  background-color: var(--border);
+}
+.scoreEntry:hover > .raceSailorsTooltip {
+  display: flex;
+}
+
 .tableColFit {
   width: 1%;
   white-space: nowrap;

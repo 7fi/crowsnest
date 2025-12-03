@@ -91,7 +91,7 @@ app.get('/sailors/:id', async (req, res) => {
 app.get('/teams', async (req, res) => {
   try {
     const [rows] = await pool.query(`SELECT t.teamID as teamID, teamName, topFleetRating, topWomenRating, topTeamRating,
-       topWomenTeamRating, avgRating, avgRatio, region, link,
+       topWomenTeamRating, avgRating, avgRatio, region,
            COUNT(DISTINCT st.sailorID) AS memberCount
     FROM Teams t JOIN SailorTeams st ON t.teamID = st.teamID
     WHERE st.season in ('f24','s25')
@@ -349,7 +349,7 @@ app.get('/regattas', async (req, res) => {
 
   try {
     const [rows] = await pool.query(
-      `SELECT DISTINCT fs.sailorID, s.name, fs.raceNumber, fs.division, fs.score, fs.predicted, fs.partnerID, fs.partnerName, fs.newRating, fs.oldRating, fs.ratingType, fs.regAvg, st.teamID
+      `SELECT DISTINCT fs.sailorID, s.name, fs.raceNumber, fs.division, fs.boatName, fs.score, fs.predicted, fs.partnerID, fs.partnerName, fs.newRating, fs.oldRating, fs.ratingType, fs.regAvg, st.teamID
       FROM FleetScores fs JOIN SailorTeams st ON fs.sailorID = st.sailorID
       JOIN Sailors s ON s.sailorID = fs.sailorID
       WHERE fs.season = ?

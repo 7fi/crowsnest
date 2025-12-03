@@ -23,7 +23,6 @@ import Rankings from './pages/Rankings'
 import TeamRankings from './pages/TeamRankings'
 import EloTeams from './pages/EloTeams'
 import GlobalRankings from './pages/GlobalRankings'
-import RegattaRankings from './pages/RegattaRankings'
 import RankingsHome from './pages/RankingsHome'
 import { useEffect } from 'react'
 import VersusRanking from './pages/VersusRanking'
@@ -39,6 +38,7 @@ import Feed from './pages/Feed'
 import Simulator from './pages/Simulator'
 import SSTeams from './pages/SSTeams'
 import History from './pages/History'
+import RegattaRace from './pages/RegattaRace'
 
 export default function App() {
   const userData = useUserData()
@@ -96,8 +96,8 @@ export default function App() {
               {/* <Route path='/rankings/:sailorAName/vs/:sailorBName' element={<VersusRanking />} /> */}
               <Route path='/teams' element={<EloTeams />} />
               <Route path='/teams/:teamName' element={<TeamRankings />} />
-              <Route path='/regattas/:season/:regattaName' element={<RegattaRankings />} />
-              <Route path='/regattas/:season/:regattaName/:raceNum' element={<RegattaRankings />} />
+              <Route path='/regattas/:season/:regattaName' element={<RegattaRace />} />
+              <Route path='/regattas/:season/:regattaName/:raceNum' element={<RegattaRace />} />
               {/* <Route path='/regattas/:season/:regattaName/:raceNum/:pos' element={<RegattaRankings />} /> */}
               {/* <Route path='/rankings/simulator' element={<Simulator />} />
               <Route path='/rankings/screenshot' element={<SSTeams />} />

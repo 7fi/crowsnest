@@ -2,6 +2,19 @@ DROP DATABASE IF EXISTS crowsnest;
 CREATE DATABASE IF NOT EXISTS crowsnest;
 USE crowsnest;
 
+DROP TABLE IF EXISTS Users;
+CREATE TABLE Users(
+    userID char(32) PRIMARY KEY,
+    username varchar(30),
+    displayName varchar(50),
+    techscoreLink varchar(100) DEFAULT '',
+    techscoreID INT DEFAULT 0,
+    photoURL varchar(200),
+    deleted BOOLEAN DEFAULT FALSE,
+    pro BOOLEAN DEFAULT FALSE
+);
+
+DROP TABLE IF EXISTS SailorTeams;
 DROP TABLE IF EXISTS Teams;
 CREATE TABLE Teams(
   teamID varchar(50) PRIMARY KEY,
@@ -12,8 +25,7 @@ CREATE TABLE Teams(
   topWomenTeamRating INT,
   avgRating INT,
   avgRatio FLOAT,
-  region char(8),
-  link varChar(100)
+  region char(8)
 );
 
 DROP TABLE IF EXISTS Sailors;
@@ -40,7 +52,7 @@ CREATE TABLE Sailors(
     avgSkipperRatio FLOAT,
     avgCrewRatio FLOAT,
     # add techscore links... New table?
-    # add seasons? don't want to join with races every time
+    # add seasons? dont want to join with races every time
     year char(6),
     crossLinks INT,
     outLinks INT,
@@ -62,9 +74,10 @@ CREATE TABLE SailorTeams(
     season char(3),
     position char(7),
     raceCount INT,
-    PRIMARY KEY(sailorID,teamID, season, position)
+    rankType char(4),
+    PRIMARY KEY(sailorID,teamID, season, position),
 #     CONSTRAINT FOREIGN KEY (sailorID) REFERENCES Sailors(sailorID),
-#     CONSTRAINT FOREIGN KEY (teamID) REFERENCES Teams(teamID)
+    CONSTRAINT FOREIGN KEY (teamID) REFERENCES Teams(teamID)
 );
 
 DROP TABLE IF EXISTS SailorFollows;
@@ -110,6 +123,7 @@ CREATE TABLE FleetScores(
     scoring char(12),
     venue varchar(40),
     boat varchar(30),
+    boatName varchar(100),
     ratingType char(4),
     oldRating int,
     newRating int,
@@ -143,18 +157,6 @@ CREATE TABLE TRScores(
     regAvg int,
     PRIMARY KEY(season, regatta, raceNumber, sailorID),
     CONSTRAINT FOREIGN KEY (sailorID) REFERENCES Sailors(sailorID)
-);
-
-DROP TABLE IF EXISTS Users;
-CREATE TABLE Users(
-    userID char(32) PRIMARY KEY,
-    username varchar(30),
-    displayName varchar(50),
-    techscoreLink varchar(100) DEFAULT '',
-    techscoreID INT DEFAULT 0,
-    photoURL varchar(200),
-    deleted BOOLEAN DEFAULT FALSE,
-    pro BOOLEAN DEFAULT FALSE
 );
 
 DROP TABLE IF EXISTS HomePageStats;
