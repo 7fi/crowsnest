@@ -51,88 +51,21 @@ export default function TeamRankings() {
       setLoaded(true)
     })
   }, [teamName])
-
   const getRating = (member, pos, type, raceType) => {
-    let rating = 0
-    if (pos === 'skipper') {
-      if (raceType === 'team') {
-        let tsr = member.tsr
-        let wtsr = member.wtsr
-        if (member.wtsr === 1000) {
-          wtsr = 0
-        }
-        if (member.tsr === 1000) {
-          tsr = 0
-        }
-        if (type !== undefined) {
-          if (type === 'women') {
-            rating = wtsr
-          } else {
-            rating = tsr
-          }
-        } else {
-          rating = Math.max(tsr, wtsr)
-        }
-      } else {
-        let sr = member.sr
-        let wsr = member.wsr
-        if (member.wsr === 1000) {
-          wsr = 0
-        }
-        if (member.sr === 1000) {
-          sr = 0
-        }
-        if (type !== undefined) {
-          if (type === 'women') {
-            rating = wsr
-          } else {
-            rating = sr
-          }
-        } else {
-          rating = Math.max(sr, wsr)
-        }
-      }
-    } else {
-      // Crew
-      if (raceType === 'team') {
-        let tcr = member.tcr
-        let wtcr = member.wtcr
-        if (member.wtcr === 1000) {
-          wtcr = 0
-        }
-        if (member.tcr === 1000) {
-          tcr = 0
-        }
-        if (type !== undefined) {
-          if (type === 'women') {
-            rating = wtcr
-          } else {
-            rating = tcr
-          }
-        } else {
-          rating = Math.max(tcr, wtcr)
-        }
-      } else {
-        let cr = member.cr
-        let wcr = member.wcr
-        if (member.wcr === 1000) {
-          wcr = 0
-        }
-        if (member.cr === 1000) {
-          cr = 0
-        }
-        if (type !== undefined) {
-          if (type === 'women') {
-            rating = wcr
-          } else {
-            rating = cr
-          }
-        } else {
-          rating = Math.max(cr, wcr)
-        }
-      }
+    const ratingMap = {
+      skipper: {
+        fleet: { open: 'sr', women: 'wsr' },
+        team: { open: 'tsr', women: 'wtsr' },
+      },
+      crew: {
+        fleet: { open: 'cr', women: 'wcr' },
+        team: { open: 'tcr', women: 'wtcr' },
+      },
     }
-    return rating
+
+    const key = ratingMap[pos][raceType][type]
+    const rating = member[key]
+    return rating === 1000 ? 0 : rating
   }
 
   const TeamMember = ({ index, member, pos }) => {
@@ -144,7 +77,7 @@ export default function TeamRankings() {
     const rankingOpen = (member.rankType.split('.').includes('sr') && pos == 'skipper') || (member.rankType.split('.').includes('cr') && pos == 'crew')
     const rankingWomen = (member.rankType.split('.').includes('wsr') && pos == 'skipper') || (member.rankType.split('.').includes('wcr') && pos == 'crew')
 
-    console.log(member.name, rankingOpen, rankingWomen, member.rankType)
+    // console.log(member.name, rankingOpen, rankingWomen, member.rankType)s
 
     return (
       <tr key={index} className='clickable' onClick={() => navigate(`/sailors/${member.sailorID}`)}>
@@ -216,10 +149,6 @@ export default function TeamRankings() {
           }
           return total
         }, 0)
-        if (member.sailorID == 'carter-anderson') {
-          console.log(member.season)
-          console.log(numRaces)
-        }
         return { ...member, numRaces }
       })
       .filter((member) => {
@@ -323,7 +252,7 @@ export default function TeamRankings() {
             </thead>
             <tbody>
               {filtered.length > 0 ? (
-                filtered.map((member, index) => <TeamMember index={index} key={member.name + member.pos} member={member} pos={pos} />)
+                filtered.map((member, index) => <TeamMember index={index} key={index} member={member} pos={pos} />)
               ) : (
                 <tr>
                   <span style={{ width: '50%', position: 'absolute', textAlign: 'center', margin: 20 }}>Please select at least one season!</span>

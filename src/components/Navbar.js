@@ -65,7 +65,9 @@ export default function Navbar() {
             </Link>
             <ul className='hoverafter'>
               <li>
-                <Link to={'/rankings/skipper'}>Top Open Skippers</Link>
+                <Link style={{ height: '100%' }} to={'/rankings/skipper'}>
+                  <span>Top Open Skippers</span>
+                </Link>
               </li>
               <li>
                 <Link to={'/rankings/crew'}>Top Open Crews</Link>
@@ -99,11 +101,12 @@ export default function Navbar() {
               </Link>
             </li>
           )}
+
           {userVals.tsLink ? (
             <li>
-              <button>
-                <Link to={`/sailors/${userVals?.tsLink?.split('/')[4]}`}>{userVals?.displayName}</Link>
-              </button>
+              <Link to={`/sailors/${userVals?.tsLink?.split('/')[4]}`}>
+                <button>{userVals?.displayName}</button>
+              </Link>
             </li>
           ) : (
             <></>

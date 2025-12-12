@@ -74,7 +74,7 @@ CREATE TABLE SailorTeams(
     season char(3),
     position char(7),
     raceCount INT,
-    rankType char(4),
+    rankType varchar(20),
     PRIMARY KEY(sailorID,teamID, season, position),
 #     CONSTRAINT FOREIGN KEY (sailorID) REFERENCES Sailors(sailorID),
     CONSTRAINT FOREIGN KEY (teamID) REFERENCES Teams(teamID)
@@ -151,6 +151,7 @@ CREATE TABLE TRScores(
     date DATETIME,
     venue varchar(40),
     boat varchar(30),
+    boatName varchar(100),
     ratingType char(4),
     oldRating int,
     newRating int,

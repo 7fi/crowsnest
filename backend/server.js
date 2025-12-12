@@ -105,7 +105,7 @@ app.get('/teams', async (req, res) => {
 
 app.get('/teams/:id', async (req, res) => {
   try {
-    const [rows] = await pool.query(
+    const [members] = await pool.query(
       `SELECT * FROM Sailors s JOIN SailorTeams st on s.sailorID = st.sailorID
         WHERE st.teamID = ?;`,
       [req.params.id]
@@ -124,7 +124,7 @@ app.get('/teams/:id', async (req, res) => {
       LIMIT 50;`,
       [req.params.id]
     )
-    res.json({ members: rows, data: info[0], regattas: regattas })
+    res.json({ members: members, data: info[0], regattas: regattas })
   } catch (err) {
     console.error(err)
     res.status(500).json({ error: 'Database query failed', dueTo: err.sql, why: err.sqlMessage })

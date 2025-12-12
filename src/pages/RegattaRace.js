@@ -349,5 +349,14 @@ export default function RegattaRace() {
     )
   }
 
-  return <>{loaded ? <RegattaPage /> : <Loader show={!loaded} />}</>
+  const NotFound = () => {
+    return (
+      <div style={{ margin: 50 }}>
+        Could not find any scores for {season} {regattaName}...
+        <br /> Make sure it is spelled correctly!
+      </div>
+    )
+  }
+
+  return <>{loaded ? scores.length > 0 ? <RegattaPage /> : <NotFound /> : <Loader show={!loaded} />}</>
 }
