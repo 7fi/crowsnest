@@ -108,7 +108,7 @@ export default function App() {
             </Routes>
             {pathname != '/teams' && pathname != '/sailors' ? <Footer /> : <></>}
             <Toaster position='top-center' reverseOrder={false} />
-            <ScrollButton />
+            {pathname != '/teams' ? <ScrollButton /> : <></>}
             {/* <div onClick={() => window.scrollTo(0, 0)} style={{ position: 'sticky', bottom: -20, right: 0, visibility: window.scrollX > 20 ? 'visible' : 'visible' }}>
               top
             </div> */}
