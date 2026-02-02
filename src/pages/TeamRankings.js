@@ -107,7 +107,7 @@ export default function TeamRankings() {
           <RatioBar ratio={pos === 'skipper' ? member.avgSkipperRatio : member.avgCrewRatio} />
         </td>
         <td></td>
-        <td style={{ textAlign: 'right' }} className='tableColFit'>
+        <td style={{ textAlign: 'right', width: 'min-content' }} className='tableColFit'>
           <RatingNum highest={false} sailor={member} pos={pos} type={'open'} raceType={'fleet'} />
         </td>
         <td style={{ textAlign: 'right' }} className='tableColFit'>
@@ -217,11 +217,11 @@ export default function TeamRankings() {
                 <th></th>
                 <th
                   className=' tableColFit clickable'
-                  // style={{ textAlign: 'right' }}
+                  style={{ textAlign: 'right' }}
                   onClick={() => {
                     setSort('openrating')
                   }}>
-                  FR{sort === 'openrating' ? <FaSortDown /> : ''}
+                  Open Fleet{sort === 'openrating' ? <FaSortDown /> : ''}
                 </th>
                 <th
                   className=' tableColFit clickable'
@@ -229,7 +229,7 @@ export default function TeamRankings() {
                   onClick={() => {
                     setSort('womenrating')
                   }}>
-                  WFR{sort === 'womenrating' ? <FaSortDown /> : ''}
+                  Women's{sort === 'womenrating' ? <FaSortDown /> : ''}
                 </th>
                 <th
                   className=' tableColFit clickable'
@@ -237,7 +237,7 @@ export default function TeamRankings() {
                   onClick={() => {
                     setSort('teamrating')
                   }}>
-                  TR{sort === 'teamrating' ? <FaSortDown /> : ''}
+                  Team Race{sort === 'teamrating' ? <FaSortDown /> : ''}
                 </th>
                 <th
                   className=' tableColFit clickable'
@@ -245,7 +245,7 @@ export default function TeamRankings() {
                   onClick={() => {
                     setSort('wteamrating')
                   }}>
-                  WTR{sort === 'wteamrating' ? <FaSortDown /> : ''}
+                  Women's TR{sort === 'wteamrating' ? <FaSortDown /> : ''}
                 </th>
                 {/* <th> </th> */}
               </tr>

@@ -31,7 +31,7 @@ CREATE TABLE Teams(
 DROP TABLE IF EXISTS Sailors;
 CREATE TABLE Sailors(
   sailorID varchar(50) PRIMARY KEY,
-  name varchar(50),
+  name varchar(75),
   gender char(2),
   sr INT,
   cr INT,
@@ -51,7 +51,6 @@ CREATE TABLE Sailors(
     wtcRank INT,
     avgSkipperRatio FLOAT,
     avgCrewRatio FLOAT,
-    # add techscore links... New table?
     # add seasons? dont want to join with races every time
     year char(6),
     crossLinks INT,
@@ -75,10 +74,11 @@ CREATE TABLE SailorTeams(
     position char(7),
     raceCount INT,
     rankType varchar(20),
-    PRIMARY KEY(sailorID,teamID, season, position),
+    PRIMARY KEY(sailorID, teamID, season, position)
 #     CONSTRAINT FOREIGN KEY (sailorID) REFERENCES Sailors(sailorID),
-    CONSTRAINT FOREIGN KEY (teamID) REFERENCES Teams(teamID)
+#     CONSTRAINT FOREIGN KEY (teamID) REFERENCES Teams(teamID)
 );
+CREATE INDEX sailor_teams_idx ON SailorTeams (teamID);
 
 DROP TABLE IF EXISTS SailorFollows;
 CREATE TABLE SailorFollows(
@@ -92,7 +92,7 @@ CREATE TABLE SailorFollows(
 
 DROP TABLE IF EXISTS SailorRivals;
 CREATE TABLE SailorRivals(
-    sailorID varchar(100),
+    sailorID varchar(50),
     rivalID varchar(50),
     rivalName varchar(100),
     rivalTeam varchar(50),
@@ -128,9 +128,15 @@ CREATE TABLE FleetScores(
     oldRating int,
     newRating int,
     regAvg int,
-    PRIMARY KEY(season, regatta, raceNumber, division, sailorID),
-    CONSTRAINT FOREIGN KEY (sailorID) REFERENCES Sailors(sailorID)
+    PRIMARY KEY(season, regatta, raceNumber, division, sailorID)
+#     ,CONSTRAINT FOREIGN KEY (sailorID) REFERENCES Sailors(sailorID)
 );
+DROP INDEX fleet_sailor_idx ON FleetScores;
+DROP INDEX fleet_sailor_idx2 ON FleetScores;
+DROP INDEX fleet_sailor_idx3 ON FleetScores;
+CREATE INDEX fleet_sailor_idx ON FleetScores (sailorID);
+CREATE INDEX fleet_sailor_idx2 ON FleetScores (regatta);
+CREATE INDEX fleet_sailor_idx3 ON FleetScores (date);
 
 DROP TABLE IF EXISTS TRScores;
 CREATE TABLE TRScores(
@@ -143,7 +149,7 @@ CREATE TABLE TRScores(
     partnerName varchar(100),
     opponentTeam varchar(50),
     opponentNick varchar(50),
-    score char(10),
+    score varchar(40),
     outcome char(4),
     predicted char(4),
     penalty varchar(50),
@@ -156,8 +162,8 @@ CREATE TABLE TRScores(
     oldRating int,
     newRating int,
     regAvg int,
-    PRIMARY KEY(season, regatta, raceNumber, sailorID),
-    CONSTRAINT FOREIGN KEY (sailorID) REFERENCES Sailors(sailorID)
+    PRIMARY KEY(season, regatta, raceNumber, sailorID)
+#     CONSTRAINT FOREIGN KEY (sailorID) REFERENCES Sailors(sailorID)
 );
 
 DROP TABLE IF EXISTS HomePageStats;

@@ -209,32 +209,71 @@ const MobileControls = ({ sort, setSort, reverse, setReverse, temp }) => {
   return (
     <div className='mobileControlsContainer'>
       <div className='mobileControlsGrid'>
-        <button
-          onClick={() => {
-            setReverse(false)
-            if (sort == 'womensteam') {
-              setSort('women')
-            } else {
-              setSort('top')
-            }
-          }}
-          style={{ backgroundColor: sort == 'top' || sort == 'women' ? 'var(--border)' : 'var(--bg)' }}>
-          <img src={sort == 'women' || sort == 'womensteam' ? 'WomensFleetIcon.png' : 'OpenFleetIcon.png'} style={{ height: '1.5rem' }} />
-          Fleet
-        </button>
-        <button
-          onClick={() => {
-            setReverse(false)
-            if (sort == 'women' || sort == 'womensteam') {
-              setSort('womensteam')
-            } else {
-              setSort('team')
-            }
-          }}
-          style={{ backgroundColor: sort == 'team' || sort == 'womensteam' ? 'var(--border)' : 'var(--bg)' }}>
-          <img src={sort == 'women' || sort == 'womensteam' ? 'WomensTeamIcon.png' : 'OpenTeamIcon.png'} style={{ height: '1.5rem' }} />
-          Team
-        </button>
+        <div style={{ gridArea: '1 / 1 / 1 / 3' }}>
+          <label className='fleetTeamSwitch' for='checkbox'>
+            <input
+              id='checkbox'
+              type='checkbox'
+              checked={sort == 'team' || sort == 'womensteam'}
+              onChange={(input) => {
+                let team = input.target.checked
+                setReverse(false)
+
+                if (team) {
+                  if (sort == 'women' || sort == 'womensteam') {
+                    setSort('womensteam')
+                  } else {
+                    setSort('team')
+                  }
+                } else {
+                  if (sort == 'womensteam') {
+                    setSort('women')
+                  } else {
+                    setSort('top')
+                  }
+                }
+              }}
+            />
+            <div className='fleetTeamSlider'></div>
+            <div className='fleetTeamSliderLabel'>
+              <span>Fleet</span>
+              <span>Team</span>
+            </div>
+          </label>
+        </div>
+        <div style={{ gridArea: '2 / 1 / 2 / 3' }}>
+          <label className='fleetTeamSwitch' for='womensCheckbox'>
+            <input
+              id='womensCheckbox'
+              type='checkbox'
+              checked={sort == 'women' || sort == 'womensteam'}
+              onChange={(input) => {
+                let womens = input.target.checked
+                setReverse(false)
+
+                if (womens) {
+                  if (sort == 'team' || sort == 'womensteam') {
+                    setSort('womensteam')
+                  } else {
+                    setSort('women')
+                  }
+                } else {
+                  if (sort == 'team' || sort == 'womensteam') {
+                    setSort('team')
+                  } else {
+                    setSort('top')
+                  }
+                }
+              }}
+            />
+            <div className='fleetTeamSlider'></div>
+            <div className='fleetTeamSliderLabel'>
+              <span>Open</span>
+              <span>Women</span>
+            </div>
+          </label>
+        </div>
+
         <button
           onClick={() => {
             setReverse(false)
@@ -259,30 +298,6 @@ const MobileControls = ({ sort, setSort, reverse, setReverse, temp }) => {
           }}
           style={{ backgroundColor: sort == 'members' ? 'var(--border)' : 'var(--bg)' }}>
           Members
-        </button>
-        <button
-          onClick={() => {
-            setReverse(false)
-            if (sort == 'team' || sort == 'womensteam') {
-              setSort('team')
-            } else {
-              setSort('top')
-            }
-          }}
-          style={{ backgroundColor: sort == 'top' || sort == 'team' ? 'var(--border)' : 'var(--bg)' }}>
-          Open
-        </button>
-        <button
-          onClick={() => {
-            setReverse(false)
-            if (sort == 'team' || sort == 'womensteam') {
-              setSort('womensteam')
-            } else {
-              setSort('women')
-            }
-          }}
-          style={{ backgroundColor: sort == 'women' || sort == 'womensteam' ? 'var(--border)' : 'var(--bg)' }}>
-          Women's
         </button>
 
         <button onClick={() => scrollToTop()} style={{ backgroundColor: 'var(--bg)', gridArea: '2 / 3 / 2 / 5' }}>

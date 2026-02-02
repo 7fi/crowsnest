@@ -69,13 +69,18 @@ export default function RatingNum({ sailor, pos, type, highest, ratingNum, raceT
     if (pos === 'skipper') {
     }
   }
+
+  const iconSrcs = { top: 'OpenFleetIcon.png', women: 'WomensFleetIcon.png', team: 'OpenTeamIcon.png', womensteam: 'WomensTeamIcon.png' }
+  const sort = type == 'women' ? (raceType == 'team' ? 'womensteam' : 'women') : raceType == 'team' ? 'team' : 'top'
+
   return (
-    <span>
+    <span style={{ width: 'min-content !important' }}>
       {rating !== 0 ? (
-        <>
-          {isWomens ? <TbDiamondsFilled className='' style={{ color: 'var(--women)' }} /> : ''}
+        <div className='flexRowCentered'>
+          {/* {isWomens ? <TbDiamondsFilled className='' style={{ color: 'var(--women)' }} /> : ''} */}
+          <img src={'../' + iconSrcs[sort]} style={{ height: '1.5rem' }} />
           {rating.toFixed(0)}{' '}
-        </>
+        </div>
       ) : (
         <span className='secondaryText'>~</span>
       )}

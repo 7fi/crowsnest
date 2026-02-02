@@ -62,7 +62,7 @@ app.get('/sailors/top', async (req, res) => {
       ORDER BY s.${rankQuery}
       LIMIT ?
     `,
-      [Number(count) || 100]
+      [Number(count) || 100],
     )
     res.json(rows)
   } catch (err) {
@@ -105,25 +105,33 @@ app.get('/teams', async (req, res) => {
 
 app.get('/teams/:id', async (req, res) => {
   try {
+    const startMembers = Date.now()
     const [members] = await pool.query(
       `SELECT * FROM Sailors s JOIN SailorTeams st on s.sailorID = st.sailorID
-        WHERE st.teamID = ?;`,
-      [req.params.id]
+      WHERE st.teamID = ?;`,
+      [req.params.id],
     )
+    console.log(`Members query took ${Date.now() - startMembers}ms`)
+
+    const startInfo = Date.now()
     const [info] = await pool.query(
       `SELECT * FROM Teams
-        WHERE teamID = ?;`,
-      [req.params.id]
+      WHERE teamID = ?;`,
+      [req.params.id],
     )
-    const [regattas] = await pool.query(
-      `SELECT Distinct fs.regatta, fs.date
-      FROM FleetScores fs
-      JOIN SailorTeams st ON fs.sailorID = st.sailorID
-      WHERE st.teamID = ?
-      ORDER BY fs.date DESC
-      LIMIT 50;`,
-      [req.params.id]
-    )
+    console.log(`Info query took ${Date.now() - startInfo}ms`)
+    const regattas = []
+    const startReg = Date.now()
+    // const [regattas] = await pool.query(
+    //   `SELECT Distinct fs.regatta, fs.date
+    //   FROM FleetScores fs
+    //   JOIN SailorTeams st ON fs.sailorID = st.sailorID
+    //   WHERE st.teamID = ?
+    //   ORDER BY fs.date DESC
+    //   LIMIT 50;`,
+    //   [req.params.id],
+    // )
+    console.log(`Regattas query took ${Date.now() - startReg}ms`)
     res.json({ members: members, data: info[0], regattas: regattas })
   } catch (err) {
     console.error(err)
@@ -203,7 +211,7 @@ app.get('/users/feed/:id', async (req, res) => {
         JOIN Users u ON sf.userID = u.userID
          AND rt.rn = 1
         WHERE sf.userID = ? AND u.deleted = FALSE;`,
-      [req.params.id]
+      [req.params.id],
     )
     await Promise.all(
       rows.map(async (sailor) => {
@@ -212,11 +220,11 @@ app.get('/users/feed/:id', async (req, res) => {
           SELECT season, regatta, sailorID, date, score, predicted, ratingType, oldRating, newRating, position, raceNumber, raceNumber as x, raceNumber as y FROM TRScores ts WHERE ts.sailorID = ?
           ORDER BY date DESC
           LIMIT 5;`,
-          [sailor.sailorID, sailor.sailorID]
+          [sailor.sailorID, sailor.sailorID],
         )
         sailor.races = recentRaces
         resJson.push(sailor)
-      })
+      }),
     )
     res.json(resJson)
   } catch (err) {
@@ -286,7 +294,7 @@ app.put('/link', async (req, res) => {
       `UPDATE Users SET techscoreLink = ?,
                  techscoreID = ?
       WHERE userID = ?;`,
-      [techscoreLink, techscoreID, userID]
+      [techscoreLink, techscoreID, userID],
     )
   } catch (err) {
     console.err(err)
@@ -305,7 +313,7 @@ app.delete('/link', async (req, res) => {
       `UPDATE Users SET techscoreLink = '',
                  techscoreID = 0
       WHERE userID = ?;`,
-      [userID]
+      [userID],
     )
   } catch (err) {
     console.err(err)
@@ -357,7 +365,7 @@ app.get('/regattas', async (req, res) => {
           AND fs.regatta = ?
           AND fs.position = 'Skipper'
       LIMIT 500;`,
-      [season, season, regatta]
+      [season, season, regatta],
     )
 
     res.json({ scores: rows })
@@ -382,7 +390,7 @@ app.get('/regattas/race', async (req, res) => {
           AND division = ?
           AND fs.position = ?
       LIMIT 50;`,
-      [season, season, regatta, raceNum, division, position]
+      [season, season, regatta, raceNum, division, position],
     )
 
     res.json({ scores: rows })

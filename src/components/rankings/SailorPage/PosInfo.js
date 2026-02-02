@@ -64,8 +64,8 @@ export default function PosInfo({ isUsers, type, raceType, pos, rating, rank, ra
       {rating != 1000 ? (
         <div className='ratingStatCard'>
           <div>
-            <div style={{ fontSize: '2rem' }}>
-              <RatingNum ratingNum={rating} type={type == "Women's" ? 'women' : 'open'} pos={pos} />
+            <div style={{ fontSize: '2rem', alignItems: 'end' }} className='flexRowContainer'>
+              <RatingNum ratingNum={rating} type={type == "Women's" ? 'women' : 'open'} pos={pos} raceType={raceType} />
               <span style={{ fontSize: '0.7rem' }}>
                 <span
                   style={{

@@ -5,7 +5,7 @@ export default function About() {
     <main>
       <div>
         <h2>What is Crowsnest?</h2>
-        <p>Crowsnest is the new best way to view college sailing statistics. Crowsnest includes data from 2016 onwards, and ranks uses the data from techscore to rate sailors and make comparisons between teams.</p>
+        <p>Crowsnest is the new best way to view college sailing statistics. Crowsnest includes data from 2010 onwards, and ranks uses the data from techscore to rate sailors and make comparisons between teams.</p>
         {/* <br /> */}
         Here are some common terms to remember:
         <ul>
@@ -34,7 +34,7 @@ export default function About() {
       <div>
         <h2>Interested in helping?</h2>
         <p>
-          We are looking a passionate college sailor who can help us improve the website, or increase the accuracy of our algorithm. A willingness to learn react or python is a must, and experience in either one is highly appreciated. If you are interested please reach out on our{' '}
+          We are looking for a passionate college sailor who can help us improve the website, or increase the accuracy of our algorithm. A willingness to learn react or python is a must, and experience in either one is highly appreciated. If you are interested please reach out on our{' '}
           <a style={{ textDecoration: 'underline' }} href='https://discord.gg/RxVhg2aUQE/'>
             discord
           </a>

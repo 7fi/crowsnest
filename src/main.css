@@ -17,6 +17,8 @@
   /* --font: 'Inter'; */
   --font: 'Rubik';
   /* --font: 'Lato'; */
+
+  --shadow: #00000055 1px 1px 5px;
 }
 /* Dark mode */
 [data-theme='dark'] {
@@ -30,6 +32,7 @@
   --highlight3: #555;
   --text: #eee;
   --women: #903737;
+  --shadow: #ffffff30 0 1px 2px inset;
 }
 /* michelle */
 [data-theme='new'] {
@@ -425,7 +428,6 @@ select {
   /* background-color: var(--med); */
   border: var(--border) var(--border-size) solid;
   text-align: center;
-  font-family: inherit;
   /* font-weight: 700; */
   font-style: normal;
   font-size: 1.2em;
@@ -919,15 +921,17 @@ tr .filterOption:hover {
   text-wrap-mode: nowrap;
 }
 .ratingStatCard {
-  border: 2px solid var(--border);
+  /* border: 2px solid var(--border); */
   border-radius: var(--radius);
   padding: 0.3rem;
-  /* box-shadow: #00000066 0 0 5px; */
+  box-shadow: var(--shadow);
   /* max0w: 45%; */
 }
 .ratingStatContainer {
   gap: 0.5rem;
   width: 100%;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 280px);
 }
 
 /* Mobile Stuff */
@@ -985,6 +989,8 @@ tr .filterOption:hover {
   border-radius: var(--radius);
 
   flex-grow: 1;
+  text-align: center;
+  justify-content: center;
 }
 
 .mobileControlsGrid {
@@ -995,11 +1001,62 @@ tr .filterOption:hover {
   /* flex-direction: row; */
   gap: 0.5rem;
   /* flex-wrap: wrap; */
-  padding: 0.5rem 0 0.5rem 0.5rem;
+  padding: 0.5rem;
 }
 
 .flexRowCentered {
   display: flex;
   flex-direction: row;
   align-items: center;
+}
+
+.fleetTeamSwitch {
+  display: inline-block;
+  height: 100%;
+  position: relative;
+  width: 100%;
+}
+
+.fleetTeamSwitch input {
+  display: none;
+}
+
+.fleetTeamSlider {
+  background-color: var(--border);
+  bottom: 0;
+  cursor: pointer;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  transition: 0.4s;
+  border-radius: var(--radius);
+}
+
+.fleetTeamSlider:before {
+  background-color: var(--bg);
+  bottom: 4px;
+  content: '';
+  height: calc(100% - 8px);
+  left: 4px;
+  position: absolute;
+  transition: 0.4s;
+  width: 45%;
+  z-index: 1;
+  border-radius: var(--radius);
+}
+
+input:checked + .fleetTeamSlider:before {
+  transform: translateX(110%);
+}
+
+.fleetTeamSliderLabel {
+  position: absolute;
+  z-index: 100;
+  justify-content: space-between;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  padding: 0 0.8rem;
 }

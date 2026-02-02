@@ -197,7 +197,7 @@ export default function RankingsHome() {
             <div className='contentBox flexGrowChild'>
               {/* We have
               <br /> */}
-              Data from 2016 onwards has been scraped from techscore and processed to assign each individual sailor a rating value. These ratings change based on performance in regattas, and the strength of the opponents.
+              Data from 2010 onwards has been scraped from techscore and processed to assign each individual sailor a rating value. These ratings change based on performance in regattas, and the strength of the opponents.
               <br />
               <br />
               Keep in mind that all data is scraped straight from <a href='https://scores.collegesailing.org'>scores.collegesailing.org</a> so any inaccuracies in that data will be reflected here (such as inaccuate RP forms).

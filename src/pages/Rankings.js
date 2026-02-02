@@ -146,7 +146,7 @@ export default function Rankings() {
           </div> */}
           <br />
           {/* Elos and Rankings */}
-          <div className='responsiveRowCol ratingStatContainer'>
+          <div className='ratingStatContainer'>
             <PosInfo isUsers={isUsers} raceType={'fleet'} races={races} type='Open' pos='Skipper' rating={sailor.sr} rank={sailor.sRank} />
             <PosInfo isUsers={isUsers} raceType={'fleet'} races={races} type='Open' pos='Crew' rating={sailor.cr} rank={sailor.cRank} />
             <PosInfo isUsers={isUsers} raceType={'fleet'} races={races} type="Women's" pos='Skipper' rating={sailor.wsr} rank={sailor.wsRank} />
