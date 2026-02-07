@@ -101,7 +101,7 @@ export default function RankingsHome() {
                         <img style={{ display: 'inline', maxHeight: '3rem', minHeight: 10, minWidth: '3rem' }} src={`https://scores.collegesailing.org/inc/img/schools/${teamCodes[team.teamName]}.png`} />
                       </td>
                       <td>{team.teamName}</td>
-                      <td className='tableColFit'>
+                      <td className='tableColFit' style={{ width: '5rem' }}>
                         <RatingNum ratingNum={team.topFleetRating} />
                       </td>
                     </tr>
@@ -129,7 +129,7 @@ export default function RankingsHome() {
                         <img style={{ display: 'inline', maxHeight: '3rem', minHeight: 10, minWidth: '3rem' }} src={`https://scores.collegesailing.org/inc/img/schools/${teamCodes[team.teamName]}.png`} />
                       </td>
                       <td>{team.teamName}</td>
-                      <td className='tableColFit'>
+                      <td className='tableColFit' style={{ width: '5rem' }}>
                         <RatingNum ratingNum={team.topWomenRating} type='women' />
                       </td>
                     </tr>
@@ -194,7 +194,7 @@ export default function RankingsHome() {
               </a>
               !
             </div> */}
-            <div className='contentBox flexGrowChild'>
+            <div className='contentBox flexGrowChild' style={{ maxWidth: '35rem' }}>
               {/* We have
               <br /> */}
               Data from 2010 onwards has been scraped from techscore and processed to assign each individual sailor a rating value. These ratings change based on performance in regattas, and the strength of the opponents.
@@ -202,7 +202,7 @@ export default function RankingsHome() {
               <br />
               Keep in mind that all data is scraped straight from <a href='https://scores.collegesailing.org'>scores.collegesailing.org</a> so any inaccuracies in that data will be reflected here (such as inaccuate RP forms).
             </div>
-            <div className='contentBox flexGrowChild'>
+            {/* <div className='contentBox flexGrowChild' style={{ maxWidth: '40rem' }}>
               {' '}
               Here are some common terms to remember:
               <ul>
@@ -219,8 +219,8 @@ export default function RankingsHome() {
                   <strong>Score:</strong> This is the finishing place in the fleet. First place is a score of 1. Tenth is a score of 10.
                 </li>
               </ul>
-            </div>
-            <div className='contentBox flexGrowChild'>
+            </div> */}
+            <div className='contentBox flexGrowChild' style={{ maxWidth: '35rem' }}>
               For more info check out our{' '}
               <Link to={'/about'} style={{ textDecoration: 'underline' }}>
                 about page

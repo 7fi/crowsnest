@@ -325,20 +325,25 @@ export default function RegattaRace() {
   const RegattaPage = () => {
     return (
       <>
-        <div className='flexRowContainer' style={{ alignItems: 'center' }}>
+        <div className='flexColContainer' style={{ alignItems: 'center', fontSize: '1.2rem', margin: '0.5rem' }}>
           <h1 className='text-titlecase'>
             {regattaName} {raceNumber == 0 ? '' : raceNumber}
-            {curDiv}
+            {curDiv}{' '}
+            <a href={`https://scores.collegesailing.org/${season}/${regattaName}/full-scores`} className='secondary' style={{ fontSize: '1rem' }}>
+              (techscore)
+            </a>
           </h1>
-          <div className='flexRowContainer'>
-            <Link to={`/regattas/${season}/${regattaName}`}>All</Link>
+          <div className='flexRowContainer regattaTabContainer'>
+            <Link to={`/regattas/${season}/${regattaName}`} className={`regattaTab ${raceNumber == 0 ? 'regattaTabSelected' : ''}`}>
+              All
+            </Link>
             {raceNums.map((num, i) => (
-              <Link key={i} to={`/regattas/${season}/${regattaName}/${num}${curDiv == '' ? 'A' : curDiv}`}>
+              <Link key={i} to={`/regattas/${season}/${regattaName}/${num}${curDiv == '' ? 'A' : curDiv}`} className={`regattaTab ${raceNumber == num ? 'regattaTabSelected' : ''}`}>
                 {num}
               </Link>
             ))}
             {divisions.map((div, i) => (
-              <Link key={i} to={`/regattas/${season}/${regattaName}/${raceNumber == 0 ? '' : raceNumber}${div}`}>
+              <Link key={i} to={`/regattas/${season}/${regattaName}/${raceNumber == 0 ? '' : raceNumber}${div}`} className={`regattaTab ${curDiv == div ? 'regattaTabSelected' : ''}`}>
                 {div}
               </Link>
             ))}

@@ -94,7 +94,7 @@ app.get('/teams', async (req, res) => {
        topWomenTeamRating, avgRating, avgRatio, region,
            COUNT(DISTINCT st.sailorID) AS memberCount
     FROM Teams t JOIN SailorTeams st ON t.teamID = st.teamID
-    WHERE st.season in ('f24','s25')
+    
     GROUP BY teamID;`)
     res.json(rows)
   } catch (err) {
@@ -111,7 +111,7 @@ app.get('/teams/:id', async (req, res) => {
       WHERE st.teamID = ?;`,
       [req.params.id],
     )
-    console.log(`Members query took ${Date.now() - startMembers}ms`)
+    // console.log(`Members query took ${Date.now() - startMembers}ms`)
 
     const startInfo = Date.now()
     const [info] = await pool.query(
@@ -119,7 +119,7 @@ app.get('/teams/:id', async (req, res) => {
       WHERE teamID = ?;`,
       [req.params.id],
     )
-    console.log(`Info query took ${Date.now() - startInfo}ms`)
+    // console.log(`Info query took ${Date.now() - startInfo}ms`)
     const regattas = []
     const startReg = Date.now()
     // const [regattas] = await pool.query(
@@ -131,7 +131,7 @@ app.get('/teams/:id', async (req, res) => {
     //   LIMIT 50;`,
     //   [req.params.id],
     // )
-    console.log(`Regattas query took ${Date.now() - startReg}ms`)
+    // console.log(`Regattas query took ${Date.now() - startReg}ms`)
     res.json({ members: members, data: info[0], regattas: regattas })
   } catch (err) {
     console.error(err)

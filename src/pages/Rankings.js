@@ -39,9 +39,9 @@ export default function Rankings() {
   // 7 6 2 1 5 4 3 8
 
   useEffect(() => {
-    getSailorInfo(key).then((dataIn) => {
-      setSailor(dataIn.data)
-      let totalRaces = dataIn.fleetScores.concat(dataIn.teamScores)
+    Promise.all([getSailorInfo(key), getSailorTeams(key), getSailorRivals(key), getSailorFollows(key)]).then(([sailorData, teamsData, rivalsData, followsData]) => {
+      setSailor(sailorData.data)
+      let totalRaces = sailorData.fleetScores.concat(sailorData.teamScores)
       setRaces(
         totalRaces.sort((a, b) => {
           let datea = new Date(a.date)
@@ -50,34 +50,27 @@ export default function Rankings() {
             return datea - dateb
           }
           return a.raceNumber - b.raceNumber
-        })
+        }),
       )
       setRegattaCount(
-        dataIn.fleetScores.reduce((acc, race) => {
+        sailorData.fleetScores.reduce((acc, race) => {
           const regattaKey = `${race.season}-${race.regatta}`
           if (!acc.includes(regattaKey)) {
             acc.push(regattaKey)
           }
           return acc
-        }, []).length
+        }, []).length,
       )
-      // setLoaded(true)
-    })
 
-    getSailorTeams(key).then((dataIn) => {
-      setTeams(dataIn.map((item) => item.teamID))
-      // setLoaded(true)
-      document.querySelector(':root').style.setProperty('--highlight1', regionColors[teamRegions[dataIn[0].teamID]])
-    })
-    getSailorRivals(key).then((dataIn) => {
+      setTeams(teamsData.map((item) => item.teamID))
+      document.querySelector(':root').style.setProperty('--highlight1', regionColors[teamRegions[teamsData[0].teamID]])
+
       setRivals({
-        skipper: dataIn.filter((rival) => rival.position == 'Skipper'),
-        crew: dataIn.filter((rival) => rival.position == 'Crew'),
+        skipper: rivalsData.filter((rival) => rival.position == 'Skipper'),
+        crew: rivalsData.filter((rival) => rival.position == 'Crew'),
       })
-      // setLoaded(true)
-    })
-    getSailorFollows(key).then((dataIn) => {
-      setFollowCount(dataIn.count)
+
+      setFollowCount(followsData.count)
       setLoaded(true)
     })
   }, [key])

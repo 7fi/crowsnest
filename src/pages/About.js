@@ -2,7 +2,7 @@ import { TbDiamondsFilled } from 'react-icons/tb'
 
 export default function About() {
   return (
-    <main>
+    <main className='wideTextWithMargin'>
       <div>
         <h2>What is Crowsnest?</h2>
         <p>Crowsnest is the new best way to view college sailing statistics. Crowsnest includes data from 2010 onwards, and ranks uses the data from techscore to rate sailors and make comparisons between teams.</p>
