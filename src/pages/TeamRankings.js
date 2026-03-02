@@ -8,6 +8,7 @@ import RatingNum from '../components/RatingNum'
 import { FaSortDown } from 'react-icons/fa'
 import useRegionColors from '../lib/regionColors'
 import RatioBar from '../components/rankings/RatioBar'
+import DoubleSlider from '../components/DoubleSlider'
 
 export default function TeamRankings() {
   const { teamName } = useParams()
@@ -24,6 +25,8 @@ export default function TeamRankings() {
   const teamCodes = useTeamCodes()
   const regionColors = useRegionColors()
   const debug = false
+
+  const [selectionMode, setSelectionMode] = useState('default') // 'advanced'
 
   useEffect(() => {
     getTeam(teamName).then((tempTeam) => {
@@ -133,6 +136,10 @@ export default function TeamRankings() {
       // element.classList.remove('filterInactive')
     }
     // console.log(element.classList)
+  }
+
+  const seasonsChanged = ([start, end]) => {
+    setActiveSeasons(allSeasons.slice(allSeasons.indexOf(start), allSeasons.indexOf(end) + 1))
   }
 
   const PosList = ({ members, pos }) => {
@@ -289,29 +296,34 @@ export default function TeamRankings() {
               avg rating: {rating.toFixed(0)}
             </Link>
           </div>
-          <div className='flexRowContainer flexWrap' style={{ marginLeft: 15 }}>
-            {allSeasons
-              .sort((a, b) => {
-                if (parseInt(a.slice(1, 3)) - parseInt(b.slice(1, 3)) !== 0) {
-                  return parseInt(a.slice(1, 3)) - parseInt(b.slice(1, 3))
-                } else if (a.slice(0, 1) === 's' && b.slice(0, 1) === 'f') {
-                  return -1
-                } else {
-                  return 1
-                }
-              })
-              .map((season, index) => (
-                <div key={index} className={`filterOption`} style={{ backgroundColor: activeSeasons.includes(season) ? 'var(--highlight1)' : '' }} onClick={(e) => toggleFilter(season, e.target)} onDoubleClick={() => setActiveSeasons([season])}>
-                  {season?.toUpperCase()}
-                </div>
-              ))}
-            <button className='filterOption' onClick={() => setActiveSeasons(allSeasons)}>
-              Enable all
-            </button>
-            <button className='filterOption' onClick={() => setActiveSeasons([])}>
-              Disable all
-            </button>
-          </div>
+          <DoubleSlider values={allSeasons} initialStart={activeSeasons.slice(-1)[0]} onChange={seasonsChanged} />
+          {selectionMode == 'advanced' ? (
+            <div className='flexRowContainer flexWrap' style={{ marginLeft: 15 }}>
+              {allSeasons
+                .sort((a, b) => {
+                  if (parseInt(a.slice(1, 3)) - parseInt(b.slice(1, 3)) !== 0) {
+                    return parseInt(a.slice(1, 3)) - parseInt(b.slice(1, 3))
+                  } else if (a.slice(0, 1) === 's' && b.slice(0, 1) === 'f') {
+                    return -1
+                  } else {
+                    return 1
+                  }
+                })
+                .map((season, index) => (
+                  <div key={index} className={`filterOption`} style={{ backgroundColor: activeSeasons.includes(season) ? 'var(--highlight1)' : '' }} onClick={(e) => toggleFilter(season, e.target)} onDoubleClick={() => setActiveSeasons([season])}>
+                    {season?.toUpperCase()}
+                  </div>
+                ))}
+              <button className='filterOption' onClick={() => setActiveSeasons(allSeasons)}>
+                Enable all
+              </button>
+              <button className='filterOption' onClick={() => setActiveSeasons([])}>
+                Disable all
+              </button>
+            </div>
+          ) : (
+            <></>
+          )}
           <div className='responsiveRowCol' style={{ padding: 15, flexWrap: 'wrap' }}>
             <PosList members={teamMembers} pos={'skipper'} />
             <PosList members={teamMembers} pos='crew' />

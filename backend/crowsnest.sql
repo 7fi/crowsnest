@@ -128,6 +128,7 @@ CREATE TABLE FleetScores(
     oldRating int,
     newRating int,
     regAvg int,
+    lastUpdate DATETIME DEFAULT CURRENT_TIMESTAMP() ON UPDATE CURRENT_TIMESTAMP(),
     PRIMARY KEY(season, regatta, raceNumber, division, sailorID)
 #     ,CONSTRAINT FOREIGN KEY (sailorID) REFERENCES Sailors(sailorID)
 );
@@ -162,6 +163,7 @@ CREATE TABLE TRScores(
     oldRating int,
     newRating int,
     regAvg int,
+    lastUpdate DATETIME DEFAULT CURRENT_TIMESTAMP() ON UPDATE CURRENT_TIMESTAMP(),
     PRIMARY KEY(season, regatta, raceNumber, sailorID)
 #     CONSTRAINT FOREIGN KEY (sailorID) REFERENCES Sailors(sailorID)
 );
