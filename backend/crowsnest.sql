@@ -100,8 +100,8 @@ CREATE TABLE SailorRivals(
     season char(3),
     raceCount SMALLINT,
     winCount SMALLINT,
-    PRIMARY KEY (sailorID, rivalID, position, season),
-    CONSTRAINT FOREIGN KEY (sailorID) REFERENCES Sailors(sailorID)
+    PRIMARY KEY (sailorID, rivalID, position, season)
+#    CONSTRAINT FOREIGN KEY (sailorID) REFERENCES Sailors(sailorID)
 #     CONSTRAINT FOREIGN KEY (rivalID) REFERENCES Sailors(sailorID)
 );
 

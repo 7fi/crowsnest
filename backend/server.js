@@ -94,7 +94,6 @@ app.get('/teams', async (req, res) => {
        topWomenTeamRating, avgRating, avgRatio, region,
            COUNT(DISTINCT st.sailorID) AS memberCount
     FROM Teams t JOIN SailorTeams st ON t.teamID = st.teamID
-    
     GROUP BY teamID;`)
     res.json(rows)
   } catch (err) {

@@ -29,8 +29,6 @@ export default function RankingsHome() {
 
   return (
     <div>
-      {/* <img src='https://carteranderson.dev/images/Deep1.png' className='heroImg' /> */}
-      {/* <img src='./hero.jpeg' className='heroImg' /> */}
       <div className='heroContainer' style={{ backgroundImage: `url(/hero.jpeg)` }}>
         <div className='heroBlock'>
           <h1 className='heroTitle'>CrowsNest</h1>
