@@ -73,12 +73,21 @@ app.get('/sailors/top', async (req, res) => {
 
 app.get('/sailors/:id', async (req, res) => {
   try {
+    const startMembers = Date.now()
     const [rows] = await pool.query('SELECT * FROM Sailors WHERE sailorID = ?', [req.params.id])
+    console.log(`Sailor query took ${Date.now() - startMembers}ms`)
+
     if (rows.length === 0) {
       return res.status(404).json({ error: 'Sailor not found' })
     }
+    const startFleet = Date.now()
     const [fleetRows] = await pool.query('SELECT season, regatta, raceNumber, division, sa.sailorID, partnerID, partnerName, score, predicted, ratio, penalty, position, date, scoring, venue, boat, ratingType, oldRating, newRating, regAvg FROM Sailors sa JOIN FleetScores sc ON sa.sailorID = sc.sailorID WHERE sa.sailorID = ? ORDER BY date DESC, raceNumber DESC;', [req.params.id])
+    console.log(`Fleet query took ${Date.now() - startFleet}ms`)
+
+    const startTeam = Date.now()
     const [teamRows] = await pool.query('SELECT season, regatta, raceNumber, round, sa.sailorID, partnerID, partnerName, opponentTeam, opponentNick, score, outcome, predicted, penalty, position, date, venue, boat, ratingType, oldRating, newRating, regAvg FROM Sailors sa JOIN TRScores sc ON sa.sailorID = sc.sailorID WHERE sa.sailorID = ? ORDER BY date DESC, raceNumber DESC;', [req.params.id])
+
+    console.log(`Team query took ${Date.now() - startTeam}ms`)
 
     const result = { data: rows[0], fleetScores: fleetRows, teamScores: teamRows }
     res.json(result)

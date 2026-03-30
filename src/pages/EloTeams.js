@@ -322,158 +322,161 @@ const DesktopTeams = ({ reverse, setReverse, filtered, sort, setSort }) => {
   }
 
   return (
-    <div className='teamTableContainer'>
-      <table className='raceByRaceTable teamsTable' ref={temp}>
-        <thead>
-          <tr>
-            <th style={{ minWidth: 40, textAlign: 'right' }}></th>
-            <th style={{ minWidth: 50 }}> </th>
-            <th>Name</th>
-            <th>Conference</th>
-            <th
-              className='tableColFit tooltip'
-              onClick={() => {
-                setReverse(false)
-                setSort('top')
-              }}
-              style={{ minWidth: 80, textAlign: 'right' }}>
-              {sort === 'top' ? reverse ? <FaSortUp /> : <FaSortDown /> : <></>}
-              Open
-              <span className='tooltiptext'>Takes avg the top 3 from each pos</span>
-            </th>
-            <th
-              className='tableColFit tooltip'
-              onClick={() => {
-                setReverse(false)
-                setSort(sort === 'women' ? 'top' : 'women')
-              }}
-              style={{ minWidth: 95, textAlign: 'right' }}>
-              {sort === 'women' ? reverse ? <FaSortUp /> : <FaSortDown /> : <></>}
-              Women's
-              <span className='tooltiptext'>Takes avg the top 2 from each pos</span>
-            </th>
-            <th
-              className='tableColFit tooltip'
-              onClick={() => {
-                setReverse(false)
-                setSort(sort === 'team' ? 'top' : 'team')
-              }}
-              style={{ minWidth: 130, textAlign: 'right' }}>
-              {sort === 'team' ? reverse ? <FaSortUp /> : <FaSortDown /> : <></>}
-              Team Racing
-              <span className='tooltiptext'>Takes avg the top 3 from each pos</span>
-            </th>
-            <th
-              className='tableColFit tooltip'
-              onClick={() => {
-                setReverse(false)
-                setSort(sort === 'womensteam' ? 'top' : 'womensteam')
-              }}
-              style={{ minWidth: 125, textAlign: 'right' }}>
-              {sort === 'womensteam' ? reverse ? <FaSortUp /> : <FaSortDown /> : <></>}
-              Women's TR
-              <span className='tooltiptext'>Takes avg the top 3 from each pos</span>
-            </th>
-            <th
-              className='tableColFit tooltip'
-              onClick={() => {
-                setReverse(false)
-                setSort(sort === 'rating' ? 'top' : 'rating')
-              }}
-              style={{ minWidth: 110, textAlign: 'right' }}>
-              <span className='tooltiptext'>Avg Rating of all sailors</span>
-              {sort === 'rating' ? reverse ? <FaSortUp /> : <FaSortDown /> : <></>}Avg Rating
-            </th>
-            <th
-              style={{ minWidth: 113, textAlign: 'right' }}
-              className='tableColFit'
-              onClick={() => {
-                setReverse(false)
-                setSort(sort === 'ratio' ? 'top' : 'ratio')
-              }}>
-              {sort === 'ratio' ? reverse ? <FaSortUp /> : <FaSortDown /> : <></>}Percentage
-            </th>
-            <th
-              style={{ minWidth: 80, textAlign: 'right' }}
-              className='tableColFit'
-              onClick={() => {
-                if (sort === 'members') {
-                  if (!reverse) {
-                    setReverse(true)
+    <>
+      <div className='teamTableContainer'>
+        <table className='raceByRaceTable teamsTable' ref={temp}>
+          <thead>
+            <tr>
+              <th style={{ minWidth: 40, textAlign: 'right' }}></th>
+              <th style={{ minWidth: 50 }}> </th>
+              <th>Name</th>
+              <th>Conference</th>
+              <th
+                className='tableColFit tooltip'
+                onClick={() => {
+                  setReverse(false)
+                  setSort('top')
+                }}
+                style={{ minWidth: 80, textAlign: 'right' }}>
+                {sort === 'top' ? reverse ? <FaSortUp /> : <FaSortDown /> : <></>}
+                Open
+                <span className='tooltiptext'>Takes avg the top 3 from each pos</span>
+              </th>
+              <th
+                className='tableColFit tooltip'
+                onClick={() => {
+                  setReverse(false)
+                  setSort(sort === 'women' ? 'top' : 'women')
+                }}
+                style={{ minWidth: 95, textAlign: 'right' }}>
+                {sort === 'women' ? reverse ? <FaSortUp /> : <FaSortDown /> : <></>}
+                Women's
+                <span className='tooltiptext'>Takes avg the top 2 from each pos</span>
+              </th>
+              <th
+                className='tableColFit tooltip'
+                onClick={() => {
+                  setReverse(false)
+                  setSort(sort === 'team' ? 'top' : 'team')
+                }}
+                style={{ minWidth: 130, textAlign: 'right' }}>
+                {sort === 'team' ? reverse ? <FaSortUp /> : <FaSortDown /> : <></>}
+                Team Racing
+                <span className='tooltiptext'>Takes avg the top 3 from each pos</span>
+              </th>
+              <th
+                className='tableColFit tooltip'
+                onClick={() => {
+                  setReverse(false)
+                  setSort(sort === 'womensteam' ? 'top' : 'womensteam')
+                }}
+                style={{ minWidth: 125, textAlign: 'right' }}>
+                {sort === 'womensteam' ? reverse ? <FaSortUp /> : <FaSortDown /> : <></>}
+                Women's TR
+                <span className='tooltiptext'>Takes avg the top 3 from each pos</span>
+              </th>
+              <th
+                className='tableColFit tooltip'
+                onClick={() => {
+                  setReverse(false)
+                  setSort(sort === 'rating' ? 'top' : 'rating')
+                }}
+                style={{ minWidth: 110, textAlign: 'right' }}>
+                <span className='tooltiptext'>Avg Rating of all sailors</span>
+                {sort === 'rating' ? reverse ? <FaSortUp /> : <FaSortDown /> : <></>}Avg Rating
+              </th>
+              <th
+                style={{ minWidth: 113, textAlign: 'right' }}
+                className='tableColFit'
+                onClick={() => {
+                  setReverse(false)
+                  setSort(sort === 'ratio' ? 'top' : 'ratio')
+                }}>
+                {sort === 'ratio' ? reverse ? <FaSortUp /> : <FaSortDown /> : <></>}Percentage
+              </th>
+              <th
+                style={{ minWidth: 80, textAlign: 'right' }}
+                className='tableColFit'
+                onClick={() => {
+                  if (sort === 'members') {
+                    if (!reverse) {
+                      setReverse(true)
+                    } else {
+                      setSort('top')
+                      setReverse(false)
+                    }
                   } else {
-                    setSort('top')
+                    setSort('members')
                     setReverse(false)
                   }
-                } else {
-                  setSort('members')
-                  setReverse(false)
-                }
-              }}>
-              {sort === 'members' ? reverse ? <FaSortUp /> : <FaSortDown /> : <></>}
-              Sailors
-            </th>
+                }}>
+                {sort === 'members' ? reverse ? <FaSortUp /> : <FaSortDown /> : <></>}
+                Sailors
+              </th>
 
-            <th></th>
-          </tr>
-        </thead>
-        <tbody className='teamsTable'>
-          {filtered.length > 0 ? (
-            filtered.map((team, index) => (
-              <tr key={index} className='clickable' onClick={() => navigate(`/teams/${team.teamID}`)}>
-                <td className='tableColFit tdRightBorder'>
-                  {(sort === 'rating' ? team.avgRating !== 0 : sort === 'women' ? team.topWomenRating !== 0 : sort === 'members' ? team.memberCount !== 0 : sort === 'ratio' ? team.avgRatio !== 0 : sort === 'team' ? team.topTeamRating !== 0 : team.topFleetRating !== 0) ? (
-                    index + 1
-                  ) : (
-                    <span className='secondaryText' style={{ textAlign: 'center' }}>
-                      ~
-                    </span>
-                  )}
-                </td>
-                <td className='tableColFit'>
-                  <img style={{ display: 'inline', maxHeight: '2rem' }} src={`https://scores.collegesailing.org/inc/img/schools/${teamCodes[team.teamID]}.png`} />
-                </td>
-
-                <td className='tableColFit'>{team.teamName}</td>
-                <td className=''>
-                  <div className='filterOption' style={{ backgroundColor: RegionColors[team.region] }}>
-                    {team.region}
-                  </div>
-                </td>
-                <td style={{ textAlign: 'right' }}>
-                  <RatingNum ratingNum={team.topFleetRating} />
-                </td>
-                <td style={{ textAlign: 'right' }}>
-                  <RatingNum ratingNum={team.topWomenRating} type={'women'} />
-                </td>
-                <td style={{ textAlign: 'right' }}>
-                  <RatingNum ratingNum={team.topTeamRating} type={'open'} />
-                </td>
-                <td style={{ textAlign: 'right' }}>
-                  <RatingNum ratingNum={team.topWomenTeamRating} type={'women'} />
-                </td>
-                <td style={{ textAlign: 'right' }}>{team.avgRating.toFixed(0)}</td>
-
-                <td style={{ textAlign: 'right' }}>
-                  <div className='ratioBarBg'>
-                    <div className='ratioBar' style={{ width: team.avgRatio * 100 }}>
-                      <span>{(team.avgRatio * 100).toFixed(1)}%</span>
-                    </div>
-                  </div>
-                </td>
-                <td className='' style={{ textAlign: 'right' }}>
-                  {team.memberCount}
-                </td>
-
-                <td></td>
-              </tr>
-            ))
-          ) : (
-            <tr>
-              <span style={{ width: '100%', position: 'absolute', textAlign: 'center', margin: 20 }}>Please select at least one conference!</span>
+              <th></th>
             </tr>
-          )}
-        </tbody>
-      </table>
+          </thead>
+          <tbody className='teamsTable'>
+            {filtered.length > 0 ? (
+              filtered.map((team, index) => (
+                <tr key={index} className='clickable' onClick={() => navigate(`/teams/${team.teamID}`)}>
+                  <td className='tableColFit tdRightBorder'>
+                    {(sort === 'rating' ? team.avgRating !== 0 : sort === 'women' ? team.topWomenRating !== 0 : sort === 'members' ? team.memberCount !== 0 : sort === 'ratio' ? team.avgRatio !== 0 : sort === 'team' ? team.topTeamRating !== 0 : team.topFleetRating !== 0) ? (
+                      index + 1
+                    ) : (
+                      <span className='secondaryText' style={{ textAlign: 'center' }}>
+                        ~
+                      </span>
+                    )}
+                  </td>
+                  <td className='tableColFit'>
+                    <img style={{ display: 'inline', maxHeight: '2rem' }} src={`https://scores.collegesailing.org/inc/img/schools/${teamCodes[team.teamID]}.png`} />
+                  </td>
+
+                  <td className='tableColFit'>{team.teamName}</td>
+                  <td className=''>
+                    <div className='filterOption' style={{ backgroundColor: RegionColors[team.region] }}>
+                      {team.region}
+                    </div>
+                  </td>
+                  <td style={{ textAlign: 'right' }}>
+                    <RatingNum ratingNum={team.topFleetRating} />
+                  </td>
+                  <td style={{ textAlign: 'right' }}>
+                    <RatingNum ratingNum={team.topWomenRating} type={'women'} />
+                  </td>
+                  <td style={{ textAlign: 'right' }}>
+                    <RatingNum ratingNum={team.topTeamRating} type={'open'} />
+                  </td>
+                  <td style={{ textAlign: 'right' }}>
+                    <RatingNum ratingNum={team.topWomenTeamRating} type={'women'} />
+                  </td>
+                  <td style={{ textAlign: 'right' }}>{team.avgRating.toFixed(0)}</td>
+
+                  <td style={{ textAlign: 'right' }}>
+                    <div className='ratioBarBg'>
+                      <div className='ratioBar' style={{ width: team.avgRatio * 100 }}>
+                        <span>{(team.avgRatio * 100).toFixed(1)}%</span>
+                      </div>
+                    </div>
+                  </td>
+                  <td className='' style={{ textAlign: 'right' }}>
+                    {team.memberCount}
+                  </td>
+
+                  <td></td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <span style={{ width: '100%', position: 'absolute', textAlign: 'center', margin: 20 }}>Please select at least one conference!</span>
+              </tr>
+            )}
+          </tbody>
+        </table>
+        {/* <ScrollButton element={temp} /> */}
+      </div>
       <button
         className='scrollButton'
         onClick={() => {
@@ -481,7 +484,6 @@ const DesktopTeams = ({ reverse, setReverse, filtered, sort, setSort }) => {
         }}>
         Back to top
       </button>
-      {/* <ScrollButton element={temp} /> */}
-    </div>
+    </>
   )
 }

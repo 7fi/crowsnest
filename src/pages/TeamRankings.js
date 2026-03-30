@@ -109,7 +109,8 @@ export default function TeamRankings() {
         </td>
         {/* <td style={{ textAlign: 'right' }}>{pos === 'skipper' ? member.avgSkipperRatio.toFixed(3) : member.avgCrewRatio.toFixed(3)}</td> */}
         <td className='tableColFit' style={{ textAlign: 'center' }}>
-          <RatioBar ratio={pos === 'skipper' ? member.avgSkipperRatio : member.avgCrewRatio} />
+          {/* <RatioBar ratio={pos === 'skipper' ? member.avgSkipperRatio : member.avgCrewRatio} /> */}
+          <RatioBar ratio={member.winP} />
         </td>
         <td></td>
         <td style={{ textAlign: 'right', width: 'min-content' }} className='tableColFit'>
@@ -145,41 +146,60 @@ export default function TeamRankings() {
   }
 
   const PosList = ({ members, pos }) => {
-    const newMembers = members.filter((member) => member.position == pos)
-    const filtered = newMembers
+    const seenInThisList = new Set()
+
+    const posMembers = members.filter((member) => member.position == pos && member.teamID == teamName)
+    const filtered = posMembers
       .map((member) => {
         // accumulate numRaces across the activeSeasons before filtering so totals reflect all selected seasons
         // sum raceCount for all entries in `members` that match this sailor (by sailorID or name+pos) and are in an active season
         const key = member.sailorID ? `${member.sailorID}` : `${member.name}_${pos}`
-        const numRaces = members.reduce((total, m) => {
+        const thisMemberEntries = posMembers.filter((m) => {
+          // grab entries of current sailor
           const mKey = m.sailorID ? `${m.sailorID}` : `${m.name}_${pos}`
-          if (mKey === key && activeSeasons.includes(m.season) && m.teamID === teamName) {
+          return mKey == key
+        })
+
+        const numRaces = thisMemberEntries.reduce((total, m) => {
+          // sum total races if season is selected
+          if (activeSeasons.includes(m.season)) {
             return total + (m.raceCount || 0)
           }
           return total
         }, 0)
-        return { ...member, numRaces }
+
+        const winStats = thisMemberEntries.reduce(
+          (acc, m) => {
+            if (activeSeasons.includes(m.season)) {
+              acc.sum += m.winPercent
+              acc.count += 1
+            }
+            return acc
+          },
+          { sum: 0, count: 0 },
+        )
+
+        // Calculate average (and handle division by zero just in case)
+        const winP = winStats.count > 0 ? winStats.sum / winStats.count : 0
+        return { ...member, numRaces, winP }
       })
       .filter((member) => {
-        // reset seen set when active seasons change
-        if (!PosList._seenKey || PosList._seenKey !== activeSeasons.join(',')) {
-          PosList._seen = new Set()
-          PosList._seenKey = activeSeasons.join(',')
-        }
-
-        // require that the member has at least one of the active seasons
+        // 2. Filter for active seasons
         let hasSeason = activeSeasons.includes(member.season)
         if (!hasSeason) return false
 
-        // dedupe entries (by sailorID when present, otherwise name+pos)
+        // 3. Dedupe using the local Set
+        // Using sailorID + position ensures uniqueness within this specific list
         const key = member.sailorID ? `${member.sailorID}` : `${member.name}_${pos}`
-        if (PosList._seen.has(key)) return false
-        PosList._seen.add(key)
+
+        if (seenInThisList.has(key)) return false
+        seenInThisList.add(key)
 
         return true
       })
       .sort((a, b) => {
         if (sort === 'ratio') {
+          return b.winP - a.winP
         } else if (sort === 'races') {
           // use the accumulated numRaces
           return (b.numRaces || 0) - (a.numRaces || 0)
@@ -327,7 +347,7 @@ export default function TeamRankings() {
             <></>
           )}
           <div className='responsiveRowCol' style={{ padding: 15, flexWrap: 'wrap' }}>
-            <PosList members={teamMembers} pos={'skipper'} />
+            <PosList members={teamMembers} pos='skipper' />
             <PosList members={teamMembers} pos='crew' />
           </div>
           <span className='secondaryText'>

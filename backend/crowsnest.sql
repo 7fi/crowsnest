@@ -73,6 +73,7 @@ CREATE TABLE SailorTeams(
     season char(3),
     position char(7),
     raceCount INT,
+    winPercent float,
     rankType varchar(20),
     PRIMARY KEY(sailorID, teamID, season, position)
 #     CONSTRAINT FOREIGN KEY (sailorID) REFERENCES Sailors(sailorID),
@@ -167,6 +168,12 @@ CREATE TABLE TRScores(
     PRIMARY KEY(season, regatta, raceNumber, sailorID)
 #     CONSTRAINT FOREIGN KEY (sailorID) REFERENCES Sailors(sailorID)
 );
+DROP INDEX team_sailor_idx ON TRScores;
+DROP INDEX team_sailor_idx2 ON TRScores;
+DROP INDEX team_sailor_idx3 ON TRScores;
+CREATE INDEX team_sailor_idx ON TRScores (sailorID);
+CREATE INDEX team_sailor_idx2 ON TRScores (regatta);
+CREATE INDEX team_sailor_idx3 ON TRScores (date);
 
 DROP TABLE IF EXISTS HomePageStats;
 CREATE TABLE HomePageStats(
