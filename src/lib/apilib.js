@@ -1,7 +1,8 @@
 import posthog from 'posthog-js'
 import { getAuth, signOut } from 'firebase/auth'
 
-const APIURL = 'http://localhost:3002/'
+const APIURL = process.env.REACT_APP_API_URL
+// const APIURL = 'http://localhost:3002/'
 // const APIURL = 'https://api.crowsnest.club/'
 
 export async function getAllSailors() {
