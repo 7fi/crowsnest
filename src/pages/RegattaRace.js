@@ -154,7 +154,7 @@ export default function RegattaRace() {
                   const boatName = accumulatedBoats[boat].boatName
                   const boatScore = accumulatedBoats[boat].score
                   return (
-                    <tr key={i}>
+                    <tr key={i} className='scoreRow'>
                       <td>{i + 1}</td>
                       <td>
                         <Link to={`/teams/${teamID}`} className='flexRowContainer'>

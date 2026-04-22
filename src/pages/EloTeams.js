@@ -447,10 +447,10 @@ const DesktopTeams = ({ reverse, setReverse, filtered, sort, setSort }) => {
                     <RatingNum ratingNum={team.topWomenRating} type={'women'} />
                   </td>
                   <td style={{ textAlign: 'right' }}>
-                    <RatingNum ratingNum={team.topTeamRating} type={'open'} />
+                    <RatingNum ratingNum={team.topTeamRating} type={'open'} raceType={'team'} />
                   </td>
                   <td style={{ textAlign: 'right' }}>
-                    <RatingNum ratingNum={team.topWomenTeamRating} type={'women'} />
+                    <RatingNum ratingNum={team.topWomenTeamRating} type={'women'} raceType={'team'} />
                   </td>
                   <td style={{ textAlign: 'right' }}>{team.avgRating.toFixed(0)}</td>
 

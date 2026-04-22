@@ -172,7 +172,7 @@ select {
   display: flex;
   flex-direction: row;
   gap: 0 0.3rem;
-  align-items: start;
+  align-items: flex-start;
 }
 
 /* Navbar */
@@ -234,7 +234,7 @@ select {
   top: 40px;
   background-color: var(--bg);
   flex-direction: column;
-  align-items: start;
+  align-items: flex-start;
 
   border-radius: 0 0 var(--radius) var(--radius);
 }
@@ -481,7 +481,7 @@ select {
 .eventTitleBox {
   display: flex;
   flex-direction: column;
-  align-items: start;
+  align-items: flex-start;
   justify-content: space-between;
 }
 
@@ -567,6 +567,12 @@ select {
   display: none;
   flex-direction: column;
   padding: 0.4rem;
+}
+.scoreRow {
+  height: 110%;
+}
+.scoreEntry {
+  text-align: right;
 }
 .scoreEntry:hover {
   background-color: var(--border);
@@ -941,7 +947,7 @@ tr .filterOption:hover {
   .responsiveRowCol {
     display: flex;
     flex-direction: column;
-    align-items: start;
+    align-items: flex-start;
   }
 
   .chartLabel {

@@ -17,7 +17,7 @@ export default function GlobalRankings({ pos, type, raceType }) {
 
   useEffect(() => {
     setLoaded(false)
-    getTopSailors(pos.toLowerCase(), raceType.toLowerCase(), type == 'women', 100)
+    getTopSailors(pos.toLowerCase(), raceType.toLowerCase(), type === 'women', 100)
       .then((people) => {
         setPeople(people)
       })
@@ -69,18 +69,18 @@ export default function GlobalRankings({ pos, type, raceType }) {
       <div className='contentBox responsiveRowCol' style={{ marginTop: 80, justifyContent: 'space-between' }}>
         <div>
           <h2>
-            Top 100 {raceType == 'fleet' ? 'Fleet Race' : 'Team Race'} {type[0].toUpperCase()}
+            Top 100 {raceType === 'fleet' ? 'Fleet Race' : 'Team Race'} {type[0].toUpperCase()}
             {type.slice(1)} {pos}s
           </h2>
           <div className='flexRowContainer'>
-            <Link to={`/sailors/${pos === 'Skipper' ? (raceType == 'fleet' ? 'crew' : 'trcrew') : raceType == 'fleet' ? 'skipper' : 'trskipper'}${type === 'women' ? '/women' : ''}`}>
+            <Link to={`/rankings/${pos === 'Skipper' ? (raceType === 'fleet' ? 'crew' : 'trcrew') : raceType === 'fleet' ? 'skipper' : 'trskipper'}${type === 'women' ? '/women' : ''}`}>
               <button>See {pos === 'Skipper' ? 'Crews' : 'Skippers'}</button>
             </Link>{' '}
-            <Link to={`/sailors/${pos === 'Skipper' ? (raceType == 'fleet' ? 'skipper' : 'trskipper') : raceType == 'fleet' ? 'crew' : 'trcrew'}${type === 'women' ? '' : '/women'}`}>
+            <Link to={`/rankings/${pos === 'Skipper' ? (raceType === 'fleet' ? 'skipper' : 'trskipper') : raceType === 'fleet' ? 'crew' : 'trcrew'}${type === 'women' ? '' : '/women'}`}>
               {' '}
               <button>See {type === 'women' ? 'Open' : "Women's"}</button>
             </Link>
-            <Link to={`/sailors/${raceType === 'fleet' ? 'tr' + pos.toLowerCase() : pos.toLowerCase()}${type === 'women' ? '/women' : ''}`}>
+            <Link to={`/rankings/${raceType === 'fleet' ? 'tr' + pos.toLowerCase() : pos.toLowerCase()}${type === 'women' ? '/women' : ''}`}>
               {' '}
               <button>See {raceType === 'fleet' ? 'Team Race' : 'Fleet Race'}</button>
             </Link>
