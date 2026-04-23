@@ -9,10 +9,12 @@ import { FaSortDown } from 'react-icons/fa'
 import useRegionColors from '../lib/regionColors'
 import RatioBar from '../components/rankings/RatioBar'
 import DoubleSlider from '../components/DoubleSlider'
+import RankingDisplay from '../components/rankings/TeamPage/RankingDisplay'
 
 export default function TeamRankings() {
   const { teamName } = useParams()
   const [rating, setRating] = useState(1500)
+  const [teamData, setTeamData] = useState({})
   const [teamMembers, setTeamMembers] = useState([])
   const [teamLink, setTeamLink] = useState('')
   const [teamRegion, setTeamRegion] = useState('')
@@ -37,6 +39,7 @@ export default function TeamRankings() {
       setTeamLink(tempTeam.data.link)
       setTeamRegion(tempTeam.data.region)
       setRecentRegattas(tempTeam.regattas)
+      setTeamData(tempTeam.data)
 
       const allSeasons = tempTeam.members.map((member) => member.season)
       const uniqueSeasons = [...new Set(allSeasons)].sort((a, b) => {
@@ -82,7 +85,7 @@ export default function TeamRankings() {
     const rankingOpen = (member.rankType?.split('.').includes('sr') && pos == 'skipper') || (member.rankType?.split('.').includes('cr') && pos == 'crew')
     const rankingWomen = (member.rankType?.split('.').includes('wsr') && pos == 'skipper') || (member.rankType?.split('.').includes('wcr') && pos == 'crew')
 
-    // console.log(member.name, rankingOpen, rankingWomen, member.rankType)s
+    // console.log(member.name, rankingOpen, rankingWomen, member.rankType)
 
     return (
       <tr key={index} className='clickable' onClick={() => navigate(`/sailors/${member.sailorID}`)}>
@@ -100,8 +103,8 @@ export default function TeamRankings() {
         <td className='tableColFit'>{decodeURIComponent(member.name)}</td>
         <td className=''>{member.year.split('.')[0].includes('*') ? member.year.split('.')[0].slice(0, 2) : member.year.split('.')[0].slice(2, 4)}</td>
         <td style={{ textAlign: 'left', minWidth: 50 }}>
-          {rankingOpen ? <TiStarFullOutline style={{ bottom: -5 }} className='secondaryText' /> : ''}
-          {rankingWomen ? <TiStarFullOutline className='secondaryText' color='var(--women)' /> : ''}
+          {/* {rankingOpen ? <TiStarFullOutline style={{ bottom: -5 }} className='secondaryText' /> : ''}
+          {rankingWomen ? <TiStarFullOutline className='secondaryText' color='var(--women)' /> : ''} */}
         </td>
         {/* <td className='secondaryText'>{member.gender === 'F' ? 'W' : ''}</td> */}
         <td className='tableColFit' style={{ textAlign: 'left' }}>
@@ -311,12 +314,18 @@ export default function TeamRankings() {
               </h1>
             </div>
 
-            <Link to={{ pathname: `/teams`, search: `?region=${teamRegion}` }}>
+            {/* <Link to={{ pathname: `/teams`, search: `?region=${teamRegion}` }}>
               <span className='filterOption' style={{ backgroundColor: regionColors[teamRegion] }}>
                 {teamRegion}
               </span>{' '}
               avg rating: {rating.toFixed(0)}
-            </Link>
+            </Link> */}
+          </div>
+          <div className='teamRatingContainer'>
+            {teamData.fr_rank ? <RankingDisplay data={teamData} members={teamMembers} rankType='fr' /> : <></>}
+            {teamData.tr_rank ? <RankingDisplay data={teamData} members={teamMembers} rankType='tr' /> : <></>}
+            {teamData.wfr_rank ? <RankingDisplay data={teamData} members={teamMembers} rankType='wfr' /> : <></>}
+            {teamData.wtr_rank ? <RankingDisplay data={teamData} members={teamMembers} rankType='wtr' /> : <></>}
           </div>
           <DoubleSlider values={allSeasons} initialStart={activeSeasons.slice(-1)[0]} onChange={seasonsChanged} />
           {selectionMode == 'advanced' ? (
@@ -353,7 +362,7 @@ export default function TeamRankings() {
           <span className='secondaryText'>
             <TiStarFullOutline /> means that this sailor is used in the calculation of this teams rating. Requires a certain number of races vs out of conference sailors.{' '}
           </span>
-          <div>
+          <div className='flexCol'>
             <h2>Recent Regattas:</h2>
             {recentRegattas.slice(0, 10).map((reg, i) => (
               <a key={i} className='text-titlecase' href={`https://scores.collegesailing.org/${reg.regatta}`}>

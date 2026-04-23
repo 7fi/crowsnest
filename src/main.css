@@ -942,6 +942,20 @@ tr .filterOption:hover {
   grid-template-columns: repeat(auto-fill, 280px);
 }
 
+.teamRatingContainer {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 400px), 1fr));
+  gap: 1rem;
+}
+
+.teamRatingCard {
+  width: 100%;
+  min-width: 0;
+  box-shadow: var(--shadow);
+  padding: 1rem;
+  border-radius: var(--radius);
+}
+
 /* Mobile Stuff */
 @media only screen and (max-device-width: 600px) {
   .responsiveRowCol {

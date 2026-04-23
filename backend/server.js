@@ -123,23 +123,35 @@ app.get('/teams/:id', async (req, res) => {
 
     const startInfo = Date.now()
     const [info] = await pool.query(
-      `SELECT * FROM Teams
+      `SELECT *
+        FROM (
+            SELECT Teams.*,
+                  CASE WHEN topFleetRating != 0 THEN RANK() OVER (ORDER BY topFleetRating DESC) END fr_rank,
+                  CASE WHEN topTeamRating != 0 THEN RANK() OVER (ORDER BY topTeamRating DESC) END tr_rank,
+                  CASE WHEN topWomenRating != 0 THEN RANK() OVER (ORDER BY topWomenRating DESC) END wfr_rank,
+                  CASE WHEN topWomenTeamRating != 0 THEN RANK() OVER (ORDER BY topWomenTeamRating DESC) END wtr_rank,
+                  CASE WHEN topFleetRating != 0 THEN RANK() OVER (PARTITION BY Region ORDER BY topFleetRating DESC) END fr_region_rank,
+                  CASE WHEN topTeamRating != 0 THEN RANK() OVER (PARTITION BY Region ORDER BY topTeamRating DESC) END tr_region_rank,
+                  CASE WHEN topWomenRating != 0 THEN RANK() OVER (PARTITION BY Region ORDER BY topWomenRating DESC) END wfr_region_rank,
+                  CASE WHEN topWomenTeamRating != 0 THEN RANK() OVER (PARTITION BY Region ORDER BY topWomenTeamRating DESC) END wtr_region_rank
+            FROM Teams
+        ) RankedTeams
       WHERE teamID = ?;`,
       [req.params.id],
     )
     // console.log(`Info query took ${Date.now() - startInfo}ms`)
-    const regattas = []
+    // const regattas = []
     const startReg = Date.now()
-    // const [regattas] = await pool.query(
-    //   `SELECT Distinct fs.regatta, fs.date
-    //   FROM FleetScores fs
-    //   JOIN SailorTeams st ON fs.sailorID = st.sailorID
-    //   WHERE st.teamID = ?
-    //   ORDER BY fs.date DESC
-    //   LIMIT 50;`,
-    //   [req.params.id],
-    // )
-    // console.log(`Regattas query took ${Date.now() - startReg}ms`)
+    const [regattas] = await pool.query(
+      `SELECT Distinct fs.regatta, fs.date
+      FROM FleetScores fs
+      JOIN SailorTeams st ON fs.sailorID = st.sailorID
+      WHERE st.teamID = ?
+      ORDER BY fs.date DESC
+      LIMIT 50;`,
+      [req.params.id],
+    )
+    console.log(`Regattas query took ${Date.now() - startReg}ms`)
     res.json({ members: members, data: info[0], regattas: regattas })
   } catch (err) {
     console.error(err)
