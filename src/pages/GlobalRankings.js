@@ -56,7 +56,7 @@ export default function GlobalRankings({ pos, type, raceType }) {
           )}
           {/* <td></td> */}
           <td style={{ textAlign: 'right' }}>
-            <RatingNum type={type} pos={pos} ratingNum={member.rating} />
+            <RatingNum type={type} pos={pos} ratingNum={member.rating} raceType={raceType.toLowerCase()} />
             {/* {member.rating.toFixed(0)} {type === 'women' ? <FaDiamond className='secondaryText' /> : ''} */}
           </td>
         </tr>

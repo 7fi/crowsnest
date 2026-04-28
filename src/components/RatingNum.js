@@ -71,14 +71,14 @@ export default function RatingNum({ sailor, pos, type, highest, ratingNum, raceT
   }
 
   const iconSrcs = { top: 'OpenFleetIcon.png', women: 'WomensFleetIcon.png', team: 'OpenTeamIcon.png', womensteam: 'WomensTeamIcon.png' }
-  const sort = type == 'women' ? (raceType == 'team' ? 'womensteam' : 'women') : raceType == 'team' ? 'team' : 'top'
+  const sort = type == 'women' ? (raceType == 'team' ? 'womensteam' : 'women') : raceType == 'team' || raceType?.includes('team') ? 'team' : 'top'
 
   return (
     <span style={{ width: 'min-content !important' }}>
       {rating !== 0 ? (
         <div className='flexRowCentered'>
           {/* {isWomens ? <TbDiamondsFilled className='' style={{ color: 'var(--women)' }} /> : ''} */}
-          <img src={'../' + iconSrcs[sort]} style={{ height: '1.5rem' }} />
+          <img src={'/' + iconSrcs[sort]} style={{ height: '1.5rem' }} />
           {rating.toFixed(0)}{' '}
         </div>
       ) : (

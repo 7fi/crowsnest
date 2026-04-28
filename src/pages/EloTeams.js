@@ -31,7 +31,6 @@ export default function EloTeams() {
     setLoaded(false)
     getAllTeams()
       .then((tempTeams) => {
-        console.log(tempTeams)
         setTeams(tempTeams)
         let regions = tempTeams.map((team) => team.region).filter((value, index, self) => self.indexOf(value) === index)
         if (linkRegion == null) {
