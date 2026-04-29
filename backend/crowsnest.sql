@@ -19,6 +19,7 @@ DROP TABLE IF EXISTS Teams;
 CREATE TABLE Teams(
   teamID varchar(50) PRIMARY KEY,
   teamName varchar(50),
+  link varchar(50),
   topFleetRating INT,
   topWomenRating INT,
   topTeamRating INT,

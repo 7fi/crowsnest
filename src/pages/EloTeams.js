@@ -14,7 +14,7 @@ export default function EloTeams() {
   const [allRegions, setAllRegions] = useState([])
   const [filterText, setFilterText] = useState('')
   const [reverse, setReverse] = useState(false)
-  const [sort, setSort] = useState('top') // ['ratio', 'members', 'women', 'rating', 'team', 'womensteam']
+  const [sort, setSort] = useState('top') // ['ratio', 'members', 'women', 'rating', 'team', 'womenteam']
 
   const [loaded, setLoaded] = useState(false)
 
@@ -80,7 +80,7 @@ export default function EloTeams() {
       else if (sort === 'rating') return b.avgRating - a.avgRating
       else if (sort === 'women') return b.topWomenRating - a.topWomenRating
       else if (sort === 'team') return b.topTeamRating - a.topTeamRating
-      else if (sort === 'womensteam') return b.topWomenTeamRating - a.topWomenTeamRating
+      else if (sort === 'womenteam') return b.topWomenTeamRating - a.topWomenTeamRating
       // sort === 'top'
       else return b.topFleetRating - a.topFleetRating
     })
@@ -135,8 +135,8 @@ const MobileTeams = ({ reverse, setReverse, filtered, sort, setSort }) => {
 }
 
 const MobileTeam = ({ team, index, teamCodes, RegionColors, navigate, sort }) => {
-  const ratings = { top: team.topFleetRating, women: team.topWomenRating, team: team.topTeamRating, womensteam: team.topWomenTeamRating, rating: team.avgRating, members: team.memberCount }
-  const iconSrcs = { top: 'OpenFleetIcon.png', women: 'WomensFleetIcon.png', team: 'OpenTeamIcon.png', womensteam: 'WomensTeamIcon.png' }
+  const ratings = { top: team.topFleetRating, women: team.topWomenRating, team: team.topTeamRating, womenteam: team.topWomenTeamRating, rating: team.avgRating, members: team.memberCount }
+  const iconSrcs = { top: 'OpenFleetIcon.png', women: 'WomensFleetIcon.png', team: 'OpenTeamIcon.png', womenteam: 'WomensTeamIcon.png' }
 
   return (
     <div key={index} className='mobileTeamRow' onClick={() => navigate(`/teams/${team.teamID}`)}>
@@ -213,19 +213,19 @@ const MobileControls = ({ sort, setSort, reverse, setReverse, temp }) => {
             <input
               id='checkbox'
               type='checkbox'
-              checked={sort == 'team' || sort == 'womensteam'}
+              checked={sort == 'team' || sort == 'womenteam'}
               onChange={(input) => {
                 let team = input.target.checked
                 setReverse(false)
 
                 if (team) {
-                  if (sort == 'women' || sort == 'womensteam') {
-                    setSort('womensteam')
+                  if (sort == 'women' || sort == 'womenteam') {
+                    setSort('womenteam')
                   } else {
                     setSort('team')
                   }
                 } else {
-                  if (sort == 'womensteam') {
+                  if (sort == 'womenteam') {
                     setSort('women')
                   } else {
                     setSort('top')
@@ -245,19 +245,19 @@ const MobileControls = ({ sort, setSort, reverse, setReverse, temp }) => {
             <input
               id='womensCheckbox'
               type='checkbox'
-              checked={sort == 'women' || sort == 'womensteam'}
+              checked={sort == 'women' || sort == 'womenteam'}
               onChange={(input) => {
                 let womens = input.target.checked
                 setReverse(false)
 
                 if (womens) {
-                  if (sort == 'team' || sort == 'womensteam') {
-                    setSort('womensteam')
+                  if (sort == 'team' || sort == 'womenteam') {
+                    setSort('womenteam')
                   } else {
                     setSort('women')
                   }
                 } else {
-                  if (sort == 'team' || sort == 'womensteam') {
+                  if (sort == 'team' || sort == 'womenteam') {
                     setSort('team')
                   } else {
                     setSort('top')
@@ -325,10 +325,10 @@ const DesktopTeams = ({ reverse, setReverse, filtered, sort, setSort }) => {
       <div className='teamTableContainer'>
         <table className='raceByRaceTable teamsTable' ref={temp}>
           <thead>
-            <tr>
-              <th style={{ minWidth: 40, textAlign: 'right' }}></th>
+            <tr style={{ fontSize: '1.1rem' }}>
+              <th style={{ minWidth: 40, textAlign: 'right', height: '2.5rem' }}></th>
               <th style={{ minWidth: 50 }}> </th>
-              <th>Name</th>
+              <th>Team</th>
               <th>Conference</th>
               <th
                 className='tableColFit tooltip'
@@ -367,10 +367,10 @@ const DesktopTeams = ({ reverse, setReverse, filtered, sort, setSort }) => {
                 className='tableColFit tooltip'
                 onClick={() => {
                   setReverse(false)
-                  setSort(sort === 'womensteam' ? 'top' : 'womensteam')
+                  setSort(sort === 'womenteam' ? 'top' : 'womenteam')
                 }}
                 style={{ minWidth: 125, textAlign: 'right' }}>
-                {sort === 'womensteam' ? reverse ? <FaSortUp /> : <FaSortDown /> : <></>}
+                {sort === 'womenteam' ? reverse ? <FaSortUp /> : <FaSortDown /> : <></>}
                 Women's TR
                 <span className='tooltiptext'>Takes avg the top 3 from each pos</span>
               </th>
@@ -420,11 +420,11 @@ const DesktopTeams = ({ reverse, setReverse, filtered, sort, setSort }) => {
             {filtered.length > 0 ? (
               filtered.map((team, index) => (
                 <tr key={index} className='clickable' onClick={() => navigate(`/teams/${team.teamID}`)}>
-                  <td className='tableColFit tdRightBorder'>
+                  <td className='tableColFit tdRightBorder' style={{ textAlign: 'right' }}>
                     {(sort === 'rating' ? team.avgRating !== 0 : sort === 'women' ? team.topWomenRating !== 0 : sort === 'members' ? team.memberCount !== 0 : sort === 'ratio' ? team.avgRatio !== 0 : sort === 'team' ? team.topTeamRating !== 0 : team.topFleetRating !== 0) ? (
                       index + 1
                     ) : (
-                      <span className='secondaryText' style={{ textAlign: 'center' }}>
+                      <span className='secondaryText' style={{ textAlign: 'right' }}>
                         ~
                       </span>
                     )}

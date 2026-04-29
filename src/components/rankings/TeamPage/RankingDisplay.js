@@ -1,53 +1,59 @@
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import useRegionColors from '../../../lib/regionColors'
+import RatingNum from '../../RatingNum'
 
 export default function RankingDisplay({ data, members, rankType }) {
   const rankTypeMap = { fr: ['sr', 'cr'], wfr: ['wsr', 'wcr'], tr: ['tsr', 'tcr'], wtr: ['wtsr', 'wtcr'] }
   const globalRankTypes = { fr: 'topFleetRating', tr: 'topTeamRating', wfr: 'topWomenRating', wtr: 'topWomenTeamRating' }
 
-  const filtered = members.filter((m) => rankTypeMap[rankType].some((rank) => m.rankType.split('.').includes(rank)) && m.season == 's26')
+  const filtered = members.filter((m) => rankTypeMap[rankType].some((rank) => m.rankType.split('.').includes(rank))).filter((user, index, self) => index === self.findIndex((u) => u.sailorID === user.sailorID))
 
-  const regionColors = useRegionColors()
+  const nav = useNavigate()
 
   return (
-    <div class='teamRatingCard'>
-      <h2>
+    <tr>
+      <td className='clickable' onClick={() => nav(`/teams?sort=${rankType.includes('w') ? 'women' : ''}${rankType.includes('t') ? 'team' : rankType.includes('w') ? '' : 'top'}`)}>
         {rankType.includes('w') ? "Women's " : ''}
-        {rankType.includes('t') ? 'Team' : 'Fleet'} Race Rank: #{data[rankType + '_rank']}
-      </h2>
-      <div className='flexRowContainer' style={{ justifyContent: 'space-between' }}>
-        <div>
-          #{data[rankType + '_region_rank']} in{' '}
-          <Link to={{ pathname: `/teams`, search: `?region=${data?.region}` }}>
-            <span className='filterOption' style={{ backgroundColor: regionColors[data?.region] }}>
-              {data?.region}
-            </span>
-          </Link>
-        </div>
-        <div>Rating: {data[globalRankTypes[rankType]]}</div>
-      </div>
-      <div className='flexRowContainer'>
-        <div>
-          <h3>Skippers</h3>
+        {rankType.includes('t') ? 'Team' : 'Fleet'} Race {/*#{data[rankType + '_rank']}*/}
+      </td>
+      <td className='clickable' onClick={() => nav(`/teams?sort=${rankType.includes('w') ? 'women' : ''}${rankType.includes('t') ? 'team' : rankType.includes('w') ? '' : 'top'}`)}>
+        #{data[rankType + '_rank']}
+      </td>
+      <td>
+        {' '}
+        <Link to={{ pathname: `/teams`, search: `?region=${data?.region}&sort=${rankType.includes('w') ? 'women' : ''}${rankType.includes('t') ? 'team' : rankType.includes('w') ? '' : 'top'}` }}>#{data[rankType + '_region_rank']}</Link>
+      </td>
+      <td className='clickable' onClick={() => nav(`/teams?sort=${rankType.includes('w') ? 'women' : ''}${rankType.includes('t') ? 'team' : rankType.includes('w') ? '' : 'top'}`)}>
+        <RatingNum ratingNum={data[globalRankTypes[rankType]]} type={rankType.includes('w') ? 'women' : 'open'} raceType={rankType.includes('t') ? 'team' : 'fleet'} />
+      </td>
+      <td className='teamRatingSailors'>
+        <div className='flexCol'>
           {filtered
             .filter((m) => m.position == 'skipper')
-            .map((member) => {
+            .sort((a, b) => b[rankTypeMap[rankType][0]] - a[rankTypeMap[rankType][0]])
+            .map((member, i) => {
               return (
-                <div>
-                  {member.name} {member[rankTypeMap[rankType]]}
-                </div>
+                <Link key={i} to={`/sailors/${member.sailorID}`}>
+                  {member.name} {member[rankTypeMap[rankType][0]]}
+                </Link>
               )
             })}
         </div>
-        <div>
-          <h3>Crews</h3>
+      </td>
+      <td className='teamRatingSailors'>
+        <div className='flexCol'>
           {filtered
             .filter((m) => m.position == 'crew')
-            .map((member) => {
-              return <div>{member.name}</div>
+            .sort((a, b) => b[rankTypeMap[rankType][1]] - a[rankTypeMap[rankType][1]])
+            .map((member, i) => {
+              return (
+                <Link key={i} to={`/sailors/${member.sailorID}`}>
+                  {member.name} {member[rankTypeMap[rankType][1]]}
+                </Link>
+              )
             })}
         </div>
-      </div>
-    </div>
+      </td>
+    </tr>
   )
 }

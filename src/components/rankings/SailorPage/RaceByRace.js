@@ -142,8 +142,8 @@ export default function RaceByRace({ races, woman, showFilter }) {
                     key={i}
                     // style={{ backgroundColor: getRegDifficulty(race.regAvg) }}
                     onClick={() => {
-                      navigate(`/regattas/${race.season}/${race.regatta}/${race.raceNumber}${race.division}`)
-                      // window.open(`https://scores.collegesailing.org/${race.season}/${race.regatta}/full-scores/`, '_blank', 'noopener,noreferrer')
+                      // navigate(`/regattas/${race.season}/${race.regatta}/${race.raceNumber}${race.division}`)
+                      window.open(`https://scores.collegesailing.org/${race.season}/${race.regatta}/full-scores/`, '_blank', 'noopener,noreferrer')
                     }}
                     className='clickable'>
                     {isMobile ? (

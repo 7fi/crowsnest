@@ -943,9 +943,17 @@ tr .filterOption:hover {
 }
 
 .teamRatingContainer {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 400px), 1fr));
-  gap: 1rem;
+  /* display: flex;
+  flex-direction: column; */
+  /* grid-template-columns: repeat(auto-fit, minmax(min(100%, 400px), 1fr)); */
+  /* gap: 1rem; */
+  border-collapse: collapse;
+  max-width: 1500px;
+}
+@media only screen and (max-width: 750px) {
+  .teamRatingSailors {
+    display: none;
+  }
 }
 
 .teamRatingCard {
@@ -954,6 +962,9 @@ tr .filterOption:hover {
   box-shadow: var(--shadow);
   padding: 1rem;
   border-radius: var(--radius);
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
 }
 
 /* Mobile Stuff */

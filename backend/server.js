@@ -143,16 +143,25 @@ app.get('/teams/:id', async (req, res) => {
     // const regattas = []
     const startReg = Date.now()
     const [regattas] = await pool.query(
-      `SELECT Distinct fs.regatta, fs.date
+      `SELECT Distinct fs.regatta, fs.date, fs.season
       FROM FleetScores fs
       JOIN SailorTeams st ON fs.sailorID = st.sailorID
-      WHERE st.teamID = ?
+      WHERE st.teamID = ? AND fs.season = 's26'
       ORDER BY fs.date DESC
       LIMIT 50;`,
       [req.params.id],
     )
+    const [teamRegattas] = await pool.query(
+      `SELECT Distinct ts.regatta, ts.date, ts.season
+      FROM TRScores ts
+      JOIN SailorTeams st ON ts.sailorID = st.sailorID
+      WHERE st.teamID = ? AND ts.season = 's26'
+      ORDER BY ts.date DESC
+      LIMIT 50;`,
+      [req.params.id],
+    )
     console.log(`Regattas query took ${Date.now() - startReg}ms`)
-    res.json({ members: members, data: info[0], regattas: regattas })
+    res.json({ members: members, data: info[0], regattas: [...regattas, ...teamRegattas] })
   } catch (err) {
     console.error(err)
     res.status(500).json({ error: 'Database query failed', dueTo: err.sql, why: err.sqlMessage })

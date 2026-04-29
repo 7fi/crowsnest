@@ -80,7 +80,7 @@ export default function RankingsHome() {
         </div>
         <div className='responsiveRowCol'>
           <div className='flexGrowChild contentBox' style={{ minHeight: 'fit-content' }}>
-            <h2 style={{ margin: 10 }} onClick={() => nav(`/teams`)} className='clickable'>
+            <h2 style={{ margin: 10 }} onClick={() => nav(`/teams?sort=top`)} className='clickable'>
               Top Open Fleet Racing Teams
             </h2>
             <table className='raceByRaceTable'>
@@ -108,7 +108,7 @@ export default function RankingsHome() {
             </table>
           </div>
           <div className='flexGrowChild contentBox' style={{ minHeight: 'fit-content' }}>
-            <h2 style={{ margin: 10 }} onClick={() => nav(`/teams`)} className='clickable'>
+            <h2 style={{ margin: 10 }} onClick={() => nav(`/teams?sort=women`)} className='clickable'>
               Top Women's Fleet Racing Teams
             </h2>
             <table className='raceByRaceTable'>

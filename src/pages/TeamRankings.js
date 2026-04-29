@@ -308,7 +308,7 @@ export default function TeamRankings() {
             <div className='flexRowContainer' style={{ alignItems: 'center' }}>
               <img style={{ display: 'inline', maxHeight: '3rem' }} src={`https://scores.collegesailing.org/inc/img/schools/${teamCodes[teamName]}.png`} />
               <h1 style={{ display: 'inline-block' }}>
-                <a href={teamLink} target={1}>
+                <a href={`https://scores.collegesailing.org/schools/${teamLink}`} target={1}>
                   {teamName}
                 </a>
               </h1>
@@ -321,12 +321,32 @@ export default function TeamRankings() {
               avg rating: {rating.toFixed(0)}
             </Link> */}
           </div>
-          <div className='teamRatingContainer'>
-            {teamData.fr_rank ? <RankingDisplay data={teamData} members={teamMembers} rankType='fr' /> : <></>}
-            {teamData.tr_rank ? <RankingDisplay data={teamData} members={teamMembers} rankType='tr' /> : <></>}
-            {teamData.wfr_rank ? <RankingDisplay data={teamData} members={teamMembers} rankType='wfr' /> : <></>}
-            {teamData.wtr_rank ? <RankingDisplay data={teamData} members={teamMembers} rankType='wtr' /> : <></>}
-          </div>
+          {teamData.fr_rank || teamData.tr_rank || teamData.wfr_rank || teamData.wtr_rank ? (
+            <table className='teamRatingContainer'>
+              <thead>
+                <tr style={{ height: '3rem' }}>
+                  <th>Racing Type</th>
+                  <th>National</th>
+                  <th>
+                    <span className='filterOption' style={{ backgroundColor: regionColors[teamData?.region] }}>
+                      {teamData?.region}
+                    </span>
+                  </th>
+                  <th>Avg Rating</th>
+                  <th className='teamRatingSailors'>Skippers</th>
+                  <th className='teamRatingSailors'>Crews</th>
+                </tr>
+              </thead>
+              <tbody>
+                {teamData.fr_rank ? <RankingDisplay data={teamData} members={teamMembers} rankType='fr' /> : <></>}
+                {teamData.tr_rank ? <RankingDisplay data={teamData} members={teamMembers} rankType='tr' /> : <></>}
+                {teamData.wfr_rank ? <RankingDisplay data={teamData} members={teamMembers} rankType='wfr' /> : <></>}
+                {teamData.wtr_rank ? <RankingDisplay data={teamData} members={teamMembers} rankType='wtr' /> : <></>}
+              </tbody>
+            </table>
+          ) : (
+            <></>
+          )}
           <DoubleSlider values={allSeasons} initialStart={activeSeasons.slice(-1)[0]} onChange={seasonsChanged} />
           {selectionMode == 'advanced' ? (
             <div className='flexRowContainer flexWrap' style={{ marginLeft: 15 }}>
@@ -359,16 +379,30 @@ export default function TeamRankings() {
             <PosList members={teamMembers} pos='skipper' />
             <PosList members={teamMembers} pos='crew' />
           </div>
-          <span className='secondaryText'>
-            <TiStarFullOutline /> means that this sailor is used in the calculation of this teams rating. Requires a certain number of races vs out of conference sailors.{' '}
-          </span>
+
           <div className='flexCol'>
-            <h2>Recent Regattas:</h2>
-            {recentRegattas.slice(0, 10).map((reg, i) => (
-              <a key={i} className='text-titlecase' href={`https://scores.collegesailing.org/${reg.regatta}`}>
-                {new Date(reg.date).toLocaleDateString()} {reg.regatta.replaceAll('-', ' ')}
-              </a>
-            ))}
+            <h2>Season Regattas:</h2>
+            <table className='raceByRaceTable'>
+              <thead>
+                <tr>
+                  <th className='tableColFit'>Date</th>
+                  <th>Regatta</th>
+                </tr>
+              </thead>
+              <tbody>
+                {recentRegattas.slice(0, 20).map((reg, i) => (
+                  <tr
+                    key={i}
+                    className='clickable'
+                    onClick={() => {
+                      window.open(`https://scores.collegesailing.org/${reg.season}/${reg.regatta}`)
+                    }}>
+                    <td>{new Date(reg.date).toLocaleDateString()}</td>
+                    <td className='text-titlecase'>{reg.regatta.replaceAll('-', ' ')}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
       ) : (

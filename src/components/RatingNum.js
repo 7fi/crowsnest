@@ -70,8 +70,8 @@ export default function RatingNum({ sailor, pos, type, highest, ratingNum, raceT
     }
   }
 
-  const iconSrcs = { top: 'OpenFleetIcon.png', women: 'WomensFleetIcon.png', team: 'OpenTeamIcon.png', womensteam: 'WomensTeamIcon.png' }
-  const sort = type == 'women' ? (raceType == 'team' ? 'womensteam' : 'women') : raceType == 'team' || raceType?.includes('team') ? 'team' : 'top'
+  const iconSrcs = { top: 'OpenFleetIcon.png', women: 'WomensFleetIcon.png', team: 'OpenTeamIcon.png', womenteam: 'WomensTeamIcon.png' }
+  const sort = type == 'women' ? (raceType == 'team' ? 'womenteam' : 'women') : raceType == 'team' || raceType?.includes('team') ? 'team' : 'top'
 
   return (
     <span style={{ width: 'min-content !important' }}>
