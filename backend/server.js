@@ -9,6 +9,8 @@ const app = express()
 app.use(cors())
 app.use(express.json())
 
+const targetSeason = 's26'
+
 // Create a connection pool (better performance than single connection)
 const pool = mysql.createPool({
   host: process.env.DB_HOST,
@@ -103,6 +105,7 @@ app.get('/teams', async (req, res) => {
        topWomenTeamRating, avgRating, avgRatio, region,
            COUNT(DISTINCT st.sailorID) AS memberCount
     FROM Teams t JOIN SailorTeams st ON t.teamID = st.teamID
+    WHERE st.season='${targetSeason}'
     GROUP BY teamID;`)
     res.json(rows)
   } catch (err) {
@@ -146,7 +149,7 @@ app.get('/teams/:id', async (req, res) => {
       `SELECT Distinct fs.regatta, fs.date, fs.season
       FROM FleetScores fs
       JOIN SailorTeams st ON fs.sailorID = st.sailorID
-      WHERE st.teamID = ? AND fs.season = 's26'
+      WHERE st.teamID = ? AND fs.season = '${targetSeason}'
       ORDER BY fs.date DESC
       LIMIT 50;`,
       [req.params.id],
@@ -155,7 +158,7 @@ app.get('/teams/:id', async (req, res) => {
       `SELECT Distinct ts.regatta, ts.date, ts.season
       FROM TRScores ts
       JOIN SailorTeams st ON ts.sailorID = st.sailorID
-      WHERE st.teamID = ? AND ts.season = 's26'
+      WHERE st.teamID = ? AND ts.season = '${targetSeason}'
       ORDER BY ts.date DESC
       LIMIT 50;`,
       [req.params.id],

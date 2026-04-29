@@ -347,7 +347,7 @@ const DesktopTeams = ({ reverse, setReverse, filtered, sort, setSort }) => {
                   setReverse(false)
                   setSort(sort === 'women' ? 'top' : 'women')
                 }}
-                style={{ minWidth: 95, textAlign: 'right' }}>
+                style={{ minWidth: 105, textAlign: 'right' }}>
                 {sort === 'women' ? reverse ? <FaSortUp /> : <FaSortDown /> : <></>}
                 Women's
                 <span className='tooltiptext'>Takes avg the top 2 from each pos</span>
@@ -358,9 +358,9 @@ const DesktopTeams = ({ reverse, setReverse, filtered, sort, setSort }) => {
                   setReverse(false)
                   setSort(sort === 'team' ? 'top' : 'team')
                 }}
-                style={{ minWidth: 130, textAlign: 'right' }}>
+                style={{ minWidth: 100, textAlign: 'right' }}>
                 {sort === 'team' ? reverse ? <FaSortUp /> : <FaSortDown /> : <></>}
-                Team Racing
+                Open TR
                 <span className='tooltiptext'>Takes avg the top 3 from each pos</span>
               </th>
               <th
@@ -369,7 +369,7 @@ const DesktopTeams = ({ reverse, setReverse, filtered, sort, setSort }) => {
                   setReverse(false)
                   setSort(sort === 'womenteam' ? 'top' : 'womenteam')
                 }}
-                style={{ minWidth: 125, textAlign: 'right' }}>
+                style={{ minWidth: 130, textAlign: 'right' }}>
                 {sort === 'womenteam' ? reverse ? <FaSortUp /> : <FaSortDown /> : <></>}
                 Women's TR
                 <span className='tooltiptext'>Takes avg the top 3 from each pos</span>
@@ -380,12 +380,12 @@ const DesktopTeams = ({ reverse, setReverse, filtered, sort, setSort }) => {
                   setReverse(false)
                   setSort(sort === 'rating' ? 'top' : 'rating')
                 }}
-                style={{ minWidth: 110, textAlign: 'right' }}>
+                style={{ minWidth: 125, textAlign: 'right' }}>
                 <span className='tooltiptext'>Avg Rating of all sailors</span>
                 {sort === 'rating' ? reverse ? <FaSortUp /> : <FaSortDown /> : <></>}Avg Rating
               </th>
               <th
-                style={{ minWidth: 113, textAlign: 'right' }}
+                style={{ minWidth: 130, textAlign: 'right' }}
                 className='tableColFit'
                 onClick={() => {
                   setReverse(false)
@@ -394,7 +394,7 @@ const DesktopTeams = ({ reverse, setReverse, filtered, sort, setSort }) => {
                 {sort === 'ratio' ? reverse ? <FaSortUp /> : <FaSortDown /> : <></>}Percentage
               </th>
               <th
-                style={{ minWidth: 80, textAlign: 'right' }}
+                style={{ minWidth: 88, textAlign: 'right' }}
                 className='tableColFit'
                 onClick={() => {
                   if (sort === 'members') {
@@ -439,17 +439,25 @@ const DesktopTeams = ({ reverse, setReverse, filtered, sort, setSort }) => {
                       {team.region}
                     </div>
                   </td>
-                  <td style={{ textAlign: 'right' }}>
-                    <RatingNum ratingNum={team.topFleetRating} />
+                  <td>
+                    <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                      <RatingNum ratingNum={team.topFleetRating} />
+                    </div>
                   </td>
-                  <td style={{ textAlign: 'right' }}>
-                    <RatingNum ratingNum={team.topWomenRating} type={'women'} />
+                  <td>
+                    <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                      <RatingNum ratingNum={team.topWomenRating} type={'women'} />
+                    </div>
                   </td>
-                  <td style={{ textAlign: 'right' }}>
-                    <RatingNum ratingNum={team.topTeamRating} type={'open'} raceType={'team'} />
+                  <td>
+                    <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                      <RatingNum ratingNum={team.topTeamRating} type={'open'} raceType={'team'} />
+                    </div>
                   </td>
-                  <td style={{ textAlign: 'right' }}>
-                    <RatingNum ratingNum={team.topWomenTeamRating} type={'women'} raceType={'team'} />
+                  <td>
+                    <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                      <RatingNum ratingNum={team.topWomenTeamRating} type={'women'} raceType={'team'} />
+                    </div>
                   </td>
                   <td style={{ textAlign: 'right' }}>{team.avgRating.toFixed(0)}</td>
 
@@ -463,7 +471,6 @@ const DesktopTeams = ({ reverse, setReverse, filtered, sort, setSort }) => {
                   <td className='' style={{ textAlign: 'right' }}>
                     {team.memberCount}
                   </td>
-
                   <td></td>
                 </tr>
               ))
