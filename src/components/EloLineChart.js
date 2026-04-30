@@ -138,15 +138,15 @@ export default function EloLineChart({ data, woman }) {
   // Custom tick: label each unique regatta on the X axis (works with displayRaces)
   const CustomTick = ({ x, y, payload, index }) => {
     if (index === displayRaces.length) return null
-    const currentEvent = displayRaces[index]?.season + '/' + displayRaces[index]?.regatta
-    const previousEvent = index > 0 ? displayRaces[index - 1]?.season + '/' + displayRaces[index - 1]?.regatta : null
-    // if (currentEvent !== previousEvent) {
-    //   return (
-    //     <text fill='var(--text)' x={x} y={y + 10} transform={`rotate(90, ${x}, ${y + 10})`} className='chartLabel'>
-    //       {currentEvent}
-    //     </text>
-    //   )
-    // }
+    const currentSeason = displayRaces[index]?.season
+    const previousSeason = index > 0 ? displayRaces[index - 1]?.season : null
+    if (currentSeason !== previousSeason) {
+      return (
+        <text fill='var(--text)' x={x} y={y + 10} transform={`rotate(0, ${x}, ${y + 10})`} className='chartLabel'>
+          {currentSeason}
+        </text>
+      )
+    }
     return null
   }
 
@@ -260,7 +260,7 @@ export default function EloLineChart({ data, woman }) {
                 {entry.value === 'cr' ? 'Open Crew' : entry.value === 'sr' ? 'Open Skipper' : entry.value === 'wsr' ? "Women's Skipper" : entry.value === 'wcr' ? "Women's Crew" : entry.value === 'tsr' ? 'Open TR Skipper' : entry.value === 'tcr' ? 'Open TR Crew' : entry.value === 'wtsr' ? "Women's TR Skipper" : entry.value === 'wtcr' ? "Women's TR Crew" : 'Regatta Average'}
               </span>
             </div>
-          ) : null
+          ) : null,
         )}
       </div>
     )
@@ -270,49 +270,55 @@ export default function EloLineChart({ data, woman }) {
   const refLines = useMemo(() => {
     const uniqueRegattas = new Set()
     const firstRaces = []
+    const seasonStarts = []
+    let lastSeason = null
     displayRaces?.forEach((race) => {
       const uniqueRegatta = `${race.season}/${race.regatta}`
       if (!uniqueRegattas.has(uniqueRegatta)) {
         firstRaces.push(race.raceID)
+        if (race.season !== lastSeason) {
+          seasonStarts.push(race.raceID)
+          lastSeason = race.season
+        }
       }
       uniqueRegattas.add(uniqueRegatta)
     })
-    return firstRaces.map((race, i) => <ReferenceLine key={i} x={race} strokeDasharray='3 3' />)
+    return firstRaces.map((race, i) => <ReferenceLine key={i} x={race} strokeDasharray='3 3' strokeWidth={seasonStarts.includes(race) ? 2 : 1} />)
   }, [displayRaces])
 
-  const regattaAreas = useMemo(() => {
-    if (!displayRaces.length) return []
+  // const regattaAreas = useMemo(() => {
+  //   if (!displayRaces.length) return []
 
-    const areas = []
-    let start = 0
+  //   const areas = []
+  //   let start = 0
 
-    for (let i = 1; i < displayRaces.length; i++) {
-      const prev = displayRaces[i - 1]
-      const curr = displayRaces[i]
-      const prevKey = `${prev.season}/${prev.regatta}`
-      const currKey = `${curr.season}/${curr.regatta}`
+  //   for (let i = 1; i < displayRaces.length; i++) {
+  //     const prev = displayRaces[i - 1]
+  //     const curr = displayRaces[i]
+  //     const prevKey = `${prev.season}/${prev.regatta}`
+  //     const currKey = `${curr.season}/${curr.regatta}`
 
-      if (prevKey !== currKey) {
-        // previous regatta ended at i-1
-        areas.push({
-          start: displayRaces[start].raceID,
-          end: displayRaces[i].raceID,
-          rank: getRegDifficulty(displayRaces[start].regAvg),
-        })
-        start = i
-      }
-    }
+  //     if (prevKey !== currKey) {
+  //       // previous regatta ended at i-1
+  //       areas.push({
+  //         start: displayRaces[start].raceID,
+  //         end: displayRaces[i].raceID,
+  //         rank: getRegDifficulty(displayRaces[start].regAvg),
+  //       })
+  //       start = i
+  //     }
+  //   }
 
-    // push final regatta
-    const lastIndex = displayRaces.length - 1
-    areas.push({
-      start: displayRaces[start].raceID,
-      end: displayRaces[lastIndex].raceID,
-      rank: getRegDifficulty(displayRaces[start].regAvg),
-    })
+  //   // push final regatta
+  //   const lastIndex = displayRaces.length - 1
+  //   areas.push({
+  //     start: displayRaces[start].raceID,
+  //     end: displayRaces[lastIndex].raceID,
+  //     rank: getRegDifficulty(displayRaces[start].regAvg),
+  //   })
 
-    return areas
-  }, [displayRaces])
+  //   return areas
+  // }, [displayRaces])
 
   const yMin = useMemo(() => {
     if (!displayRaces.length) return 0
@@ -330,20 +336,18 @@ export default function EloLineChart({ data, woman }) {
     return min === Infinity ? 0 : min
   }, [displayRaces])
 
-  console.log(regattaAreas)
-
   // If displayRaces is empty, we can show an empty chart gracefully
   return (
-    <ResponsiveContainer height={250}>
-      <ComposedChart data={displayRaces} margin={{ top: 5, right: 5, left: 20, bottom: -55 }}>
-        {regattaAreas.map((area, i) => (
+    <ResponsiveContainer height={280}>
+      <ComposedChart data={displayRaces} margin={{ top: 5, right: 5, left: 20, bottom: -20 }}>
+        {/* Regatta rank color */}
+        {/* {regattaAreas.map((area, i) => (
           <ReferenceArea key={'hi' + i} x1={area.start} x2={area.end} y1={yMin - 100} y2={yMin - 35} stroke='none' fill={area.rank} />
-        ))}
+        ))} */}
         <CartesianGrid strokeDasharray='3 3' vertical={false} />
         {refLines}
         <Area connectNulls dataKey='conf' stroke='#6088ff' fill='#6088ff55' legendType='none' />
         <XAxis dataKey='raceID' tick={<CustomTick />} height={60} interval={0} />
-        {/* tick={<CustomTick />} */}
         <YAxis
           domain={['dataMin - 100', 'dataMax + 100']}
           label={{

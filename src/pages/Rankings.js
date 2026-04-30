@@ -156,51 +156,68 @@ export default function Rankings() {
           {/* <h2>Rating over time </h2> */}
           {/* <EloLineChart woman={sailor.WomenSkipperRating !== 1000 || sailor.WomenCrewRating !== 1000} data={races} /> */}
 
-          <SailorStatTab
-            titles={['Rating Graph', 'All Races', 'Partners', 'Venues', 'Rival Skippers', 'Rival Crews', 'Bar Charts']}
-            components={[
+          {!isMobile ? (
+            <SailorStatTab
+              titles={['Rating Graph', 'All Races', 'Partners', 'Venues', 'Rival Skippers', 'Rival Crews', 'Bar Charts']}
+              components={[
+                <EloLineChart woman={sailor.wsr !== 1000 || sailor.wcr !== 1000} data={races} />, //
+                <RaceByRace woman={sailor.wsr !== 1000 || sailor.wcr !== 1000} races={races} showFilter={true} />, //
+                <PartnerResults races={races} />, //
+                <VenueResults races={races} />, //
+                <Rivals rivals={rivals.skipper} pos={'Skipper'} />, //
+                <Rivals rivals={rivals.crew} pos={'Crew'} />,
+                <>
+                  {isMobile ? (
+                    <>
+                      <h2>Rating changes by race, Scores (lower is better) and Percentage (higher is better) by race</h2>
+                      <PosNegBarChart
+                        showLabels={false}
+                        data={races.map((race) => {
+                          race.change = race.newRating - race.oldRating
+                          return race
+                        })}
+                        dataKey='change'
+                        syncID='ranking'
+                        title='Change'
+                      />
+                      <PosNegBarChart showLabels={false} data={races} dataKey='score' syncID='ranking' title='Score' />
+                      {/* <h2>Ratio by race (higher is better)</h2> */}
+                      <PosNegBarChart
+                        title='Percentage'
+                        showLabels={true}
+                        data={races.map((race) => {
+                          if (race.ratio < 0) {
+                            race.ratio = 0
+                          }
+                          if (race.ratingType.includes('t')) {
+                            if (race.outcome == 'win') {
+                              race.ratio = 1
+                            } else {
+                              race.ratio = 0
+                            }
+                          }
+                          return race
+                        })}
+                        dataKey='ratio'
+                        syncID='ranking'
+                      />
+                    </>
+                  ) : (
+                    <></>
+                  )}
+                </>,
+              ]}
+            />
+          ) : (
+            [
               <EloLineChart woman={sailor.wsr !== 1000 || sailor.wcr !== 1000} data={races} />, //
               <RaceByRace woman={sailor.wsr !== 1000 || sailor.wcr !== 1000} races={races} showFilter={true} />, //
               <PartnerResults races={races} />, //
               <VenueResults races={races} />, //
               <Rivals rivals={rivals.skipper} pos={'Skipper'} />, //
               <Rivals rivals={rivals.crew} pos={'Crew'} />,
-              <>
-                <h2>Rating changes by race, Scores (lower is better) and Percentage (higher is better) by race</h2>
-                <PosNegBarChart
-                  showLabels={false}
-                  data={races.map((race) => {
-                    race.change = race.newRating - race.oldRating
-                    return race
-                  })}
-                  dataKey='change'
-                  syncID='ranking'
-                  title='Change'
-                />
-                <PosNegBarChart showLabels={false} data={races} dataKey='score' syncID='ranking' title='Score' />
-                {/* <h2>Ratio by race (higher is better)</h2> */}
-                <PosNegBarChart
-                  title='Percentage'
-                  showLabels={true}
-                  data={races.map((race) => {
-                    if (race.ratio < 0) {
-                      race.ratio = 0
-                    }
-                    if (race.ratingType.includes('t')) {
-                      if (race.outcome == 'win') {
-                        race.ratio = 1
-                      } else {
-                        race.ratio = 0
-                      }
-                    }
-                    return race
-                  })}
-                  dataKey='ratio'
-                  syncID='ranking'
-                />
-              </>,
-            ]}
-          />
+            ]
+          )}
 
           {/* <h2>
             Race by race breakdown: <span className='secondaryText'>(scroll for more)</span>

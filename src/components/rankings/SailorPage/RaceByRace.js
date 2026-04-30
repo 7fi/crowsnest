@@ -210,7 +210,8 @@ const mapRange = (value, oldMin, oldMax, newMin, newMax) => {
 }
 export function getRegDifficulty(avgRating) {
   const ranks = ['iron', 'silver', 'gold', 'diamond', 'immortal']
-  const rankColors = ['#686868', '#bcbcbc', '#ffcc00', '#3c9eee', '#bc0a0aff']
+  // const rankColors = ['#686868', '#bcbcbc', '#ffcc00', '#3c9eee', '#bc0a0aff']
+  const rankColors = ['#dbdbdb', '#dbdbdb', '#dbdbdb', '#dbdbdb', '#dbdbdb']
   const rankEmojis = ['🟫', '⬜', '🟨', '💎', '☠️']
   let newNum = Math.floor(mapRange(avgRating, 800, 1550, 0, 4))
   if (avgRating > 1500) console.log(avgRating, newNum)
