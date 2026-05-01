@@ -949,6 +949,13 @@ tr .filterOption:hover {
   /* gap: 1rem; */
   border-collapse: collapse;
   max-width: 1500px;
+  /* width: 100%; */
+}
+.teamRatingContainer td {
+  padding-right: 2rem;
+}
+.teamRatingSailors > div {
+  gap: 0.5rem;
 }
 @media only screen and (max-width: 750px) {
   .teamRatingSailors {

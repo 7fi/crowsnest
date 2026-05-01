@@ -9,7 +9,7 @@ const app = express()
 app.use(cors())
 app.use(express.json())
 
-const targetSeason = 's26'
+const targetSeasons = "'s26','f25'"
 
 // Create a connection pool (better performance than single connection)
 const pool = mysql.createPool({
@@ -105,7 +105,7 @@ app.get('/teams', async (req, res) => {
        topWomenTeamRating, avgRating, avgRatio, region,
            COUNT(DISTINCT st.sailorID) AS memberCount
     FROM Teams t JOIN SailorTeams st ON t.teamID = st.teamID
-    WHERE st.season='${targetSeason}'
+    WHERE st.season IN (${targetSeasons})
     GROUP BY teamID;`)
     res.json(rows)
   } catch (err) {
@@ -149,7 +149,7 @@ app.get('/teams/:id', async (req, res) => {
       `SELECT Distinct fs.regatta, fs.date, fs.season
       FROM FleetScores fs
       JOIN SailorTeams st ON fs.sailorID = st.sailorID
-      WHERE st.teamID = ? AND fs.season = '${targetSeason}'
+      WHERE st.teamID = ? AND fs.season IN (${targetSeasons})
       ORDER BY fs.date DESC
       LIMIT 50;`,
       [req.params.id],
@@ -158,13 +158,37 @@ app.get('/teams/:id', async (req, res) => {
       `SELECT Distinct ts.regatta, ts.date, ts.season
       FROM TRScores ts
       JOIN SailorTeams st ON ts.sailorID = st.sailorID
-      WHERE st.teamID = ? AND ts.season = '${targetSeason}'
+      WHERE st.teamID = ? AND ts.season IN (${targetSeasons})
       ORDER BY ts.date DESC
       LIMIT 50;`,
       [req.params.id],
     )
     console.log(`Regattas query took ${Date.now() - startReg}ms`)
     res.json({ members: members, data: info[0], regattas: [...regattas, ...teamRegattas] })
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ error: 'Database query failed', dueTo: err.sql, why: err.sqlMessage })
+  }
+})
+
+app.get('/teams/:id/sailors', async (req, res) => {
+  try {
+    const [rows] = await pool.query(
+      `SELECT 
+          s.sailorID, 
+          ANY_VALUE(s.name) AS name, 
+          ANY_VALUE(s.sr) AS sr, 
+          ANY_VALUE(s.cr) AS cr, 
+          ANY_VALUE(s.wsr) AS wsr, 
+          ANY_VALUE(s.wcr) AS wcr,
+          ANY_VALUE(st.rankType) AS rankType
+      FROM Sailors s 
+      JOIN SailorTeams st ON s.sailorID = st.sailorID
+      WHERE st.teamID = ? AND st.season IN (${targetSeasons})
+      GROUP BY s.sailorID;`,
+      [req.params.id],
+    )
+    res.json(rows)
   } catch (err) {
     console.error(err)
     res.status(500).json({ error: 'Database query failed', dueTo: err.sql, why: err.sqlMessage })
@@ -426,6 +450,103 @@ app.get('/regattas/race', async (req, res) => {
     )
 
     res.json({ scores: rows })
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ error: 'Database query failed', dueTo: err.sql, why: err.sqlMessage })
+  }
+})
+
+app.get('/compare/regattas', async (req, res) => {
+  const { selectedMembers, selectedOpponents } = req.query
+  try {
+    const [fleetRegattas] = await pool.query(
+      `SELECT fs.regatta
+        FROM FleetScores fs
+        JOIN SailorTeams st ON fs.sailorID = st.sailorID
+        WHERE fs.season IN (?)
+          AND fs.regAvg > 0
+        GROUP BY fs.regatta
+        HAVING
+          COUNT(CASE WHEN fs.sailorID IN (?) THEN 1 END) > 0
+          AND
+          COUNT(CASE WHEN fs.sailorID IN (?) THEN 1 END) > 0;`,
+      [['f25', 's26'], selectedMembers?.split(','), selectedOpponents?.split(',')],
+    )
+
+    const [teamRegattas] = await pool.query(
+      `SELECT ts.regatta
+        FROM TRScores ts
+        JOIN SailorTeams st ON ts.sailorID = st.sailorID
+        WHERE ts.season IN (?)
+          AND ts.regAvg > 0
+        GROUP BY ts.regatta
+        HAVING
+          COUNT(CASE WHEN ts.sailorID IN (?) THEN 1 END) > 0
+          AND
+          COUNT(CASE WHEN ts.sailorID IN (?) THEN 1 END) > 0;`,
+      [['f25', 's26'], selectedMembers?.split(','), selectedOpponents?.split(',')],
+    )
+
+    res.json({ fleet: fleetRegattas, team: teamRegattas })
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ error: 'Database query failed', dueTo: err.sql, why: err.sqlMessage })
+  }
+})
+app.get('/compare/stats', async (req, res) => {
+  const { team1, team2, selectedMembers, selectedOpponents, selectedFleetRegattas, selectedTeamRegattas } = req.query
+  try {
+    const [fleetStats] = await pool.query(
+      `WITH FleetRaceScores AS (
+          SELECT
+              CASE
+                  WHEN fs.sailorID IN (?) THEN 'Group A'
+                  WHEN fs.sailorID IN (?) THEN 'Group B'
+              END AS groupName,
+              st.teamID,
+              fs.regatta,
+              fs.raceNumber,
+              fs.division,
+              AVG(fs.score) AS team_avg_score
+          FROM FleetScores fs
+          JOIN SailorTeams st ON fs.sailorID = st.sailorID
+          WHERE fs.regatta IN (?)
+            AND (fs.sailorID IN (?) OR fs.sailorID IN (?))
+          GROUP BY groupName, st.teamID, fs.regatta, fs.raceNumber, fs.division
+      )
+      SELECT
+          t1.groupName AS side_a,
+          t2.groupName AS side_b,
+          COUNT(*) AS head_to_head_races,
+          AVG(t1.team_avg_score - t2.team_avg_score) AS avg_score_diff,
+          SUM(CASE WHEN t1.team_avg_score < t2.team_avg_score THEN 1 ELSE 0 END) AS wins_for_a,
+          SUM(CASE WHEN t2.team_avg_score < t1.team_avg_score THEN 1 ELSE 0 END) AS wins_for_b
+      FROM FleetRaceScores t1
+      JOIN FleetRaceScores t2 ON t1.regatta = t2.regatta
+          AND t1.raceNumber = t2.raceNumber
+          AND t1.division = t2.division
+      WHERE t1.groupName = 'Group A'
+        AND t2.groupName = 'Group B'
+      GROUP BY t1.groupName, t2.groupName;`,
+      [selectedMembers.split(','), selectedOpponents?.split(','), selectedFleetRegattas?.split(','), selectedMembers.split(','), selectedOpponents?.split(',')],
+    )
+    const [teamStats] = await pool.query(
+      `SELECT
+          st.teamID,
+          ts.opponentTeam,
+          COUNT(DISTINCT CONCAT(ts.regatta, '-', ts.raceNumber)) AS races,
+          COUNT(DISTINCT CASE WHEN ts.outcome = 'win'
+              THEN CONCAT(ts.regatta, '-', ts.raceNumber)
+          END) AS wins
+      FROM TRScores ts
+      JOIN SailorTeams st ON ts.sailorID = st.sailorID
+      WHERE st.teamID = ? AND ts.opponentTeam = ? AND ts.regatta IN (?) AND (ts.sailorID IN (?) OR ts.sailorID IN (?))
+      GROUP BY st.teamID, ts.opponentTeam
+      ORDER BY wins DESC;`,
+      [team1, team2, selectedTeamRegattas?.split(','), selectedMembers.split(','), selectedOpponents?.split(',')],
+    )
+
+    res.json({ ...fleetStats[0], ...teamStats[0] })
   } catch (err) {
     console.error(err)
     res.status(500).json({ error: 'Database query failed', dueTo: err.sql, why: err.sqlMessage })

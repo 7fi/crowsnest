@@ -116,3 +116,18 @@ export async function getRegattaScores(season, regatta) {
   const res = await fetch(APIURL + `regattas` + `?season=${season}&regatta=${regatta}`).then((response) => response.json())
   return res
 }
+
+export async function getTeamRecentSailors(teamID) {
+  const res = await fetch(APIURL + `teams/${teamID}/sailors`).then((response) => response.json())
+  return res
+}
+
+export async function getComparisonRegattas(team1Sailors, team2Sailors) {
+  const res = await fetch(APIURL + `compare/regattas` + `?selectedMembers=${team1Sailors}&selectedOpponents=${team2Sailors}`).then((response) => response.json())
+  return res
+}
+
+export async function getComparisonStats(team1, team2, team1Sailors, team2Sailors, fleetRegattas, teamRegattas) {
+  const res = await fetch(APIURL + `compare/stats` + `?team1=${team1}&team2=${team2}&selectedMembers=${team1Sailors}&selectedOpponents=${team2Sailors}&selectedFleetRegattas=${fleetRegattas}&selectedTeamRegattas=${teamRegattas}`).then((response) => response.json())
+  return res
+}

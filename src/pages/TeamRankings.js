@@ -322,28 +322,30 @@ export default function TeamRankings() {
             </Link> */}
           </div>
           {teamData.fr_rank || teamData.tr_rank || teamData.wfr_rank || teamData.wtr_rank ? (
-            <table className='teamRatingContainer'>
-              <thead>
-                <tr style={{ height: '3rem' }}>
-                  <th>Racing Type</th>
-                  <th>National</th>
-                  <th>
-                    <span className='filterOption' style={{ backgroundColor: regionColors[teamData?.region] }}>
-                      {teamData?.region}
-                    </span>
-                  </th>
-                  <th>Avg Rating</th>
-                  <th className='teamRatingSailors'>Skippers</th>
-                  <th className='teamRatingSailors'>Crews</th>
-                </tr>
-              </thead>
-              <tbody>
-                {teamData.fr_rank ? <RankingDisplay data={teamData} members={teamMembers} rankType='fr' /> : <></>}
-                {teamData.tr_rank ? <RankingDisplay data={teamData} members={teamMembers} rankType='tr' /> : <></>}
-                {teamData.wfr_rank ? <RankingDisplay data={teamData} members={teamMembers} rankType='wfr' /> : <></>}
-                {teamData.wtr_rank ? <RankingDisplay data={teamData} members={teamMembers} rankType='wtr' /> : <></>}
-              </tbody>
-            </table>
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
+              <table className='teamRatingContainer'>
+                <thead>
+                  <tr style={{ height: '3rem' }}>
+                    <th>Racing Type</th>
+                    <th>National</th>
+                    <th>
+                      <span className='filterOption' style={{ backgroundColor: regionColors[teamData?.region] }}>
+                        {teamData?.region}
+                      </span>
+                    </th>
+                    <th>Avg Rating</th>
+                    <th className='teamRatingSailors'>Skippers</th>
+                    <th className='teamRatingSailors'>Crews</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {teamData.fr_rank ? <RankingDisplay data={teamData} members={teamMembers} rankType='fr' /> : <></>}
+                  {teamData.tr_rank ? <RankingDisplay data={teamData} members={teamMembers} rankType='tr' /> : <></>}
+                  {teamData.wfr_rank ? <RankingDisplay data={teamData} members={teamMembers} rankType='wfr' /> : <></>}
+                  {teamData.wtr_rank ? <RankingDisplay data={teamData} members={teamMembers} rankType='wtr' /> : <></>}
+                </tbody>
+              </table>
+            </div>
           ) : (
             <></>
           )}

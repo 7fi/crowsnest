@@ -39,6 +39,7 @@ import Simulator from './pages/Simulator'
 import SSTeams from './pages/SSTeams'
 import History from './pages/History'
 import RegattaRace from './pages/RegattaRace'
+import TeamCompare from './pages/TeamCompare'
 
 export default function App() {
   const userData = useUserData()
@@ -98,6 +99,8 @@ export default function App() {
               <Route path='/teams/:teamName' element={<TeamRankings />} />
               <Route path='/regattas/:season/:regattaName' element={<RegattaRace />} />
               <Route path='/regattas/:season/:regattaName/:raceNum' element={<RegattaRace />} />
+
+              <Route path='/teams/compare' element={<TeamCompare />} />
               {/* <Route path='/regattas/:season/:regattaName/:raceNum/:pos' element={<RegattaRankings />} /> */}
               {/* <Route path='/rankings/simulator' element={<Simulator />} />
               <Route path='/rankings/screenshot' element={<SSTeams />} />
