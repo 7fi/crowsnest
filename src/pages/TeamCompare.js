@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import { getAllTeams, getComparisonRegattas, getComparisonStats, getTeamRecentSailors } from '../lib/apilib'
 import RatingNum from '../components/RatingNum'
 import { FaSortDown } from 'react-icons/fa'
+import RatioBar from '../components/rankings/RatioBar'
 
 export default function TeamCompare() {
   const [searchParams] = useSearchParams()
@@ -108,23 +109,22 @@ export default function TeamCompare() {
           </span>
         </div>
       </div>
-      <div className='responsiveRowCol' style={{ width: '100%' }}>
+      <div className='responsiveRowCol' style={{ width: '100%', padding: '1rem' }}>
         <TeamSailors sailors={team1Sailors} selectedSailors={t1SelectedSailors} setSelectedSailors={setT1SelectedSailors} />
         <TeamSailors sailors={team2Sailors} selectedSailors={t2SelectedSailors} setSelectedSailors={setT2SelectedSailors} />
       </div>
-      <div className='responsiveRowCol' style={{ width: '100%' }}>
-        {fleetRegattas.length > 0 ? <RegattasList regattas={fleetRegattas} selectedRegattas={selectedFleetRegattas} setSelectedRegattas={setSelectedFleetRegattas} /> : <></>}
-        {teamRegattas.length > 0 ? <RegattasList regattas={teamRegattas} selectedRegattas={selectedTeamRegattas} setSelectedRegattas={setSelectedTeamRegattas} /> : <></>}
+      <div className='responsiveRowCol' style={{ width: '100%', padding: '0 1rem' }}>
+        {fleetRegattas.length > 0 ? <RegattasList type='Fleet' regattas={fleetRegattas} selectedRegattas={selectedFleetRegattas} setSelectedRegattas={setSelectedFleetRegattas} /> : <></>}
+        {teamRegattas.length > 0 ? <RegattasList type='Team' regattas={teamRegattas} selectedRegattas={selectedTeamRegattas} setSelectedRegattas={setSelectedTeamRegattas} /> : <></>}
         <div>
           {stats ? (
             <div>
-              Out of {stats.head_to_head_races} fleet races, <br />
-              {team1} scores {Math.abs(stats.avg_score_diff)} {stats.avg_score_diff > 0 ? 'more' : 'fewer'} points on average <br />
-              and beat {team2} {Math.round((stats.wins_for_a / stats.head_to_head_races) * 100)}% of the time
+              Out of <strong>{stats.head_to_head_races}</strong> fleet races, <br />
+              {team1} scores <strong>{Math.abs(Math.floor(stats.avg_score_diff * 100) / 100)}</strong> {stats.avg_score_diff > 0 ? 'more' : 'fewer'} points on average <br />
+              and beat {team2} <RatioBar ratio={stats.wins_for_a / stats.head_to_head_races} /> of the time
               <p>
-                Out of {stats.races} team races, <br />
-                {team1} beat {team2} {Math.round((stats.wins / stats.races) * 100)}% of the time <br />
-                (or {stats.wins} times)
+                Out of <strong>{stats.races}</strong> team races, <br />
+                {team1} beat {team2} <strong>{stats.wins}</strong> times or <RatioBar ratio={stats.wins / stats.races} /> of the time <br />
               </p>
             </div>
           ) : (
@@ -231,13 +231,13 @@ function TeamSailors({ sailors, selectedSailors, setSelectedSailors }) {
     </div>
   )
 }
-function RegattasList({ regattas, selectedRegattas, setSelectedRegattas }) {
+function RegattasList({ type, regattas, selectedRegattas, setSelectedRegattas }) {
   return (
     <table style={{ borderCollapse: 'collapse' }}>
       <thead>
         <tr>
           <th></th>
-          <th>Regatta</th>
+          <th>{type} Regatta</th>
         </tr>
       </thead>
       <tbody>
