@@ -22,6 +22,7 @@ export default function Navbar() {
         <li style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <Link to='/' style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <img style={{ margin: 5 }} src={theme == 'dark' ? `/Logo_Dark.png` : `/Logo_Light.png`} />
+            {/* <img style={{ margin: 5 }} src={theme == 'dark' ? `/Logo_Dark.png` : `/Logo_Large.png`} /> */}
             {isMobile ? (
               <></>
             ) : (

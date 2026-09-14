@@ -10,9 +10,11 @@ import useRegionColors from '../lib/regionColors'
 import RatioBar from '../components/rankings/RatioBar'
 import DoubleSlider from '../components/DoubleSlider'
 import RankingDisplay from '../components/rankings/TeamPage/RankingDisplay'
+import { useMobileDetect } from '../lib/hooks'
 
 export default function TeamRankings() {
   const { teamName } = useParams()
+  const mobile = useMobileDetect()
   const [rating, setRating] = useState(1500)
   const [teamData, setTeamData] = useState({})
   const [teamMembers, setTeamMembers] = useState([])
@@ -28,12 +30,12 @@ export default function TeamRankings() {
   const regionColors = useRegionColors()
   const debug = false
 
-  const [selectionMode, setSelectionMode] = useState('default') // 'advanced'
+  const [selectionMode, setSelectionMode] = useState(mobile ? 'advanced' : 'default')
 
   useEffect(() => {
     getTeam(teamName).then((tempTeam) => {
       if (tempTeam == undefined) return
-      console.log(tempTeam)
+      // console.log(tempTeam)
       setTeamMembers(tempTeam.members)
       setRating(tempTeam.data.avgRating)
       setTeamLink(tempTeam.data.link)
@@ -59,6 +61,12 @@ export default function TeamRankings() {
       setLoaded(true)
     })
   }, [teamName])
+  useEffect(() => {
+    if (mobile) {
+      setSelectionMode('advanced')
+    }
+  }, [mobile])
+
   const getRating = (member, pos, type, raceType) => {
     const ratingMap = {
       skipper: {
@@ -349,7 +357,7 @@ export default function TeamRankings() {
           ) : (
             <></>
           )}
-          <DoubleSlider values={allSeasons} initialStart={activeSeasons.slice(-1)[0]} onChange={seasonsChanged} />
+
           {selectionMode == 'advanced' ? (
             <div className='flexRowContainer flexWrap' style={{ marginLeft: 15 }}>
               {allSeasons
@@ -375,7 +383,7 @@ export default function TeamRankings() {
               </button>
             </div>
           ) : (
-            <></>
+            <DoubleSlider values={allSeasons} initialStart={activeSeasons.slice(-1)[0]} onChange={seasonsChanged} />
           )}
           <div className='responsiveRowCol' style={{ padding: 15, flexWrap: 'wrap' }}>
             <PosList members={teamMembers} pos='skipper' />

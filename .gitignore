@@ -29,3 +29,5 @@ elo calculation/EloScript.py.lprof
 adventures.html
 .env
 /backend/node_modules
+
+/.vscode

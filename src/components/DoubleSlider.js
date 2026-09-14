@@ -5,12 +5,12 @@ export default function DoubleSlider({ values = [], initialStart, initialEnd, on
   const mobile = useMobileDetect()
   let newValues = Array.from(values)
 
-  if (mobile && newValues.length > 10) {
-    newValues = newValues.slice(-10)
-    initialStart = newValues[0]
-    initialEnd = newValues[newValues.length - 1]
-    console.log(newValues, initialStart, initialEnd)
-  }
+  // if (mobile && newValues.length > 10) {
+  //   newValues = newValues.slice(-10)
+  //   initialStart = newValues[0]
+  //   initialEnd = newValues[newValues.length - 1]
+  //   console.log(newValues, initialStart, initialEnd)
+  // }
 
   const maxIndex = newValues.length - 1
 

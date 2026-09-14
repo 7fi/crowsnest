@@ -9,7 +9,7 @@ const app = express()
 app.use(cors())
 app.use(express.json())
 
-const targetSeasons = "'s26','f25'"
+const targetSeasons = "'f26'"
 
 // Create a connection pool (better performance than single connection)
 const pool = mysql.createPool({

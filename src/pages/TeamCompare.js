@@ -87,6 +87,25 @@ export default function TeamCompare() {
 
   return (
     <div>
+      <div>
+        {stats ? (
+          <div className='flexRowContainer' style={{ justifyContent: 'center' }}>
+            <div className='contentBox'>
+              Out of <strong>{stats.head_to_head_races}</strong> fleet races, <br />
+              {team1} scores <strong>{Math.abs(Math.floor(stats.avg_score_diff * 100) / 100)}</strong> {stats.avg_score_diff > 0 ? 'more' : 'fewer'} points on average <br />
+              and beat {team2} <RatioBar ratio={stats.wins_for_a / stats.head_to_head_races} /> of the time
+            </div>
+            <div className='contentBox'>
+              Out of <strong>{stats.races}</strong> team races, <br />
+              {team1} beat {team2} <strong>{stats.wins}</strong> times or <RatioBar ratio={stats.wins / stats.races} /> of the time <br />
+            </div>
+          </div>
+        ) : (
+          <div>
+            Could not find any races between {team1} and {team2}{' '}
+          </div>
+        )}
+      </div>
       <div className='flexRowContainer' style={{ width: '100%', justifyContent: 'center', padding: '1rem' }}>
         <select className='flexCol' value={team1} onChange={(e) => setTeam1(e.target.value)} style={{ fontSize: '1.1rem' }}>
           {teams.map((team) => (
@@ -116,23 +135,6 @@ export default function TeamCompare() {
       <div className='responsiveRowCol' style={{ width: '100%', padding: '0 1rem' }}>
         {fleetRegattas.length > 0 ? <RegattasList type='Fleet' regattas={fleetRegattas} selectedRegattas={selectedFleetRegattas} setSelectedRegattas={setSelectedFleetRegattas} /> : <></>}
         {teamRegattas.length > 0 ? <RegattasList type='Team' regattas={teamRegattas} selectedRegattas={selectedTeamRegattas} setSelectedRegattas={setSelectedTeamRegattas} /> : <></>}
-        <div>
-          {stats ? (
-            <div>
-              Out of <strong>{stats.head_to_head_races}</strong> fleet races, <br />
-              {team1} scores <strong>{Math.abs(Math.floor(stats.avg_score_diff * 100) / 100)}</strong> {stats.avg_score_diff > 0 ? 'more' : 'fewer'} points on average <br />
-              and beat {team2} <RatioBar ratio={stats.wins_for_a / stats.head_to_head_races} /> of the time
-              <p>
-                Out of <strong>{stats.races}</strong> team races, <br />
-                {team1} beat {team2} <strong>{stats.wins}</strong> times or <RatioBar ratio={stats.wins / stats.races} /> of the time <br />
-              </p>
-            </div>
-          ) : (
-            <div>
-              Could not find any races between {team1} and {team2}{' '}
-            </div>
-          )}
-        </div>
       </div>
     </div>
   )
