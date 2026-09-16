@@ -42,6 +42,7 @@ export default function PartnerResults({ races }) {
       return b.ratio - a.ratio
     }) // Sort by change in descending order
 
+  console.log(sortedPartners)
   // Step 3: Map to <span> elements with rank and total change
   return (
     <table className='raceByRaceTable'>
@@ -84,7 +85,7 @@ export default function PartnerResults({ races }) {
       </thead>
       <tbody>
         {sortedPartners.map((partner, index) =>
-          partner.key != 'Unknown' ? (
+          partner.key !== 'Unknown' ? (
             <tr key={index} className='clickable' style={{ margin: '5px' }} onClick={() => navigate(`/sailors/${partner.key}`)}>
               <td className='tdRightBorder tableColFit secondaryText'>{index + 1}</td>
               <td>{partner.name}</td>
@@ -102,7 +103,7 @@ export default function PartnerResults({ races }) {
             </tr>
           ) : (
             <></>
-          )
+          ),
         )}
       </tbody>
     </table>

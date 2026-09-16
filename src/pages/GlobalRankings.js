@@ -55,7 +55,10 @@ export default function GlobalRankings({ pos, type, raceType }) {
             </>
           )}
           {/* <td></td> */}
-          <td style={{ textAlign: 'right' }}>
+          <td className='rankingRating' style={{ textAlign: 'right' }}>
+            {/* <span>
+              {member.crossLinks}cross {member.outLinks}out
+            </span> */}
             <RatingNum type={type} pos={pos} ratingNum={member.rating} raceType={raceType.toLowerCase()} />
             {/* {member.rating.toFixed(0)} {type === 'women' ? <FaDiamond className='secondaryText' /> : ''} */}
           </td>
@@ -88,7 +91,7 @@ export default function GlobalRankings({ pos, type, raceType }) {
         </div>
         {raceType === 'fleet' ? (
           <div className='secondaryText' style={isMobile ? { maxWidth: '100%' } : { maxWidth: '45%' }}>
-            This ranking requires a sailor to have 70 pairwise comparisons to out of conference sailors. So for example, two races vs 5 out of conference opponents would count as 10 comparisons. This was implemented to reduce the inflation of sailors who's rating is inaccurate due to a lack of conference diversity.
+            This ranking requires a sailor to have 150 pairwise comparisons to out of conference sailors. So for example, two races vs 5 out of conference opponents would count as 10 comparisons. This was implemented to reduce the inflation of sailors who's rating is inaccurate due to a lack of conference diversity.
           </div>
         ) : (
           ''

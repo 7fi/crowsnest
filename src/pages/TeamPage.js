@@ -392,27 +392,31 @@ export default function TeamRankings() {
 
           <div className='flexCol'>
             <h2>Season Regattas:</h2>
-            <table className='raceByRaceTable'>
-              <thead>
-                <tr>
-                  <th className='tableColFit'>Date</th>
-                  <th>Regatta</th>
-                </tr>
-              </thead>
-              <tbody>
-                {recentRegattas.slice(0, 20).map((reg, i) => (
-                  <tr
-                    key={i}
-                    className='clickable'
-                    onClick={() => {
-                      window.open(`https://scores.collegesailing.org/${reg.season}/${reg.regatta}`)
-                    }}>
-                    <td>{new Date(reg.date).toLocaleDateString()}</td>
-                    <td className='text-titlecase'>{reg.regatta.replaceAll('-', ' ')}</td>
+            {recentRegattas.length > 0 ? (
+              <table className='raceByRaceTable'>
+                <thead>
+                  <tr>
+                    <th className='tableColFit'>Date</th>
+                    <th>Regatta</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {recentRegattas.slice(0, 20).map((reg, i) => (
+                    <tr
+                      key={i}
+                      className='clickable'
+                      onClick={() => {
+                        window.open(`https://scores.collegesailing.org/${reg.season}/${reg.regatta}`)
+                      }}>
+                      <td>{new Date(reg.date).toLocaleDateString()}</td>
+                      <td className='text-titlecase'>{reg.regatta.replaceAll('-', ' ')}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            ) : (
+              <span>This team hasn't sailed any regattas yet this season!</span>
+            )}
           </div>
         </div>
       ) : (
