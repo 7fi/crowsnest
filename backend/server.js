@@ -2,12 +2,15 @@ import express from 'express'
 import mysql from 'mysql2/promise'
 import cors from 'cors'
 import dotenv from 'dotenv'
+import swaggerUi from 'swagger-ui-express'
+import swaggerSpec from './swagger.js'
 
 dotenv.config()
 
 const app = express()
 app.use(cors())
 app.use(express.json())
+app.use('/', swaggerUi.serve, swaggerUi.setup(swaggerSpec))
 
 const targetSeasons = "'s26','f26'"
 
@@ -20,13 +23,19 @@ const pool = mysql.createPool({
   database: process.env.DB_NAME,
 })
 
-app.get('/', async (req, res) => {
-  res.send('<p>You found the crowsnest backend API!</p>')
-})
-
+/**
+ * @openapi
+ * /sailors:
+ *   get:
+ *     summary: List all sailors in the target seasons
+ *     tags: [Sailors]
+ *     responses:
+ *       200:
+ *         description: Array of sailors with their current team
+ */
 app.get('/sailors', async (req, res) => {
   try {
-    const [rows] = await pool.query("SELECT DISTINCT s.sailorID, s.name, s.year, st.teamID FROM Sailors s JOIN SailorTeams st ON s.sailorID = st.sailorID WHERE st.season in ('s25');")
+    const [rows] = await pool.query(`SELECT DISTINCT s.sailorID, s.name, s.year, st.teamID FROM Sailors s JOIN SailorTeams st ON s.sailorID = st.sailorID WHERE st.season in (${targetSeasons}) LIMIT 500;`)
     res.json(rows)
   } catch (err) {
     console.error(err)
@@ -34,6 +43,21 @@ app.get('/sailors', async (req, res) => {
   }
 })
 
+/**
+ * @openapi
+ * /search/{query}:
+ *   get:
+ *     summary: Search sailors by name or team ID
+ *     tags: [Sailors]
+ *     parameters:
+ *       - in: path
+ *         name: query
+ *         required: true
+ *         schema: { type: string }
+ *     responses:
+ *       200:
+ *         description: Matching sailors (max 200)
+ */
 app.get('/search/:query', async (req, res) => {
   const { query } = req.params
   if (!query) return res.json([])
@@ -46,6 +70,29 @@ app.get('/search/:query', async (req, res) => {
   }
 })
 
+/**
+ * @openapi
+ * /sailors/top:
+ *   get:
+ *     summary: Get top-ranked sailors by rating category
+ *     tags: [Sailors]
+ *     parameters:
+ *       - in: query
+ *         name: pos
+ *         schema: { type: string, enum: [skipper, crew] }
+ *       - in: query
+ *         name: raceType
+ *         schema: { type: string, enum: [fleet, team] }
+ *       - in: query
+ *         name: women
+ *         schema: { type: boolean }
+ *       - in: query
+ *         name: count
+ *         schema: { type: integer, default: 100 }
+ *     responses:
+ *       200:
+ *         description: Ranked list of sailors
+ */
 app.get('/sailors/top', async (req, res) => {
   const { pos, raceType, women, count } = req.query
   // if (!pos || !raceType || !womens) return res.json([])
@@ -73,6 +120,23 @@ app.get('/sailors/top', async (req, res) => {
   }
 })
 
+/**
+ * @openapi
+ * /sailors/{id}:
+ *   get:
+ *     summary: Get a sailor's profile plus their fleet and team race history
+ *     tags: [Sailors]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string }
+ *     responses:
+ *       200:
+ *         description: Sailor data, fleetScores, and teamScores
+ *       404:
+ *         description: Sailor not found
+ */
 app.get('/sailors/:id', async (req, res) => {
   try {
     const startMembers = Date.now()
@@ -99,14 +163,25 @@ app.get('/sailors/:id', async (req, res) => {
   }
 })
 
+/**
+ * @openapi
+ * /teams:
+ *   get:
+ *     summary: List all teams with aggregate ratings
+ *     tags: [Teams]
+ *     responses:
+ *       200:
+ *         description: Array of teams
+ */
 app.get('/teams', async (req, res) => {
   try {
     const [rows] = await pool.query(`SELECT t.teamID as teamID, teamName, topFleetRating, topWomenRating, topTeamRating,
        topWomenTeamRating, avgRating, avgRatio, region,
            COUNT(DISTINCT st.sailorID) AS memberCount
     FROM Teams t JOIN SailorTeams st ON t.teamID = st.teamID
-    WHERE st.season IN (${targetSeasons})
     GROUP BY teamID;`)
+    // Not sure why I had this, it removes teams that haven't sailed in the target seasons but sometimes you want old teams
+    // WHERE st.season IN (${targetSeasons})
     res.json(rows)
   } catch (err) {
     console.error(err)
@@ -114,6 +189,21 @@ app.get('/teams', async (req, res) => {
   }
 })
 
+/**
+ * @openapi
+ * /teams/{id}:
+ *   get:
+ *     summary: Get a team's members, ranking info, and recent regattas
+ *     tags: [Teams]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string }
+ *     responses:
+ *       200:
+ *         description: Team members, data, and regattas
+ */
 app.get('/teams/:id', async (req, res) => {
   try {
     const startMembers = Date.now()
@@ -149,7 +239,7 @@ app.get('/teams/:id', async (req, res) => {
       `SELECT Distinct fs.regatta, fs.date, fs.season
       FROM FleetScores fs
       JOIN SailorTeams st ON fs.sailorID = st.sailorID
-      WHERE st.teamID = ? AND fs.season IN (${targetSeasons})
+      WHERE st.teamID = ? AND fs.season IN (${targetSeasons.split(',')[1]}) AND st.season IN (${targetSeasons.split(',')[1]})
       ORDER BY fs.date DESC
       LIMIT 50;`,
       [req.params.id],
@@ -158,7 +248,7 @@ app.get('/teams/:id', async (req, res) => {
       `SELECT Distinct ts.regatta, ts.date, ts.season
       FROM TRScores ts
       JOIN SailorTeams st ON ts.sailorID = st.sailorID
-      WHERE st.teamID = ? AND ts.season IN (${targetSeasons})
+      WHERE st.teamID = ? AND ts.season IN (${targetSeasons.split(',')[1]}) AND st.season IN (${targetSeasons.split(',')[1]})
       ORDER BY ts.date DESC
       LIMIT 50;`,
       [req.params.id],
@@ -171,6 +261,21 @@ app.get('/teams/:id', async (req, res) => {
   }
 })
 
+/**
+ * @openapi
+ * /teams/{id}/sailors:
+ *   get:
+ *     summary: List a team's sailors with their ratings
+ *     tags: [Teams]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string }
+ *     responses:
+ *       200:
+ *         description: Array of sailors on the team
+ */
 app.get('/teams/:id/sailors', async (req, res) => {
   try {
     const [rows] = await pool.query(
@@ -195,6 +300,21 @@ app.get('/teams/:id/sailors', async (req, res) => {
   }
 })
 
+/**
+ * @openapi
+ * /sailors/teams/{id}:
+ *   get:
+ *     summary: List the distinct team IDs a sailor has been on
+ *     tags: [Sailors]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string }
+ *     responses:
+ *       200:
+ *         description: Array of teamID rows
+ */
 app.get('/sailors/teams/:id', async (req, res) => {
   try {
     const [rows] = await pool.query(`SELECT DISTINCT teamID FROM SailorTeams WHERE sailorID = ?;`, [req.params.id])
@@ -205,6 +325,22 @@ app.get('/sailors/teams/:id', async (req, res) => {
   }
 })
 
+/**
+ * @openapi
+ * /users/follows/{id}:
+ *   get:
+ *     summary: List sailors a user follows
+ *     tags: [Users]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: userID
+ *         schema: { type: string }
+ *     responses:
+ *       200:
+ *         description: Array of follow rows
+ */
 app.get('/users/follows/:id', async (req, res) => {
   try {
     const [rows] = await pool.query(`SELECT * FROM SailorFollows WHERE userID = ?;`, [req.params.id])
@@ -215,6 +351,22 @@ app.get('/users/follows/:id', async (req, res) => {
   }
 })
 
+/**
+ * @openapi
+ * /sailors/follows/{id}:
+ *   get:
+ *     summary: Get how many users follow a sailor
+ *     tags: [Sailors]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: sailorID
+ *         schema: { type: string }
+ *     responses:
+ *       200:
+ *         description: "{ count: number }"
+ */
 app.get('/sailors/follows/:id', async (req, res) => {
   try {
     const [rows] = await pool.query(`SELECT COUNT(*) as count FROM SailorFollows WHERE sailorID = ?;`, [req.params.id])
@@ -225,6 +377,22 @@ app.get('/sailors/follows/:id', async (req, res) => {
   }
 })
 
+/**
+ * @openapi
+ * /sailors/rivals/{id}:
+ *   get:
+ *     summary: List a sailor's rivals
+ *     tags: [Sailors]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: sailorID
+ *         schema: { type: string }
+ *     responses:
+ *       200:
+ *         description: Array of rival rows
+ */
 app.get('/sailors/rivals/:id', async (req, res) => {
   try {
     const [rows] = await pool.query(`SELECT * FROM SailorRivals WHERE sailorID = ?;`, [req.params.id])
@@ -235,6 +403,22 @@ app.get('/sailors/rivals/:id', async (req, res) => {
   }
 })
 
+/**
+ * @openapi
+ * /users/{id}:
+ *   get:
+ *     summary: Get a user by ID
+ *     tags: [Users]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: userID
+ *         schema: { type: string }
+ *     responses:
+ *       200:
+ *         description: User object (undefined if not found)
+ */
 app.get('/users/:id', async (req, res) => {
   try {
     const [rows] = await pool.query(`SELECT * FROM Users WHERE userID = ? AND deleted = FALSE;`, [req.params.id])
@@ -245,6 +429,22 @@ app.get('/users/:id', async (req, res) => {
   }
 })
 
+/**
+ * @openapi
+ * /users/feed/{id}:
+ *   get:
+ *     summary: Get a user's activity feed of followed sailors' recent races
+ *     tags: [Users]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: userID
+ *         schema: { type: string }
+ *     responses:
+ *       200:
+ *         description: Array of followed sailors, each with a recent races[] array
+ */
 app.get('/users/feed/:id', async (req, res) => {
   try {
     const resJson = []
@@ -289,6 +489,22 @@ app.get('/users/feed/:id', async (req, res) => {
   }
 })
 
+/**
+ * @openapi
+ * /users/username/{id}:
+ *   get:
+ *     summary: Get a user by username
+ *     tags: [Users]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: username
+ *         schema: { type: string }
+ *     responses:
+ *       200:
+ *         description: User object, or [] if not found
+ */
 app.get('/users/username/:id', async (req, res) => {
   try {
     const [rows] = await pool.query(`SELECT * FROM Users WHERE username = ? AND deleted = FALSE;`, [req.params.id])
@@ -303,6 +519,16 @@ app.get('/users/username/:id', async (req, res) => {
   }
 })
 
+/**
+ * @openapi
+ * /homestats:
+ *   get:
+ *     summary: Get aggregate homepage stats
+ *     tags: [Misc]
+ *     responses:
+ *       200:
+ *         description: HomePageStats row
+ */
 app.get('/homestats', async (req, res) => {
   try {
     const [rows] = await pool.query(`SELECT * FROM HomePageStats`)
@@ -313,6 +539,26 @@ app.get('/homestats', async (req, res) => {
   }
 })
 
+/**
+ * @openapi
+ * /follow:
+ *   post:
+ *     summary: Follow a sailor
+ *     tags: [Follows]
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [targetID, userID]
+ *             properties:
+ *               targetID: { type: string }
+ *               targetName: { type: string }
+ *               userID: { type: string }
+ *     responses:
+ *       201:
+ *         description: Follow created
+ */
 app.post('/follow', async (req, res) => {
   const { targetID, targetName, userID } = req.body
   if (targetID == undefined || userID == undefined) return
@@ -325,6 +571,25 @@ app.post('/follow', async (req, res) => {
     res.status(500).json({ error: 'Database query failed', dueTo: err.sql, why: err.sqlMessage })
   }
 })
+/**
+ * @openapi
+ * /follow:
+ *   delete:
+ *     summary: Unfollow a sailor
+ *     tags: [Follows]
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [targetID, userID]
+ *             properties:
+ *               targetID: { type: string }
+ *               userID: { type: string }
+ *     responses:
+ *       201:
+ *         description: Follow removed
+ */
 app.delete('/follow', async (req, res) => {
   const { targetID, targetName, userID } = req.body
   if (targetID == undefined || userID == undefined) return
@@ -339,6 +604,28 @@ app.delete('/follow', async (req, res) => {
   }
 })
 
+/**
+ * @openapi
+ * /link:
+ *   put:
+ *     summary: Link a user's account to a Techscore ID
+ *     tags: [Users]
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [userID, techscoreID, techscoreLink]
+ *             properties:
+ *               userID: { type: string }
+ *               techscoreID: { type: string }
+ *               techscoreLink: { type: string }
+ *     responses:
+ *       200:
+ *         description: Link updated
+ *       400:
+ *         description: Missing required fields
+ */
 app.put('/link', async (req, res) => {
   const { userID, techscoreID, techscoreLink } = req.body
   if (userID == undefined || techscoreID == undefined || techscoreLink == undefined) {
@@ -358,6 +645,28 @@ app.put('/link', async (req, res) => {
   }
 })
 
+/**
+ * @openapi
+ * /link:
+ *   delete:
+ *     summary: Remove a user's Techscore link
+ *     tags: [Users]
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [userID, techscoreID, techscoreLink]
+ *             properties:
+ *               userID: { type: string }
+ *               techscoreID: { type: string }
+ *               techscoreLink: { type: string }
+ *     responses:
+ *       200:
+ *         description: Link removed
+ *       400:
+ *         description: Missing required fields
+ */
 app.delete('/link', async (req, res) => {
   const { userID, techscoreID, techscoreLink } = req.body
   if (userID == undefined || techscoreID == undefined || techscoreLink == undefined) {
@@ -377,6 +686,29 @@ app.delete('/link', async (req, res) => {
   }
 })
 
+/**
+ * @openapi
+ * /users:
+ *   post:
+ *     summary: Create a new user
+ *     tags: [Users]
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [userID, username, photoURL, displayName]
+ *             properties:
+ *               userID: { type: string }
+ *               username: { type: string }
+ *               photoURL: { type: string }
+ *               displayName: { type: string }
+ *     responses:
+ *       200:
+ *         description: User created
+ *       400:
+ *         description: Missing required fields
+ */
 app.post('/users', async (req, res) => {
   const { userID, username, photoURL, displayName } = req.body
   if ((userID == undefined || username == undefined || photoURL == undefined, displayName == undefined)) {
@@ -393,6 +725,26 @@ app.post('/users', async (req, res) => {
   }
 })
 
+/**
+ * @openapi
+ * /users:
+ *   delete:
+ *     summary: Soft-delete a user
+ *     tags: [Users]
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [userID]
+ *             properties:
+ *               userID: { type: string }
+ *     responses:
+ *       200:
+ *         description: User marked deleted
+ *       400:
+ *         description: Missing userID
+ */
 app.delete('/users', async (req, res) => {
   const { userID } = req.body
   if (userID == undefined) {
@@ -408,6 +760,25 @@ app.delete('/users', async (req, res) => {
   }
 })
 
+/**
+ * @openapi
+ * /regattas:
+ *   get:
+ *     summary: Get skipper scores for a regatta
+ *     tags: [Regattas]
+ *     parameters:
+ *       - in: query
+ *         name: season
+ *         required: true
+ *         schema: { type: string }
+ *       - in: query
+ *         name: regatta
+ *         required: true
+ *         schema: { type: string }
+ *     responses:
+ *       200:
+ *         description: "{ scores: [] }"
+ */
 app.get('/regattas', async (req, res) => {
   const { season, regatta } = req.query
 
@@ -431,6 +802,37 @@ app.get('/regattas', async (req, res) => {
   }
 })
 
+/**
+ * @openapi
+ * /regattas/race:
+ *   get:
+ *     summary: Get scores for a single race within a regatta
+ *     tags: [Regattas]
+ *     parameters:
+ *       - in: query
+ *         name: season
+ *         required: true
+ *         schema: { type: string }
+ *       - in: query
+ *         name: regatta
+ *         required: true
+ *         schema: { type: string }
+ *       - in: query
+ *         name: raceNum
+ *         required: true
+ *         schema: { type: integer }
+ *       - in: query
+ *         name: division
+ *         required: true
+ *         schema: { type: string }
+ *       - in: query
+ *         name: position
+ *         required: true
+ *         schema: { type: string, enum: [Skipper, Crew] }
+ *     responses:
+ *       200:
+ *         description: "{ scores: [] }"
+ */
 app.get('/regattas/race', async (req, res) => {
   const { season, regatta, raceNum, division, position } = req.query
 
@@ -456,6 +858,25 @@ app.get('/regattas/race', async (req, res) => {
   }
 })
 
+/**
+ * @openapi
+ * /compare/regattas:
+ *   get:
+ *     summary: Find regattas where two groups of sailors both competed
+ *     tags: [Compare]
+ *     parameters:
+ *       - in: query
+ *         name: selectedMembers
+ *         schema: { type: string }
+ *         description: Comma-separated sailorIDs (group A)
+ *       - in: query
+ *         name: selectedOpponents
+ *         schema: { type: string }
+ *         description: Comma-separated sailorIDs (group B)
+ *     responses:
+ *       200:
+ *         description: "{ fleet: [], team: [] }"
+ */
 app.get('/compare/regattas', async (req, res) => {
   const { selectedMembers, selectedOpponents } = req.query
   try {
@@ -493,6 +914,37 @@ app.get('/compare/regattas', async (req, res) => {
     res.status(500).json({ error: 'Database query failed', dueTo: err.sql, why: err.sqlMessage })
   }
 })
+/**
+ * @openapi
+ * /compare/stats:
+ *   get:
+ *     summary: Head-to-head fleet and team stats between two groups of sailors
+ *     tags: [Compare]
+ *     parameters:
+ *       - in: query
+ *         name: team1
+ *         schema: { type: string }
+ *       - in: query
+ *         name: team2
+ *         schema: { type: string }
+ *       - in: query
+ *         name: selectedMembers
+ *         schema: { type: string }
+ *         description: Comma-separated sailorIDs (group A)
+ *       - in: query
+ *         name: selectedOpponents
+ *         schema: { type: string }
+ *         description: Comma-separated sailorIDs (group B)
+ *       - in: query
+ *         name: selectedFleetRegattas
+ *         schema: { type: string }
+ *       - in: query
+ *         name: selectedTeamRegattas
+ *         schema: { type: string }
+ *     responses:
+ *       200:
+ *         description: Combined fleet and team head-to-head stats
+ */
 app.get('/compare/stats', async (req, res) => {
   const { team1, team2, selectedMembers, selectedOpponents, selectedFleetRegattas, selectedTeamRegattas } = req.query
   try {
