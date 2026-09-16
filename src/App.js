@@ -23,7 +23,6 @@ import Rankings from './pages/Rankings'
 import TeamRankings from './pages/TeamRankings'
 import EloTeams from './pages/EloTeams'
 import GlobalRankings from './pages/GlobalRankings'
-import RegattaRankings from './pages/RegattaRankings'
 import RankingsHome from './pages/RankingsHome'
 import { useEffect } from 'react'
 import VersusRanking from './pages/VersusRanking'
@@ -39,6 +38,8 @@ import Feed from './pages/Feed'
 import Simulator from './pages/Simulator'
 import SSTeams from './pages/SSTeams'
 import History from './pages/History'
+import RegattaRace from './pages/RegattaRace'
+import TeamCompare from './pages/TeamCompare'
 
 export default function App() {
   const userData = useUserData()
@@ -72,14 +73,14 @@ export default function App() {
               <Route path='/enter' element={<Enter />} />
               <Route path='/profile/:profileName' element={<Profile />} />
               {/* <Route path="/profile" element={<Navigate to={`/profile/${userData.username}`} />} /> */}
-              <Route path='/team/:teamName' element={<Team />} />
-              <Route path='/team/:teamName/events' element={<Events />} />
-              <Route path='/teams' element={<Teams />} />
-              <Route path='/event/create' element={<CreateEvent />} />
+              {/* <Route path='/teams/:teamName' element={<Team />} /> */}
+              {/* <Route path='/teams/:teamName/events' element={<Events />} /> */}
+              {/* <Route path='/teams' element={<Teams />} /> */}
+              {/* <Route path='/event/create' element={<CreateEvent />} />
               <Route path='/event/:eventID' element={<Event />} />
               <Route path='/createteam' element={<CreateTeam />} />
-              <Route path='/team/:teamName/pairs' element={<Pairs />} />
-              <Route path='/scores' element={<Scores />} />
+              <Route path='/teams/:teamName/pairs' element={<Pairs />} /> */}
+              {/* <Route path='/scores' element={<Scores />} /> */}
               {/* Rankings */}
               <Route path='/rankings/' element={<RankingsHome />} />
               <Route path='/rankings/claim' element={<Claim />} />
@@ -91,24 +92,26 @@ export default function App() {
               <Route path='/rankings/trcrew' element={<GlobalRankings pos='Crew' type={'open'} raceType={'team'} />} />
               <Route path='/rankings/trskipper/women' element={<GlobalRankings pos={'Skipper'} type={'women'} raceType={'team'} />} />
               <Route path='/rankings/trcrew/women' element={<GlobalRankings pos='Crew' type={'women'} raceType={'team'} />} />
-              <Route path='/rankings/:key' element={<Rankings />} />
-              <Route path='/rankings/search' element={<EloSearch />} />
-              <Route path='/rankings/:sailorAName/vs/:sailorBName' element={<VersusRanking />} />
-              <Route path='/rankings/team' element={<EloTeams />} />
-              <Route path='/rankings/team/:teamName' element={<TeamRankings />} />
-              <Route path='/rankings/regatta/:season/:regattaName' element={<RegattaRankings />} />
-              <Route path='/rankings/regatta/:season/:regattaName/:raceNum' element={<RegattaRankings />} />
-              <Route path='/rankings/regatta/:season/:regattaName/:raceNum/:pos' element={<RegattaRankings />} />
-              <Route path='/rankings/simulator' element={<Simulator />} />
+              <Route path='/sailors/:key' element={<Rankings />} />
+              <Route path='/sailors' element={<EloSearch />} />
+              {/* <Route path='/rankings/:sailorAName/vs/:sailorBName' element={<VersusRanking />} /> */}
+              <Route path='/teams' element={<EloTeams />} />
+              <Route path='/teams/:teamName' element={<TeamRankings />} />
+              <Route path='/regattas/:season/:regattaName' element={<RegattaRace />} />
+              <Route path='/regattas/:season/:regattaName/:raceNum' element={<RegattaRace />} />
+
+              <Route path='/teams/compare' element={<TeamCompare />} />
+              {/* <Route path='/regattas/:season/:regattaName/:raceNum/:pos' element={<RegattaRankings />} /> */}
+              {/* <Route path='/rankings/simulator' element={<Simulator />} />
               <Route path='/rankings/screenshot' element={<SSTeams />} />
-              <Route path='/rankings/history' element={<History />} />
+              <Route path='/rankings/history' element={<History />} /> */}
               <Route path='/feed' element={<Feed />} />
               <Route path='/drag' element={<TestDrag />} />
               <Route path='/:text' element={<NotFound />} />
             </Routes>
-            {!pathname.includes('/rankings/team') ? <Footer /> : <></>}
+            {pathname != '/teams' && pathname != '/sailors' ? <Footer /> : <></>}
             <Toaster position='top-center' reverseOrder={false} />
-            <ScrollButton />
+            {pathname != '/teams' ? <ScrollButton /> : <></>}
             {/* <div onClick={() => window.scrollTo(0, 0)} style={{ position: 'sticky', bottom: -20, right: 0, visibility: window.scrollX > 20 ? 'visible' : 'visible' }}>
               top
             </div> */}

@@ -10,15 +10,21 @@ import useTeamCodes from '../lib/teamCodes'
 import Rivals from '../components/rankings/SailorPage/Rivals'
 import PartnerResults from '../components/rankings/SailorPage/PartnerResults'
 import PosInfo from '../components/rankings/SailorPage/PosInfo'
-import { useMobileDetect, useUserData } from '../lib/hooks'
+import { useMobileDetect, useTeamRegions, useUserData } from '../lib/hooks'
 import { AuthCheckLite } from '../components/AuthCheck'
 import FollowButton from '../components/rankings/FollowButton'
 import { UserContext } from '../lib/context'
 import SailorStatTab from '../components/rankings/SailorPage/SailorStatTab'
+import { getSailorFollows, getSailorInfo, getSailorRivals, getSailorTeams } from '../lib/apilib'
+import useRegionColors from '../lib/regionColors'
 
 export default function Rankings() {
   const { key } = useParams()
   const [sailor, setSailor] = useState(undefined)
+  const [followCount, setFollowCount] = useState(0)
+  const [races, setRaces] = useState([])
+  const [teams, setTeams] = useState([])
+  const [rivals, setRivals] = useState({ skipper: [], crew: [] })
   const [loaded, setLoaded] = useState(false)
   const [following, setFollowing] = useState(false)
   const [isUsers, setIsUsers] = useState(false)
@@ -27,35 +33,53 @@ export default function Rankings() {
   const teamCodes = useTeamCodes()
   const isMobile = useMobileDetect()
   const userData = useUserData()
+  const regionColors = useRegionColors()
+  const teamRegions = useTeamRegions()
 
   // 7 6 2 1 5 4 3 8
 
   useEffect(() => {
-    getSailorElo(key).then((tempSailor) => {
-      setSailor(undefined)
-      if (tempSailor !== undefined) {
-        setSailor(tempSailor.data())
-        setRegattaCount(
-          tempSailor.data().races.reduce((set, race) => {
-            let splitid = race['raceID'].split('/')
-            set.add(splitid[0] + '/' + splitid[1])
-            return set
-          }, new Set()).size
-        )
-        // setFollowing(sailor?.followers?.some((fol) => fol.followerUid === userData?.user?.uid))
-        // console.log(tempSailor.data())
-        setLoaded(true)
-      } else {
-        setLoaded(true)
-      }
+    Promise.all([getSailorInfo(key), getSailorTeams(key), getSailorRivals(key), getSailorFollows(key)]).then(([sailorData, teamsData, rivalsData, followsData]) => {
+      setSailor(sailorData.data)
+      let totalRaces = sailorData.fleetScores.concat(sailorData.teamScores)
+      setRaces(
+        totalRaces.sort((a, b) => {
+          let datea = new Date(a.date)
+          let dateb = new Date(b.date)
+          if (datea - dateb != 0) {
+            return datea - dateb
+          }
+          return a.raceNumber - b.raceNumber
+        }),
+      )
+      setRegattaCount(
+        sailorData.fleetScores.reduce((acc, race) => {
+          const regattaKey = `${race.season}-${race.regatta}`
+          if (!acc.includes(regattaKey)) {
+            acc.push(regattaKey)
+          }
+          return acc
+        }, []).length,
+      )
+
+      setTeams(teamsData.map((item) => item.teamID))
+      document.querySelector(':root').style.setProperty('--highlight1', regionColors[teamRegions[teamsData[0].teamID]])
+
+      setRivals({
+        skipper: rivalsData.filter((rival) => rival.position == 'Skipper'),
+        crew: rivalsData.filter((rival) => rival.position == 'Crew'),
+      })
+
+      setFollowCount(followsData.count)
+      setLoaded(true)
     })
   }, [key])
 
   useEffect(() => {
     if (userData.user !== undefined) {
-      console.log('checking following')
+      console.log('checking following', userData.userVals?.following, sailor?.sailorID)
       // setFollowing(sailor?.followers?.some((fol) => fol.followerUid === userData?.user?.uid))
-      setFollowing(userData.userVals?.following?.some((fol) => fol.targetKey === sailor?.key))
+      setFollowing(userData.userVals?.following?.includes(sailor?.sailorID))
       setIsUsers(userData.userVals?.tsLink?.split('/')[4] == key)
     }
   }, [key, userData])
@@ -65,31 +89,32 @@ export default function Rankings() {
       {loaded && sailor !== undefined ? (
         <div>
           <div className='flexRowContainer sailorNameRow'>
-            <Link to={`/rankings/team/${sailor.Teams.slice(-1)}`}>
-              <img style={{ display: 'inline', maxHeight: '3rem' }} src={`https://scores.collegesailing.org/inc/img/schools/${teamCodes[sailor.Teams[sailor.Teams.length - 1]]}.png`} />
+            <Link to={`/teams/${teams[0]}`}>
+              <img style={{ display: 'inline', maxHeight: '3rem' }} src={`https://scores.collegesailing.org/inc/img/schools/${teamCodes[teams[0]]}.png`} />
             </Link>
-            <h1 style={{ display: 'inline-block' }}>{sailor.Name}</h1>
+            <h1 style={{ display: 'inline-block' }}>{sailor.name}</h1>
             <AuthCheckLite>
               <FollowButton style={{ position: 'absolute', right: 0 }} sailor={sailor} userData={userData} following={following} setFollowing={setFollowing} />
               {isUsers ? '(You)' : ''}
             </AuthCheckLite>
           </div>
           <div>
-            {typeof sailor.Year === 'number' ? sailor.Year : sailor?.Year.split('.')[0].includes('*') ? '20' + sailor.Year?.split('.')[0].slice(0, 2) : '20' + sailor.Year?.split('.')[0].slice(2, 4)} |{' '}
-            {sailor.Teams.map((teamName, i) => (
-              <Link key={i} to={`/rankings/team/${teamName}`}>
-                {i !== 0 ? ', ' : ''} <span style={{ textDecoration: 'underline' }}>{teamName}</span>
-              </Link>
-            ))}{' '}
-            | {sailor.races.length} total races | {regattaCount} total regattas | {sailor?.followers ? sailor?.followers?.length : '0'} followers |{' '}
-            {sailor.Links.map((link, index) => (
-              <a key={index} href={`https://scores.collegesailing.org/sailors/${link}/`} target='1'>
-                {index !== 0 ? ', ' : ''} <span style={{ textDecoration: 'underline' }}>Techscore{sailor.Links.length > 1 ? ' ' + (index + 1) : ''}</span>
-              </a>
-            ))}{' '}
+            {sailor.year} |{' '}
+            {teams
+              .slice(0)
+              .reverse()
+              .map((teamName, i) => (
+                <Link key={i} to={`/teams/${teamName}`}>
+                  {i !== 0 ? ', ' : ''} <span style={{ textDecoration: 'underline' }}>{teamName}</span>
+                </Link>
+              ))}{' '}
+            | {races.length} total races | {regattaCount} total regattas | {followCount} followers |{' '}
+            <a href={`https://scores.collegesailing.org/sailors/${sailor.sailorID}/`} target='1'>
+              <span style={{ textDecoration: 'underline' }}>Techscore</span>
+            </a>{' '}
             |{' '}
             <span className='secondaryText'>
-              Last updated: {new Date(sailor.lastUpdate.seconds * 1000).toLocaleDateString()} at {new Date(sailor.lastUpdate.seconds * 1000).toLocaleTimeString()}
+              Last updated: {new Date(sailor.lastUpdate).toLocaleDateString()} at {new Date(sailor.lastUpdate).toLocaleTimeString()}
             </span>
             <AuthCheckLite>
               {userData?.userVals?.tsLink ? (
@@ -110,63 +135,83 @@ export default function Rankings() {
             </AuthCheckLite>
           </div>
           {/* <div>
-            Lifetime Stats: {sailor.races.length} total races | {regattaCount} total regattas |
+            Lifetime Stats: {races.length} total races | {regattaCount} total regattas |
           </div> */}
           <br />
           {/* Elos and Rankings */}
-          <div className='responsiveRowCol ratingStatContainer'>
-            <PosInfo raceType={'fleet'} races={sailor.races} type='Open' pos='Skipper' rating={sailor.SkipperRating} rank={sailor.SkipperRank} />
-            <PosInfo raceType={'fleet'} races={sailor.races} type='Open' pos='Crew' rating={sailor.CrewRating} rank={sailor.CrewRank} />
-            <PosInfo raceType={'fleet'} races={sailor.races} type="Women's" pos='Skipper' rating={sailor.WomenSkipperRating} rank={sailor.WomenSkipperRank} />
-            <PosInfo raceType={'fleet'} races={sailor.races} type="Women's" pos='Crew' rating={sailor.WomenCrewRating} rank={sailor.WomenCrewRank} />
+          <div className='ratingStatContainer'>
+            <PosInfo isUsers={isUsers} raceType={'fleet'} races={races} type='Open' pos='Skipper' rating={sailor.sr} rank={sailor.sRank} />
+            <PosInfo isUsers={isUsers} raceType={'fleet'} races={races} type='Open' pos='Crew' rating={sailor.cr} rank={sailor.cRank} />
+            <PosInfo isUsers={isUsers} raceType={'fleet'} races={races} type="Women's" pos='Skipper' rating={sailor.wsr} rank={sailor.wsRank} />
+            <PosInfo isUsers={isUsers} raceType={'fleet'} races={races} type="Women's" pos='Crew' rating={sailor.wcr} rank={sailor.wcRank} />
 
-            <PosInfo raceType={'team'} races={sailor.races} type='Open' pos='Skipper' rating={sailor.tsr} rank={sailor.SkipperRankTR} />
-            <PosInfo raceType={'team'} races={sailor.races} type='Open' pos='Crew' rating={sailor.tcr} rank={sailor.CrewRankTR} />
-            <PosInfo raceType={'team'} races={sailor.races} type="Women's" pos='Skipper' rating={sailor.wtsr} rank={sailor.WomenSkipperRankTR} />
-            <PosInfo raceType={'team'} races={sailor.races} type="Women's" pos='Crew' rating={sailor.wtcr} rank={sailor.WomenCrewRankTR} />
+            <PosInfo isUsers={isUsers} raceType={'team'} races={races} type='Open' pos='Skipper' rating={sailor.tsr} rank={sailor.tsRank} />
+            <PosInfo isUsers={isUsers} raceType={'team'} races={races} type='Open' pos='Crew' rating={sailor.tcr} rank={sailor.tcRank} />
+            <PosInfo isUsers={isUsers} raceType={'team'} races={races} type="Women's" pos='Skipper' rating={sailor.wtsr} rank={sailor.wtsRank} />
+            <PosInfo isUsers={isUsers} raceType={'team'} races={races} type="Women's" pos='Crew' rating={sailor.wtcr} rank={sailor.wtcRank} />
           </div>
           {/* <span style={{ color: '#ccc', left: 30 }}> * in s25</span> */}
 
           {/* Graphs */}
           {/* <h2>Rating over time </h2> */}
-          {/* <EloLineChart woman={sailor.WomenSkipperRating !== 1000 || sailor.WomenCrewRating !== 1000} data={sailor.races} /> */}
+          {/* <EloLineChart woman={sailor.WomenSkipperRating !== 1000 || sailor.WomenCrewRating !== 1000} data={races} /> */}
 
-          <SailorStatTab
-            titles={['Rating Graph', 'All Races', 'Partners', 'Venues', 'Rival Skippers', 'Rival Crews', 'Bar Charts']}
-            components={[
-              <EloLineChart woman={sailor.WomenSkipperRating !== 1000 || sailor.WomenCrewRating !== 1000} data={sailor.races} />, //
-              <RaceByRace woman={sailor.WomenSkipperRating !== 1000 || sailor.WomenCrewRating !== 1000} races={sailor.races} showFilter={true} />, //
-              <PartnerResults races={sailor.races} />, //
-              <VenueResults races={sailor.races} />, //
-              <Rivals rivals={sailor.Rivals} pos={'Skipper'} />, //
-              <Rivals rivals={sailor.Rivals} pos={'Crew'} />,
-              <>
-                <h2>Rating changes by race, Scores (lower is better) and Percentage (higher is better) by race</h2>
-                <PosNegBarChart showLabels={false} data={sailor.races} dataKey='change' syncID='ranking' title='Change' />
-                <PosNegBarChart showLabels={false} data={sailor.races} dataKey='score' syncID='ranking' title='Score' />
-                {/* <h2>Ratio by race (higher is better)</h2> */}
-                <PosNegBarChart
-                  title='Percentage'
-                  showLabels={true}
-                  data={sailor.races.map((race) => {
-                    if (race.ratio < 0) {
-                      race.ratio = 0
-                    }
-                    if (race.type == 'team') {
-                      if (race.outcome == 'win') {
-                        race.ratio = 1
-                      } else {
+          {!isMobile ? (
+            <SailorStatTab
+              titles={['Rating Graph', 'All Races', 'Partners', 'Venues', 'Rival Skippers', 'Rival Crews', 'Bar Charts']}
+              components={[
+                <EloLineChart woman={sailor.wsr !== 1000 || sailor.wcr !== 1000} data={races} />, //
+                <RaceByRace woman={sailor.wsr !== 1000 || sailor.wcr !== 1000} races={races} showFilter={true} />, //
+                <PartnerResults races={races} />, //
+                <VenueResults races={races} />, //
+                <Rivals rivals={rivals.skipper} pos={'Skipper'} />, //
+                <Rivals rivals={rivals.crew} pos={'Crew'} />,
+                <>
+                  <h2>Rating changes by race, Scores (lower is better) and Percentage (higher is better) by race</h2>
+                  <PosNegBarChart
+                    showLabels={false}
+                    data={races.map((race) => {
+                      race.change = race.newRating - race.oldRating
+                      return race
+                    })}
+                    dataKey='change'
+                    syncID='ranking'
+                    title='Change'
+                  />
+                  <PosNegBarChart showLabels={false} data={races} dataKey='score' syncID='ranking' title='Score' />
+                  {/* <h2>Ratio by race (higher is better)</h2> */}
+                  <PosNegBarChart
+                    title='Percentage'
+                    showLabels={true}
+                    data={races.map((race) => {
+                      if (race.ratio < 0) {
                         race.ratio = 0
                       }
-                    }
-                    return race
-                  })}
-                  dataKey='ratio'
-                  syncID='ranking'
-                />
-              </>,
-            ]}
-          />
+                      if (race.ratingType.includes('t')) {
+                        if (race.outcome == 'win') {
+                          race.ratio = 1
+                        } else {
+                          race.ratio = 0
+                        }
+                      }
+                      return race
+                    })}
+                    dataKey='ratio'
+                    syncID='ranking'
+                  />
+                </>,
+              ]}
+            />
+          ) : (
+            [
+              <EloLineChart woman={sailor.wsr !== 1000 || sailor.wcr !== 1000} data={races} />, //
+              <RaceByRace woman={sailor.wsr !== 1000 || sailor.wcr !== 1000} races={races} showFilter={true} />, //
+              <PartnerResults races={races} />, //
+              <VenueResults races={races} />, //
+              <Rivals rivals={rivals.skipper} pos={'Skipper'} />, //
+              <Rivals rivals={rivals.crew} pos={'Crew'} />,
+            ]
+          )}
 
           {/* <h2>
             Race by race breakdown: <span className='secondaryText'>(scroll for more)</span>
@@ -186,13 +231,13 @@ export default function Rankings() {
             <>
               <h2>Rating changes by race</h2>
               <h2>Scores (lower is better) and Percentage (higher is better) by race</h2>
-              <PosNegBarChart showLabels={false} data={sailor.races} dataKey='change' syncID='ranking' title='Change' />
-              <PosNegBarChart showLabels={false} data={sailor.races} dataKey='score' syncID='ranking' title='Score' />
+              <PosNegBarChart showLabels={false} data={races} dataKey='change' syncID='ranking' title='Change' />
+              <PosNegBarChart showLabels={false} data={races} dataKey='score' syncID='ranking' title='Score' />
               {/* <h2>Ratio by race (higher is better)</h2> */}
               <PosNegBarChart
                 title='Percentage'
                 showLabels={true}
-                data={sailor.races.map((race) => {
+                data={races.map((race) => {
                   if (race.ratio < 0) {
                     race.ratio = 0
                   }

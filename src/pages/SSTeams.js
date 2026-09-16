@@ -13,7 +13,7 @@ export default function SSTeams() {
   const [allRegions, setAllRegions] = useState([])
   const [filterText, setFilterText] = useState('')
   const [reverse, setReverse] = useState(false)
-  const [sort, setSort] = useState('top') // ['ratio', 'members', 'women', 'rating', 'team', 'womensteam']
+  const [sort, setSort] = useState('top') // ['ratio', 'members', 'women', 'rating', 'team', 'womenteam']
 
   const [loaded, setLoaded] = useState(false)
 
@@ -126,7 +126,7 @@ export default function SSTeams() {
       else if (sort === 'rating') return b.avg - a.avg
       else if (sort === 'women') return b.topWomenRating - a.topWomenRating
       else if (sort === 'team') return b.topRatingTR - a.topRatingTR
-      else if (sort === 'womensteam') return b.topWomenRatingTR - a.topWomenRatingTR
+      else if (sort === 'womenteam') return b.topWomenRatingTR - a.topWomenRatingTR
       // sort === 'top'
       else return b.topRating - a.topRating
     })
@@ -196,10 +196,10 @@ export default function SSTeams() {
                   className='tableColFit tooltip'
                   onClick={() => {
                     setReverse(false)
-                    setSort(sort === 'womensteam' ? 'top' : 'womensteam')
+                    setSort(sort === 'womenteam' ? 'top' : 'womenteam')
                   }}
                   style={{ minWidth: 125, textAlign: 'right' }}>
-                  {sort === 'womensteam' ? reverse ? <FaSortUp /> : <FaSortDown /> : <></>}
+                  {sort === 'womenteam' ? reverse ? <FaSortUp /> : <FaSortDown /> : <></>}
                   Women's TR
                   <span className='tooltiptext'>Takes avg the top 3 from each pos</span>
                 </th>
@@ -257,7 +257,7 @@ export default function SSTeams() {
               ))}
               {filtered.length > 0 ? (
                 filtered.slice(0, 36).map((team, index) => (
-                  <tr key={index} className='clickable' onClick={() => navigate(`/rankings/team/${team.name}`)}>
+                  <tr key={index} className='clickable' onClick={() => navigate(`/teams/${team.name}`)}>
                     <td className='' style={{ width: 100, paddingLeft: 30 }}>
                       <img style={{ display: 'inline', maxHeight: '2.3rem' }} src={`https://scores.collegesailing.org/inc/img/schools/${teamCodes[team.name]}.png`} />
                     </td>
@@ -289,7 +289,7 @@ export default function SSTeams() {
                     <td style={{ textAlign: 'right', display: sort !== 'team' ? 'none' : 'table-cell' }}>
                       <RatingNum ratingNum={team.topRatingTR} type={'open'} />
                     </td>
-                    <td style={{ textAlign: 'right', display: sort !== 'womensteam' ? 'none' : 'table-cell' }}>
+                    <td style={{ textAlign: 'right', display: sort !== 'womenteam' ? 'none' : 'table-cell' }}>
                       <RatingNum ratingNum={team.topWomenRatingTR} type={'women'} />
                     </td>
                     <td style={{ textAlign: 'right', display: sort !== 'rating' ? 'none' : 'table-cell' }}>{team.avg.toFixed(0)}</td>

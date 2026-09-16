@@ -1,4 +1,4 @@
-import { getTeamElos } from '../lib/firebase'
+import { getTeam } from '../lib/apilib'
 import { useEffect, useState } from 'react'
 import { Link, useParams, useNavigate } from 'react-router-dom'
 import Loader from '../components/loader'
@@ -8,13 +8,19 @@ import RatingNum from '../components/RatingNum'
 import { FaSortDown } from 'react-icons/fa'
 import useRegionColors from '../lib/regionColors'
 import RatioBar from '../components/rankings/RatioBar'
+import DoubleSlider from '../components/DoubleSlider'
+import RankingDisplay from '../components/rankings/TeamPage/RankingDisplay'
+import { useMobileDetect } from '../lib/hooks'
 
 export default function TeamRankings() {
   const { teamName } = useParams()
+  const mobile = useMobileDetect()
   const [rating, setRating] = useState(1500)
+  const [teamData, setTeamData] = useState({})
   const [teamMembers, setTeamMembers] = useState([])
   const [teamLink, setTeamLink] = useState('')
   const [teamRegion, setTeamRegion] = useState('')
+  const [recentRegattas, setRecentRegattas] = useState([])
   const [loaded, setLoaded] = useState(false)
 
   const [sort, setSort] = useState('openrating')
@@ -24,16 +30,20 @@ export default function TeamRankings() {
   const regionColors = useRegionColors()
   const debug = false
 
+  const [selectionMode, setSelectionMode] = useState(mobile ? 'advanced' : 'default')
+
   useEffect(() => {
-    getTeamElos(teamName).then((tempTeam) => {
-      console.log(tempTeam)
-      const members = tempTeam.data.members.filter((member) => member.teams[member.teams.length - 1] === teamName)
-      setTeamMembers(members)
-      setRating(tempTeam.data.avg)
+    getTeam(teamName).then((tempTeam) => {
+      if (tempTeam == undefined) return
+      // console.log(tempTeam)
+      setTeamMembers(tempTeam.members)
+      setRating(tempTeam.data.avgRating)
       setTeamLink(tempTeam.data.link)
       setTeamRegion(tempTeam.data.region)
+      setRecentRegattas(tempTeam.regattas)
+      setTeamData(tempTeam.data)
 
-      const allSeasons = members.flatMap((member) => [...member?.seasons.skipper, ...member?.seasons.crew])
+      const allSeasons = tempTeam.members.map((member) => member.season)
       const uniqueSeasons = [...new Set(allSeasons)].sort((a, b) => {
         if (parseInt(a.slice(1, 3)) - parseInt(b.slice(1, 3)) !== 0) {
           return parseInt(a.slice(1, 3)) - parseInt(b.slice(1, 3))
@@ -45,103 +55,49 @@ export default function TeamRankings() {
       })
       setActiveSeasons([uniqueSeasons[uniqueSeasons.length - 1]])
       setAllSeasons(uniqueSeasons)
-      document.querySelector(':root').style.setProperty('--highlight1', regionColors[tempTeam.data.region])
+      if (tempTeam.data.region != '') {
+        document.querySelector(':root').style.setProperty('--highlight1', regionColors[tempTeam.data.region])
+      }
       setLoaded(true)
     })
   }, [teamName])
+  useEffect(() => {
+    if (mobile) {
+      setSelectionMode('advanced')
+    }
+  }, [mobile])
 
   const getRating = (member, pos, type, raceType) => {
-    let rating = 0
-    if (pos === 'skipper') {
-      if (raceType === 'team') {
-        let tsr = member.tsr
-        let wtsr = member.wtsr
-        if (member.wtsr === 1000) {
-          wtsr = 0
-        }
-        if (member.tsr === 1000) {
-          tsr = 0
-        }
-        if (type !== undefined) {
-          if (type === 'women') {
-            rating = wtsr
-          } else {
-            rating = tsr
-          }
-        } else {
-          rating = Math.max(tsr, wtsr)
-        }
-      } else {
-        let sr = member.skipperRating
-        let wsr = member.womenSkipperRating
-        if (member.womenSkipperRating === 1000) {
-          wsr = 0
-        }
-        if (member.skipperRating === 1000) {
-          sr = 0
-        }
-        if (type !== undefined) {
-          if (type === 'women') {
-            rating = wsr
-          } else {
-            rating = sr
-          }
-        } else {
-          rating = Math.max(sr, wsr)
-        }
-      }
-    } else {
-      // Crew
-      if (raceType === 'team') {
-        let tcr = member.tcr
-        let wtcr = member.wtcr
-        if (member.wtcr === 1000) {
-          wtcr = 0
-        }
-        if (member.tcr === 1000) {
-          tcr = 0
-        }
-        if (type !== undefined) {
-          if (type === 'women') {
-            rating = wtcr
-          } else {
-            rating = tcr
-          }
-        } else {
-          rating = Math.max(tcr, wtcr)
-        }
-      } else {
-        let cr = member.crewRating
-        let wcr = member.womenCrewRating
-        if (member.womenCrewRating === 1000) {
-          wcr = 0
-        }
-        if (member.crewRating === 1000) {
-          cr = 0
-        }
-        if (type !== undefined) {
-          if (type === 'women') {
-            rating = wcr
-          } else {
-            rating = cr
-          }
-        } else {
-          rating = Math.max(cr, wcr)
-        }
-      }
+    const ratingMap = {
+      skipper: {
+        fleet: { open: 'sr', women: 'wsr' },
+        team: { open: 'tsr', women: 'wtsr' },
+      },
+      crew: {
+        fleet: { open: 'cr', women: 'wcr' },
+        team: { open: 'tcr', women: 'wtcr' },
+      },
     }
-    return rating
+
+    const key = ratingMap[pos][raceType][type]
+    const rating = member[key]
+    return rating === 1000 ? 0 : rating
   }
 
-  const TeamMember = ({ index, member, pos, rankingOpen, rankingWomen }) => {
+  const TeamMember = ({ index, member, pos }) => {
     const navigate = useNavigate()
     // let rating = getRating(member, pos)
 
-    // const rating = pos === 'skipper' ? (member.womenSkipperRating !== 1000 ? Math.max(member.skipperRating, member.womenSkipperRating).toFixed(0) : member.skipperRating.toFixed(0)) : member.womenCrewRating !== 1000 ? Math.max(member.crewRating, member.womenCrewRating).toFixed(0) : member.crewRating.toFixed(0)
+    // const rating = pos === 'skipper' ? (member.wsr !== 1000 ? Math.max(member.sr, member.wsr).toFixed(0) : member.sr.toFixed(0)) : member.wcr !== 1000 ? Math.max(member.cr, member.wcr).toFixed(0) : member.cr.toFixed(0)
     // console.log(member)
+    const rankingOpen = (member.rankType?.split('.').includes('sr') && pos == 'skipper') || (member.rankType?.split('.').includes('cr') && pos == 'crew')
+    const rankingWomen = (member.rankType?.split('.').includes('wsr') && pos == 'skipper') || (member.rankType?.split('.').includes('wcr') && pos == 'crew')
+
+    // console.log(member.name, rankingOpen, rankingWomen, member.rankType)
+
     return (
-      <tr key={index} className='clickable' onClick={() => navigate(`/rankings/${member.key}`)}>
-        <td className='tdRightBorder tableColFit' style={{ textAlign: 'right' }}>
+      <tr key={index} className='clickable' onClick={() => navigate(`/sailors/${member.sailorID}`)}>
+        <td className='tdRightBorder tdLeftBorder tableColFit' style={{ textAlign: 'right' }}>
           {index + 1}
         </td>
         {debug ? (
@@ -153,26 +109,22 @@ export default function TeamRankings() {
           <></>
         )}
         <td className='tableColFit'>{decodeURIComponent(member.name)}</td>
-        <td className='tableColFit'>{member.year.split('.')[0].includes('*') ? member.year.split('.')[0].slice(0, 2) : member.year.split('.')[0].slice(2, 4)}</td>
+        <td className=''>{member.year.split('.')[0].includes('*') ? member.year.split('.')[0].slice(0, 2) : member.year.split('.')[0].slice(2, 4)}</td>
         <td style={{ textAlign: 'left', minWidth: 50 }}>
-          {rankingOpen ? <TiStarFullOutline style={{ bottom: -5 }} className='secondaryText' /> : ''}
-          {rankingWomen ? <TiStarFullOutline className='secondaryText' color='var(--women)' /> : ''}
+          {/* {rankingOpen ? <TiStarFullOutline style={{ bottom: -5 }} className='secondaryText' /> : ''}
+          {rankingWomen ? <TiStarFullOutline className='secondaryText' color='var(--women)' /> : ''} */}
         </td>
         {/* <td className='secondaryText'>{member.gender === 'F' ? 'W' : ''}</td> */}
-        <td className='tableColFit' style={{ textAlign: 'right' }}>
-          {activeSeasons.reduce((total, season) => {
-            const newPos = pos === 'skipper' ? 'Skipper' : 'Crew'
-            if (member.raceCount[season] !== undefined && member.raceCount[season][newPos]) {
-              return total + member.raceCount[season][newPos]
-            }
-            return total // If the season is not in the seasonRaces object, we ignore it
-          }, 0)}
+        <td className='tableColFit' style={{ textAlign: 'left' }}>
+          {member.numRaces}
         </td>
         {/* <td style={{ textAlign: 'right' }}>{pos === 'skipper' ? member.avgSkipperRatio.toFixed(3) : member.avgCrewRatio.toFixed(3)}</td> */}
-        <td style={{ textAlign: 'center' }}>
-          <RatioBar ratio={pos === 'skipper' ? member.avgSkipperRatio : member.avgCrewRatio} />
+        <td className='tableColFit' style={{ textAlign: 'center' }}>
+          {/* <RatioBar ratio={pos === 'skipper' ? member.avgSkipperRatio : member.avgCrewRatio} /> */}
+          <RatioBar ratio={member.winP} />
         </td>
-        <td style={{ textAlign: 'right' }} className='tableColFit'>
+        <td></td>
+        <td style={{ textAlign: 'right', width: 'min-content' }} className='tableColFit'>
           <RatingNum highest={false} sailor={member} pos={pos} type={'open'} raceType={'fleet'} />
         </td>
         <td style={{ textAlign: 'right' }} className='tableColFit'>
@@ -184,6 +136,7 @@ export default function TeamRankings() {
         <td style={{ textAlign: 'right' }} className='tableColFit'>
           <RatingNum highest={false} sailor={member} pos={pos} type={'women'} raceType={'team'} />
         </td>
+        {/* <td className='tdRightBorder'></td> */}
       </tr>
     )
   }
@@ -199,33 +152,68 @@ export default function TeamRankings() {
     // console.log(element.classList)
   }
 
+  const seasonsChanged = ([start, end]) => {
+    setActiveSeasons(allSeasons.slice(allSeasons.indexOf(start), allSeasons.indexOf(end) + 1))
+  }
+
   const PosList = ({ members, pos }) => {
-    const newMembers = members.filter((member) => member.seasons[pos].length > 0)
-    const filtered = newMembers
+    const seenInThisList = new Set()
+
+    const posMembers = members.filter((member) => member.position == pos && member.teamID == teamName)
+    const filtered = posMembers
+      .map((member) => {
+        // accumulate numRaces across the activeSeasons before filtering so totals reflect all selected seasons
+        // sum raceCount for all entries in `members` that match this sailor (by sailorID or name+pos) and are in an active season
+        const key = member.sailorID ? `${member.sailorID}` : `${member.name}_${pos}`
+        const thisMemberEntries = posMembers.filter((m) => {
+          // grab entries of current sailor
+          const mKey = m.sailorID ? `${m.sailorID}` : `${m.name}_${pos}`
+          return mKey == key
+        })
+
+        const numRaces = thisMemberEntries.reduce((total, m) => {
+          // sum total races if season is selected
+          if (activeSeasons.includes(m.season)) {
+            return total + (m.raceCount || 0)
+          }
+          return total
+        }, 0)
+
+        const winStats = thisMemberEntries.reduce(
+          (acc, m) => {
+            if (activeSeasons.includes(m.season)) {
+              acc.sum += m.winPercent
+              acc.count += 1
+            }
+            return acc
+          },
+          { sum: 0, count: 0 },
+        )
+
+        // Calculate average (and handle division by zero just in case)
+        const winP = winStats.count > 0 ? winStats.sum / winStats.count : 0
+        return { ...member, numRaces, winP }
+      })
       .filter((member) => {
-        return member?.seasons[pos]?.some((season) => activeSeasons.includes(season))
+        // 2. Filter for active seasons
+        let hasSeason = activeSeasons.includes(member.season)
+        if (!hasSeason) return false
+
+        // 3. Dedupe using the local Set
+        // Using sailorID + position ensures uniqueness within this specific list
+        const key = member.sailorID ? `${member.sailorID}` : `${member.name}_${pos}`
+
+        if (seenInThisList.has(key)) return false
+        seenInThisList.add(key)
+
+        return true
       })
       .sort((a, b) => {
         if (sort === 'ratio') {
-          if (pos === 'skipper') return b.avgSkipperRatio - a.avgSkipperRatio
-          return b.avgCrewRatio - a.avgCrewRatio
+          return b.winP - a.winP
         } else if (sort === 'races') {
-          let bRaces = activeSeasons.reduce((total, season) => {
-            const newPos = pos === 'skipper' ? 'Skipper' : 'Crew'
-            if (b.raceCount[season] !== undefined && b.raceCount[season][newPos]) {
-              return total + b.raceCount[season][newPos]
-            }
-            return total // If the season is not in the seasonRaces object, we ignore it
-          }, 0)
-          let aRaces = activeSeasons.reduce((total, season) => {
-            const newPos = pos === 'skipper' ? 'Skipper' : 'Crew'
-            if (a.raceCount[season] !== undefined && a.raceCount[season][newPos]) {
-              return total + a.raceCount[season][newPos]
-            }
-            return total // If the season is not in the seasonRaces object, we ignore it
-          }, 0)
-          // console.log(bRaces, aRaces)
-          return bRaces - aRaces
+          // use the accumulated numRaces
+          return (b.numRaces || 0) - (a.numRaces || 0)
         } else if (sort === 'openrating') {
           return getRating(b, pos, 'open', 'fleet') - getRating(a, pos, 'open', 'fleet')
         } else if (sort === 'womenrating') {
@@ -238,21 +226,10 @@ export default function TeamRankings() {
         return 0
       })
 
-    const openrankingMembers = filtered
-      .slice(0)
-      .sort((a, b) => getRating(b, pos, 'open') - getRating(a, pos, 'open'))
-      .filter((member) => member.cross > 20 && member.outLinks > 70 && member.seasons[pos].includes(allSeasons.slice(-1)[0]))
-      .slice(0, 3)
-
-    const womenRankingMembers = filtered
-      .slice(0)
-      .sort((a, b) => getRating(b, pos, 'women') - getRating(a, pos, 'women'))
-      .filter((member) => member.cross > 20 && member.outLinks > 70 && member.seasons[pos].includes(allSeasons.slice(-1)[0]) && (pos === 'skipper' ? member.womenSkipperRating !== 1000 : member.womenCrewRating !== 1000))
-      .slice(0, 2)
-
     return (
       <>
         <div className='flexGrowChild'>
+          {/*flexGrowChild */}
           <h2>{pos.slice(0, 1).toUpperCase() + pos.slice(1)}s</h2>
           <table className='raceByRaceTable' style={{ fontSize: '0.9rem' }}>
             <thead>
@@ -260,61 +237,62 @@ export default function TeamRankings() {
                 <th></th>
                 <th>Name</th>
                 <th>Year</th>
-                <th></th>
-                {/* <th></th> */}
+                <th className='tableColFit'></th>
                 <th
                   className='tableColFit clickable'
-                  style={{ minWidth: 75, textAlign: 'right' }}
+                  style={{ minWidth: 68 }}
                   onClick={() => {
                     setSort('races')
                   }}>
-                  {sort === 'races' ? <FaSortDown /> : ''}Races
+                  Races{sort === 'races' ? <FaSortDown /> : ''}
                 </th>
                 <th
                   className=' tableColFit clickable'
-                  style={{ minWidth: 113, textAlign: 'right' }}
+                  // style={{ textAlign: 'right' }}
                   onClick={() => {
                     setSort('ratio')
                   }}>
-                  {sort === 'ratio' ? <FaSortDown /> : ''}Avg Win %
+                  Avg Win %{sort === 'ratio' ? <FaSortDown /> : ''}
                 </th>
+                <th></th>
                 <th
                   className=' tableColFit clickable'
-                  style={{ minWidth: 75, textAlign: 'right' }}
+                  style={{ textAlign: 'right' }}
                   onClick={() => {
                     setSort('openrating')
                   }}>
-                  {sort === 'openrating' ? <FaSortDown /> : ''}Open FR
+                  Open Fleet{sort === 'openrating' ? <FaSortDown /> : ''}
                 </th>
                 <th
                   className=' tableColFit clickable'
-                  style={{ minWidth: 75, textAlign: 'right' }}
+                  // style={{ textAlign: 'right' }}
                   onClick={() => {
                     setSort('womenrating')
                   }}>
-                  {sort === 'womenrating' ? <FaSortDown /> : ''}Women's FR
+                  Women's{sort === 'womenrating' ? <FaSortDown /> : ''}
                 </th>
                 <th
                   className=' tableColFit clickable'
-                  style={{ minWidth: 95, textAlign: 'right' }}
+                  // style={{ textAlign: 'right' }}
                   onClick={() => {
                     setSort('teamrating')
                   }}>
-                  {sort === 'teamrating' ? <FaSortDown /> : ''}TR Rating
+                  Team Race{sort === 'teamrating' ? <FaSortDown /> : ''}
                 </th>
                 <th
                   className=' tableColFit clickable'
-                  style={{ minWidth: 98, textAlign: 'right' }}
+                  // style={{ textAlign: 'right' }}
                   onClick={() => {
                     setSort('wteamrating')
                   }}>
-                  {sort === 'wteamrating' ? <FaSortDown /> : ''}Women's TR
+                  Women's TR{sort === 'wteamrating' ? <FaSortDown /> : ''}
                 </th>
+                {/* <th> </th> */}
               </tr>
             </thead>
             <tbody>
               {filtered.length > 0 ? (
-                filtered.map((member, index) => <TeamMember index={index} key={member.name + member.pos} member={member} pos={pos} rankingOpen={openrankingMembers.includes(member)} rankingWomen={womenRankingMembers.includes(member)} />)
+                filtered.map((member, index) => <TeamMember index={index} key={index} member={member} pos={pos} />)
               ) : (
                 <tr>
                   <span style={{ width: '50%', position: 'absolute', textAlign: 'center', margin: 20 }}>Please select at least one season!</span>
@@ -332,55 +310,110 @@ export default function TeamRankings() {
       {loaded ? (
         <div style={{ padding: 15 }}>
           <div className='teamPageHeader'>
-            <Link to={'/rankings/team'} className='secondaryText'>
+            <Link to={'/teams'} className='secondaryText'>
               {'<'} All Teams
             </Link>
             <div className='flexRowContainer' style={{ alignItems: 'center' }}>
               <img style={{ display: 'inline', maxHeight: '3rem' }} src={`https://scores.collegesailing.org/inc/img/schools/${teamCodes[teamName]}.png`} />
               <h1 style={{ display: 'inline-block' }}>
-                <a href={teamLink} target={1}>
+                <a href={`https://scores.collegesailing.org/schools/${teamLink}`} target={1}>
                   {teamName}
                 </a>
               </h1>
             </div>
 
-            <Link to={{ pathname: `/rankings/team`, search: `?region=${teamRegion}` }}>
+            {/* <Link to={{ pathname: `/teams`, search: `?region=${teamRegion}` }}>
               <span className='filterOption' style={{ backgroundColor: regionColors[teamRegion] }}>
                 {teamRegion}
               </span>{' '}
               avg rating: {rating.toFixed(0)}
-            </Link>
+            </Link> */}
           </div>
-          <div className='flexRowContainer flexWrap' style={{ marginLeft: 15 }}>
-            {allSeasons
-              .sort((a, b) => {
-                if (parseInt(a.slice(1, 3)) - parseInt(b.slice(1, 3)) !== 0) {
-                  return parseInt(a.slice(1, 3)) - parseInt(b.slice(1, 3))
-                } else if (a.slice(0, 1) === 's' && b.slice(0, 1) === 'f') {
-                  return -1
-                } else {
-                  return 1
-                }
-              })
-              .map((season, index) => (
-                <div key={index} className={`filterOption`} style={{ backgroundColor: activeSeasons.includes(season) ? 'var(--highlight1)' : '' }} onClick={(e) => toggleFilter(season, e.target)} onDoubleClick={() => setActiveSeasons([season])}>
-                  {season?.toUpperCase()}
-                </div>
-              ))}
-            <button className='filterOption' onClick={() => setActiveSeasons(allSeasons)}>
-              Enable all
-            </button>
-            <button className='filterOption' onClick={() => setActiveSeasons([])}>
-              Disable all
-            </button>
-          </div>
+          {teamData.fr_rank || teamData.tr_rank || teamData.wfr_rank || teamData.wtr_rank ? (
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
+              <table className='teamRatingContainer'>
+                <thead>
+                  <tr style={{ height: '3rem' }}>
+                    <th>Racing Type</th>
+                    <th>National</th>
+                    <th>
+                      <span className='filterOption' style={{ backgroundColor: regionColors[teamData?.region] }}>
+                        {teamData?.region}
+                      </span>
+                    </th>
+                    <th>Avg Rating</th>
+                    <th className='teamRatingSailors'>Skippers</th>
+                    <th className='teamRatingSailors'>Crews</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {teamData.fr_rank ? <RankingDisplay data={teamData} members={teamMembers} rankType='fr' /> : <></>}
+                  {teamData.tr_rank ? <RankingDisplay data={teamData} members={teamMembers} rankType='tr' /> : <></>}
+                  {teamData.wfr_rank ? <RankingDisplay data={teamData} members={teamMembers} rankType='wfr' /> : <></>}
+                  {teamData.wtr_rank ? <RankingDisplay data={teamData} members={teamMembers} rankType='wtr' /> : <></>}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <></>
+          )}
+
+          {selectionMode == 'advanced' ? (
+            <div className='flexRowContainer flexWrap' style={{ marginLeft: 15 }}>
+              {allSeasons
+                .sort((a, b) => {
+                  if (parseInt(a.slice(1, 3)) - parseInt(b.slice(1, 3)) !== 0) {
+                    return parseInt(a.slice(1, 3)) - parseInt(b.slice(1, 3))
+                  } else if (a.slice(0, 1) === 's' && b.slice(0, 1) === 'f') {
+                    return -1
+                  } else {
+                    return 1
+                  }
+                })
+                .map((season, index) => (
+                  <div key={index} className={`filterOption`} style={{ backgroundColor: activeSeasons.includes(season) ? 'var(--highlight1)' : '' }} onClick={(e) => toggleFilter(season, e.target)} onDoubleClick={() => setActiveSeasons([season])}>
+                    {season?.toUpperCase()}
+                  </div>
+                ))}
+              <button className='filterOption' onClick={() => setActiveSeasons(allSeasons)}>
+                Enable all
+              </button>
+              <button className='filterOption' onClick={() => setActiveSeasons([])}>
+                Disable all
+              </button>
+            </div>
+          ) : (
+            <DoubleSlider values={allSeasons} initialStart={activeSeasons.slice(-1)[0]} onChange={seasonsChanged} />
+          )}
           <div className='responsiveRowCol' style={{ padding: 15, flexWrap: 'wrap' }}>
-            <PosList members={teamMembers} pos={'skipper'} />
+            <PosList members={teamMembers} pos='skipper' />
             <PosList members={teamMembers} pos='crew' />
           </div>
-          <span className='secondaryText'>
-            <TiStarFullOutline /> means that this sailor is used in the calculation of this teams rating. Requires a certain number of races vs out of conference sailors.{' '}
-          </span>
+
+          <div className='flexCol'>
+            <h2>Season Regattas:</h2>
+            <table className='raceByRaceTable'>
+              <thead>
+                <tr>
+                  <th className='tableColFit'>Date</th>
+                  <th>Regatta</th>
+                </tr>
+              </thead>
+              <tbody>
+                {recentRegattas.slice(0, 20).map((reg, i) => (
+                  <tr
+                    key={i}
+                    className='clickable'
+                    onClick={() => {
+                      window.open(`https://scores.collegesailing.org/${reg.season}/${reg.regatta}`)
+                    }}>
+                    <td>{new Date(reg.date).toLocaleDateString()}</td>
+                    <td className='text-titlecase'>{reg.regatta.replaceAll('-', ' ')}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       ) : (
         <Loader show={!loaded} />

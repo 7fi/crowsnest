@@ -19,12 +19,12 @@ export default function RatingNum({ sailor, pos, type, highest, ratingNum, raceT
           isWomens = true
         }
       } else {
-        let sr = sailor.skipperRating
-        let wsr = sailor.womenSkipperRating
-        if (sailor.womenSkipperRating === 1000) {
+        let sr = sailor.sr
+        let wsr = sailor.wsr
+        if (sailor.wsr === 1000) {
           wsr = 0
         }
-        if (sailor.skipperRating === 1000) {
+        if (sailor.sr === 1000) {
           sr = 0
         }
         rating = highest ? Math.max(sr, wsr) : type === 'women' ? wsr : sr
@@ -47,12 +47,12 @@ export default function RatingNum({ sailor, pos, type, highest, ratingNum, raceT
           isWomens = true
         }
       } else {
-        let cr = sailor.crewRating
-        let wcr = sailor.womenCrewRating
-        if (sailor.womenCrewRating === 1000) {
+        let cr = sailor.cr
+        let wcr = sailor.wcr
+        if (sailor.wcr === 1000) {
           wcr = 0
         }
-        if (sailor.crewRating === 1000) {
+        if (sailor.cr === 1000) {
           cr = 0
         }
         rating = highest ? Math.max(cr, wcr) : type === 'women' ? wcr : cr
@@ -69,13 +69,22 @@ export default function RatingNum({ sailor, pos, type, highest, ratingNum, raceT
     if (pos === 'skipper') {
     }
   }
+
+  const iconSrcs = { top: 'OpenFleetIcon.png', women: 'WomensFleetIcon.png', team: 'OpenTeamIcon.png', womenteam: 'WomensTeamIcon.png' }
+  const sort = type == 'women' ? (raceType == 'team' ? 'womenteam' : 'women') : raceType == 'team' || raceType?.includes('team') ? 'team' : 'top'
+  const iconFiles = { fr: 'OpenFleetIcon.png', fsr: 'fleetskipper.png', fcr: 'fleetcrew.png', wfr: 'WomensFleetIcon.png', wfsr: 'fleetskipper.png', wfcr: 'fleetcrew.png', tr: 'OpenTeamIcon.png', tsr: 'teamskipperfull.png', tcr: 'teamcrewfull.png', wtr: 'WomensTeamIcon.png', wtsr: 'teamskipperfull.png', wtcr: 'teamcrewfull.png' }
+
+  const iconLookup = (type == 'women' ? 'w' : '') + (raceType == 'team' ? 't' : 'f') + (pos?.toLowerCase() == 'skipper' ? 's' : pos?.toLowerCase() == 'crew' ? 'c' : '') + 'r'
+
   return (
-    <span>
+    <span style={{ width: 'min-content !important' }}>
+      {/* {iconLookup} */}
       {rating !== 0 ? (
-        <>
-          {isWomens ? <TbDiamondsFilled className='' style={{ color: 'var(--women)' }} /> : ''}
+        <div className='flexRowCentered'>
+          {/* {isWomens ? <TbDiamondsFilled className='' style={{ color: 'var(--women)' }} /> : ''} */}
+          <img src={'/' + iconFiles[iconLookup]} style={{ height: '1.5rem' }} />
           {rating.toFixed(0)}{' '}
-        </>
+        </div>
       ) : (
         <span className='secondaryText'>~</span>
       )}

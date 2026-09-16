@@ -1,291 +1,245 @@
-import { useEffect, useState } from 'react'
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ReferenceLine, Area, ComposedChart } from 'recharts'
+import { useEffect, useMemo, useState } from 'react'
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ReferenceLine, Area, ComposedChart, ReferenceArea } from 'recharts'
 import { useMobileDetect } from '../lib/hooks'
+import { getRegDifficulty } from './rankings/SailorPage/RaceByRace'
 
 export default function EloLineChart({ data, woman }) {
-  const [activeLines, setActiveLines] = useState(['crewRating', 'skipperRating', 'womenSkipperRating', 'womenCrewRating', 'tsr', 'tcr', 'wtsr', 'wtcr', 'regAvg']) // 'crewRating', 'skipperRating', 'womenSkipperRating', 'womenCrewRating',
+  const [activeLines, setActiveLines] = useState(['cr', 'sr', 'wsr', 'wcr', 'tsr', 'tcr', 'wtsr', 'wtcr', 'regAvg'])
   const [notAvailableLines, setNotAvailableLines] = useState([])
-  const [allRaces, setAllRaces] = useState([])
-  const [races, setRaces] = useState([])
+  const [allRaces, setAllRaces] = useState([]) // original mapped races (unsliced)
   const isMobile = useMobileDetect()
 
-  useEffect(() => {
-    // Create a temporary list to collect the new values
-    const newLines = []
+  // example of banded chart for rating confidence? https://recharts.github.io/en-US/examples/BandedChart/
 
+  // rating keys (all possible)
+  const allKeys = ['sr', 'cr', 'wsr', 'wcr', 'tsr', 'tcr', 'wtsr', 'wtcr']
+
+  // Helper: forward-fill only for the keys provided
+  const forwardFill = (arr, keys) => {
+    const filled = []
+    const last = {}
+    arr.forEach((d) => {
+      const copy = { ...d }
+      keys.forEach((k) => {
+        if (copy[k] != null) last[k] = copy[k]
+        else if (last[k] != null) copy[k] = last[k]
+      })
+      filled.push(copy)
+    })
+    return filled
+  }
+
+  useEffect(() => {
+    if (!data || !data.length) return
+
+    // Map & sort original races and set per-race fields
     const mappedRaces = data
       .slice(0)
       .sort((a, b) => {
-        let datea = new Date(a.date.seconds * 1000)
-        let dateb = new Date(b.date.seconds * 1000)
-        if (datea.getFullYear() != dateb.getFullYear()) {
-          return datea.getFullYear() - dateb.getFullYear()
-        }
-        if (datea.getMonth() != dateb.getMonth()) {
-          return datea.getMonth() - dateb.getMonth()
-        }
-        if (datea.getDate() != dateb.getDate()) {
-          return datea.getDate() - dateb.getDate()
-        }
-        let raceNumA = parseInt(a.raceID.split('/')[2].slice(0, -1))
-        let raceNumB = parseInt(b.raceID.split('/')[2].slice(0, -1))
-        return raceNumA - raceNumB
+        const datea = new Date(a.date)
+        const dateb = new Date(b.date)
+        return datea - dateb || a.raceNumber - b.raceNumber
       })
       .map((race, index) => {
-        race.index = index
-        // if (race.pos == 'Crew') {
-        //   race.crewElo = race.newRating
-        //   return race
-        // } else if (race.pos == 'Skipper') {
-        //   race.skipperElo = race.newRating
-        //   return race
-        // }
-        if (race.skipperRating == 1000) {
-          race.skipperRating = null
-        }
-        if (race.crewRating == 1000) {
-          race.crewRating = null
-        }
-        if (race.womenSkipperRating == 1000) {
-          race.womenSkipperRating = null
-        }
-        if (race.womenCrewRating == 1000) {
-          race.womenCrewRating = null
-        }
-        if (race.tsr == 1000) {
-          race.tsr = null
-        }
-        if (race.tcr == 1000) {
-          race.tcr = null
-        }
-        if (race.wtsr == 1000) {
-          race.wtsr = null
-        }
-        if (race.wtcr == 1000) {
-          race.wtcr = null
-        }
-        return race
+        const copy = { ...race }
+        copy.index = index
+        copy.conf = [24 * (copy.srmu + 3 * copy.srsig + 1000 / 24), 24 * (copy.srmu - 3 * copy.srsig + 1000 / 24)]
+        // assign the new rating to its ratingType key
+        copy[copy.ratingType] = copy.newRating
+        // Keep regAvg if it's present on the race object (or compute elsewhere if you do)
+        // build raceID
+        copy.raceID = `${copy.season}/${copy.regatta}/${copy.raceNumber}${copy.division}`
+        return copy
       })
 
-    // mappedRaces.forEach((race) => {
-    //   if(race.skipperRating != null && !activeLines.includes('skipperRating')) setActiveLines((prev) => [...prev, 'skipperRating'])
-    //   if(race.crewRating != null && !activeLines.includes('crewRating')) setActiveLines((prev) => [...prev, 'crewRating'])
-    //   if(race.womenSkipperRating != null && !activeLines.includes('womenSkipperRating')) setActiveLines((prev) => [...prev, 'womenSkipperRating'])
-    //   if(race.womenCrewRating != null && !activeLines.includes('womenCrewRating')) setActiveLines((prev) => [...prev, 'womenCrewRating'])
-    // })
-
-    mappedRaces.forEach((race) => {
-      if (race.skipperRating != null && !newLines.includes('skipperRating')) {
-        newLines.push('skipperRating')
-      }
-      if (race.crewRating != null && !newLines.includes('crewRating')) {
-        newLines.push('crewRating')
-      }
-      if (race.womenSkipperRating != null && !newLines.includes('womenSkipperRating')) {
-        newLines.push('womenSkipperRating')
-      }
-      if (race.womenCrewRating != null && !newLines.includes('womenCrewRating')) {
-        newLines.push('womenCrewRating')
-      }
-      if (race.tsr != null && !newLines.includes('tsr')) {
-        newLines.push('tsr')
-      }
-      if (race.tcr != null && !newLines.includes('tcr')) {
-        newLines.push('tcr')
-      }
-      if (race.wtsr != null && !newLines.includes('wtsr')) {
-        newLines.push('wtsr')
-      }
-      if (race.wtcr != null && !newLines.includes('wtcr')) {
-        newLines.push('wtcr')
-      }
-    })
-
-    // Update the state with the new list
-    const unavaiable = ['crewRating', 'skipperRating', 'womenSkipperRating', 'womenCrewRating', 'tsr', 'tcr', 'wtsr', 'wtcr'].filter((line) => !newLines.includes(line) && line != 'regAvg')
-    setActiveLines([...newLines, 'regAvg'])
-    setNotAvailableLines(unavaiable)
-
-    const extendData = (data) => {
-      // Find the first and last valid points
-      const firstValids = data.find((d) => d['skipperRating'] != null)
-      const lastValids = [...data].reverse().find((d) => d['skipperRating'] != null)
-      const firstValidc = data.find((d) => d['crewRating'] != null)
-      const lastValidc = [...data].reverse().find((d) => d['crewRating'] != null)
-      if (!firstValids || !lastValids) return data
-      if (!firstValidc || !lastValidc) return data
-      // let start = { raceID: '/Start/', skipperRating: null, crewRating: null, womenSkipperRating: null, womenCrewRating: null }
-      let end = { raceID: '/END/', skipperRating: lastValids.skipperRating, crewRating: lastValidc.crewRating }
-      const extendedData = [...data, end]
-      return extendedData
-    }
-
-    const extended = extendData(mappedRaces)
-    setRaces(extended)
     setAllRaces(mappedRaces)
+
+    // Determine which rating types are present in the dataset
+    const present = Array.from(new Set(mappedRaces.map((r) => r.ratingType)))
+    const unavailable = [...allKeys.filter((key) => !present.includes(key)), 'conf']
+    // default activeLines: everything present plus regAvg
+    setActiveLines((prev) => {
+      // if previous has meaningful selection keep it, otherwise default
+      // (but to keep behavior similar to original, set to all present + regAvg)
+      return [...present, 'regAvg']
+    })
+    setNotAvailableLines(unavailable)
   }, [data])
 
-  // Custom Tick Component
-  const CustomTick = ({ x, y, payload, index }) => {
-    if (index == races.length) return null
-    const currentEvent = races[index]?.raceID.split('/')[0] + '/' + races[index]?.raceID.split('/')[1]
-    const previousEvent = index > 0 ? races[index - 1]?.raceID.split('/')[0] + '/' + races[index - 1]?.raceID.split('/')[1] : null
+  // decide whether a specific race should be included given current activeLines
+  const shouldIncludeRace = (race, active) => {
+    // if regAvg only, we still don't want to include races that are only for disabled lines
+    // Use the same logic you had in updateRaces to match ratingType -> line mapping
+    // If any of the active rating types apply to this race, include it.
+    // active is an array of active keys (may include 'regAvg')
+    if (!race) return false
+    // If active includes 'sr' and this race is an open skipper race
+    if (active.includes('sr')) {
+      if (!race.ratingType.includes('t') && !race.ratingType.includes('w') && race.position === 'Skipper') return true
+    }
+    if (active.includes('tsr')) {
+      if (race.ratingType.includes('t') && !race.ratingType.includes('w') && race.position === 'Skipper') return true
+    }
+    if (active.includes('wsr')) {
+      if (!race.ratingType.includes('t') && race.ratingType.includes('w') && race.position === 'Skipper') return true
+    }
+    if (active.includes('wtsr')) {
+      if (race.ratingType.includes('t') && race.ratingType.includes('w') && race.position === 'Skipper') return true
+    }
 
-    // Only render the label if the event is different from the previous one
-    if (currentEvent !== previousEvent) {
+    if (active.includes('cr')) {
+      if (!race.ratingType.includes('t') && !race.ratingType.includes('w') && race.position === 'Crew') return true
+    }
+    if (active.includes('tcr')) {
+      if (race.ratingType.includes('t') && !race.ratingType.includes('w') && race.position === 'Crew') return true
+    }
+    if (active.includes('wcr')) {
+      if (!race.ratingType.includes('t') && race.ratingType.includes('w') && race.position === 'Crew') return true
+    }
+    if (active.includes('wtcr')) {
+      if (race.ratingType.includes('t') && race.ratingType.includes('w') && race.position === 'Crew') return true
+    }
+
+    // If race.ratingType itself is exactly one of the active keys (fallback)
+    if (active.includes(race.ratingType)) return true
+
+    return false
+  }
+
+  // Compute the data to display on the chart (filtered -> forward-filled -> extended)
+  const displayRaces = useMemo(() => {
+    if (!allRaces || !allRaces.length) return []
+
+    // visible rating keys (do not include regAvg here)
+    const visibleKeys = allKeys.filter((k) => activeLines.includes(k))
+
+    // filter original mapped races to keep only races that match at least one active visible key
+    // If there are no visible keys (all toggled off), produce an empty array (or optionally keep regAvg-only)
+    if (!visibleKeys.length) return []
+
+    const filteredMapped = allRaces.filter((race) => shouldIncludeRace(race, activeLines))
+
+    // If we have nothing after filtering, return empty
+    if (!filteredMapped.length) return []
+
+    // For regAvg: keep it copied from original races. If it's missing on an item, attempt to use race.regAvg or leave undefined.
+    // Now forward-fill only the visible keys so disabled lines won't be re-created
+    const filled = forwardFill(filteredMapped, visibleKeys)
+
+    // Optionally ensure each filled item still keeps regAvg/conf/etc copied from original if present
+    // (filteredMapped already contains their regAvg if they had it)
+    const last = filled[filled.length - 1]
+    // Append an END sentinel to push lines to the right edge. For regAvg, keep the value from last if present.
+    const end = { ...last, raceID: '/END/' }
+    const extended = [...filled, end]
+    return extended
+  }, [allRaces, activeLines])
+
+  // Custom tick: label each unique regatta on the X axis (works with displayRaces)
+  const CustomTick = ({ x, y, payload, index }) => {
+    if (index === displayRaces.length) return null
+    const currentSeason = displayRaces[index]?.season
+    const previousSeason = index > 0 ? displayRaces[index - 1]?.season : null
+    if (currentSeason !== previousSeason) {
       return (
-        <text
-          fill='var(--text)'
-          x={x}
-          y={y + 10} // Adjust vertical position for better alignment
-          transform={`rotate(45, ${x}, ${y + 10})`} // Rotate text at the tick position
-          className='chartLabel'>
-          {currentEvent}
+        <text fill='var(--text)' x={x} y={y + 10} transform={`rotate(0, ${x}, ${y + 10})`} className='chartLabel'>
+          {currentSeason}
         </text>
       )
     }
-    return null // No label for non-unique events
-  }
-  const CustomTooltip = ({ active, payload, label }) => {
-    if (active) {
-      if (payload[0].payload?.raceID !== '/Start/' && payload[0].payload?.raceID !== '/END/') {
-        return (
-          <>
-            <div className='chartTooltip'>
-              <strong className='text-titlecase'>
-                {payload[0]?.payload?.raceID?.split('/')[1].replace(/-/g, ' ')} {payload[0]?.payload?.raceID?.split('/')[2]}
-              </strong>
-              <table style={{ borderCollapse: 'collapse' }}>
-                <thead>
-                  <tr>
-                    <td>{payload[0]?.payload?.raceID?.split('/')[0]}</td>
-                    <td>Skipper</td>
-                    <td>Crew</td>
-                  </tr>
-                </thead>
-                <tbody>
-                  {woman ? (
-                    <>
-                      <tr>
-                        <td>Women's Fleet</td>
-                        <td>{payload[0]?.payload?.womenSkipperRating?.toFixed(2)}</td>
-                        <td>{payload[0]?.payload?.womenCrewRating?.toFixed(2)}</td>
-                      </tr>
-                      <tr>
-                        <td>Women's Team</td>
-                        <td>{payload[0]?.payload?.wtsr?.toFixed(2)}</td>
-                        <td>{payload[0]?.payload?.wtcr?.toFixed(2)}</td>
-                      </tr>
-                    </>
-                  ) : (
-                    <></>
-                  )}
-                  <tr>
-                    <td>Open Fleet</td>
-                    <td>{payload[0]?.payload?.skipperRating?.toFixed(2)}</td>
-                    <td>{payload[0]?.payload?.crewRating?.toFixed(2)}</td>
-                  </tr>
-                  <tr>
-                    <td>Open Team</td>
-                    <td>{payload[0]?.payload?.tsr?.toFixed(2)}</td>
-                    <td>{payload[0]?.payload?.tcr?.toFixed(2)}</td>
-                  </tr>
-                </tbody>
-              </table>
-              Avg Regatta {payload[0]?.payload?.pos}: {payload[0]?.payload?.regAvg?.toFixed(2)}
-              <br />
-              Position: {payload[0]?.payload?.pos}
-              <br />
-              <br />
-              {/* <span>{new Date(payload[0]?.payload?.date.seconds * 1000).toDateString()}</span> */}
-            </div>
-          </>
-        )
-      }
-    }
-
     return null
   }
 
-  const createRange = (start, end, gap) => Array.from({ length: Math.floor((end - start) / gap) + 1 }, (_, i) => start + i * gap)
+  // Custom tooltip always shows all rating values (for visibleKeys we forward-filled)
+  const CustomTooltip = ({ active, payload }) => {
+    if (!active || !payload?.[0]) return null
+    const d = payload[0].payload
+    if (!d || d.raceID === '/Start/' || d.raceID === '/END/') return null
 
-  const updateRaces = (curLines) => {
-    setRaces(() => {
-      console.log(curLines)
-      return allRaces.filter((race) => {
-        let include = true
-        if (!curLines.includes('skipperRating')) {
-          if (race.type == 'fleet' && !race.womens && race.pos == 'Skipper') {
-            include = false
-          }
-        }
-        if (!curLines.includes('tsr')) {
-          if (race.type == 'team' && !race.womens && race.pos == 'Skipper') {
-            include = false
-          }
-        }
-        if (!curLines.includes('crewRating')) {
-          if (race.type == 'fleet' && !race.womens && race.pos == 'Crew') {
-            include = false
-          }
-        }
-        if (!curLines.includes('tcr')) {
-          if (race.type == 'team' && !race.womens && race.pos == 'Crew') {
-            include = false
-          }
-        }
-        if (!curLines.includes('womenSkipperRating')) {
-          if (race.type == 'fleet' && race.womens && race.pos == 'Skipper') {
-            include = false
-          }
-        }
-        if (!curLines.includes('wtsr')) {
-          if (race.type == 'team' && race.womens && race.pos == 'Skipper') {
-            include = false
-          }
-        }
-        if (!curLines.includes('womenCrewRating')) {
-          if (race.type == 'fleet' && race.womens && race.pos == 'Crew') {
-            include = false
-          }
-        }
-        if (!curLines.includes('wtcr')) {
-          if (race.type == 'team' && race.womens && race.pos == 'Crew') {
-            include = false
-          }
-        }
-
-        return include
-      })
-    })
+    return (
+      <div className='chartTooltip'>
+        <strong className='text-titlecase'>
+          {d.regatta?.replace(/-/g, ' ')} {d.raceNumber + (d.division || '')}
+        </strong>
+        <table style={{ borderCollapse: 'collapse' }}>
+          <thead>
+            <tr>
+              <td>{d.season}</td>
+              <td>Skipper</td>
+              <td>Crew</td>
+            </tr>
+          </thead>
+          <tbody>
+            {woman && (
+              <>
+                <tr>
+                  <td>Women's Fleet</td>
+                  <td>{d.wsr != null ? d.wsr.toFixed(2) : '-'}</td>
+                  <td>{d.wcr != null ? d.wcr.toFixed(2) : '-'}</td>
+                </tr>
+                <tr>
+                  <td>Women's Team</td>
+                  <td>{d.wtsr != null ? d.wtsr.toFixed(2) : '-'}</td>
+                  <td>{d.wtcr != null ? d.wtcr.toFixed(2) : '-'}</td>
+                </tr>
+              </>
+            )}
+            <tr>
+              <td>Open Fleet</td>
+              <td>{d.sr != null ? d.sr.toFixed(2) : '-'}</td>
+              <td>{d.cr != null ? d.cr.toFixed(2) : '-'}</td>
+            </tr>
+            <tr>
+              <td>Open Team</td>
+              <td>{d.tsr != null ? d.tsr.toFixed(2) : '-'}</td>
+              <td>{d.tcr != null ? d.tcr.toFixed(2) : '-'}</td>
+            </tr>
+          </tbody>
+        </table>
+        <br />
+        <small>
+          Regatta Avg: {d.regAvg != null ? d.regAvg.toFixed(2) : '-'} | Position: {d.race?.position ?? '-'}
+        </small>
+      </div>
+    )
   }
 
+  // Legend with toggle support - filter out regAvg so it's not selectable
   const CustomLegend = ({ payload }) => {
+    // Ensure regAvg is always included
+    const base = (payload || []).filter((p) => p.value !== 'regAvg' && p.value !== 'conf')
+    const fullPayload = [...base, { value: 'regAvg', payload: { stroke: '#aaa' } }]
+
     return (
       <div style={{ display: 'flex', justifyContent: 'center' }}>
-        {payload?.map((entry, index) =>
+        {fullPayload.map((entry, index) =>
           !notAvailableLines.includes(entry.value) ? (
             <div
               key={index}
               className='clickable'
-              style={{ margin: '0 10px', display: 'flex', alignItems: 'center' }}
+              style={{
+                margin: '0 10px',
+                display: 'flex',
+                alignItems: 'center',
+                cursor: entry.value === 'regAvg' ? 'default' : 'pointer',
+              }}
               onClick={() => {
-                if (entry.value != 'regAvg') {
-                  if (activeLines.includes(entry.value)) {
-                    if (activeLines.length > 2)
-                      setActiveLines(() => {
-                        updateRaces(activeLines.filter((el) => el !== entry.value))
-                        return activeLines.filter((el) => el !== entry.value)
-                      })
-                  } else {
-                    setActiveLines((prev) => {
-                      updateRaces([...prev, entry.value])
-                      return [...prev, entry.value]
-                    })
-                  }
+                if (entry.value !== 'regAvg') {
+                  setActiveLines((prev) => {
+                    const isActive = prev.includes(entry.value)
+                    const nonRegAvgCount = prev.filter((k) => k !== 'regAvg').length
+
+                    // Prevent disabling the last non-regAvg line
+                    if (isActive && nonRegAvgCount === 1) return prev
+
+                    const next = isActive ? prev.filter((el) => el !== entry.value) : [...prev, entry.value]
+
+                    // Always keep regAvg
+                    if (!next.includes('regAvg')) next.push('regAvg')
+                    return next
+                  })
                 }
               }}>
-              {/* Custom colored square */}
               <div
                 style={{
                   width: 20,
@@ -293,62 +247,130 @@ export default function EloLineChart({ data, woman }) {
                   backgroundColor: entry.payload.stroke,
                   marginRight: 5,
                   opacity: activeLines.includes(entry.value) ? '100%' : '50%',
+                  pointerEvents: entry.value === 'regAvg' ? 'none' : 'auto',
                 }}
               />
-              {/* Custom label with color */}
-              <span style={{ color: entry.payload.stroke, fontWeight: 'bold', opacity: activeLines.includes(entry.value) ? '100%' : '50%' }}>
-                {entry.value == 'crewRating' ? 'Open Crew' : entry.value == 'skipperRating' ? 'Open Skipper' : entry.value == 'womenSkipperRating' ? "Women's Skipper" : entry.value == 'womenCrewRating' ? "Women's Crew" : entry.value == 'tsr' ? 'Open TR Skipper' : entry.value == 'tcr' ? 'Open TR Crew' : entry.value == 'wtsr' ? "Women's TR Skipper" : entry.value == 'wtcr' ? "Women's TR Crew" : 'Regatta Average'}
+              <span
+                style={{
+                  color: entry.payload.stroke,
+                  fontWeight: 'bold',
+                  opacity: activeLines.includes(entry.value) ? '100%' : '50%',
+                  pointerEvents: entry.value === 'regAvg' ? 'none' : 'auto',
+                }}>
+                {entry.value === 'cr' ? 'Open Crew' : entry.value === 'sr' ? 'Open Skipper' : entry.value === 'wsr' ? "Women's Skipper" : entry.value === 'wcr' ? "Women's Crew" : entry.value === 'tsr' ? 'Open TR Skipper' : entry.value === 'tcr' ? 'Open TR Crew' : entry.value === 'wtsr' ? "Women's TR Skipper" : entry.value === 'wtcr' ? "Women's TR Crew" : 'Regatta Average'}
               </span>
             </div>
-          ) : (
-            <div key={index}></div>
-          )
+          ) : null,
         )}
       </div>
     )
   }
 
-  let uniqueRegattas = new Set()
-  let firstRaces = []
-  races?.forEach((race) => {
-    if (race != undefined) {
-      const [season, raceName] = race?.raceID.split('/') // Split the string into [season, raceName, raceNumber]
-      const uniqueKey = `${season}/${raceName}` // Create a unique key by combining season and raceName
-      if (!uniqueRegattas.has(uniqueKey)) {
-        firstRaces.push(race?.raceID)
+  // Build reference lines for start of each visible regatta (based on displayRaces)
+  const refLines = useMemo(() => {
+    const uniqueRegattas = new Set()
+    const firstRaces = []
+    const seasonStarts = []
+    let lastSeason = null
+    displayRaces?.forEach((race) => {
+      const uniqueRegatta = `${race.season}/${race.regatta}`
+      if (!uniqueRegattas.has(uniqueRegatta)) {
+        firstRaces.push(race.raceID)
+        if (race.season !== lastSeason) {
+          seasonStarts.push(race.raceID)
+          lastSeason = race.season
+        }
       }
-      uniqueRegattas.add(uniqueKey) // Add the unique key to the Set
+      uniqueRegattas.add(uniqueRegatta)
+    })
+    return firstRaces.map((race, i) => <ReferenceLine key={i} x={race} strokeDasharray='3 3' strokeWidth={seasonStarts.includes(race) ? 2 : 1} />)
+  }, [displayRaces])
+
+  // const regattaAreas = useMemo(() => {
+  //   if (!displayRaces.length) return []
+
+  //   const areas = []
+  //   let start = 0
+
+  //   for (let i = 1; i < displayRaces.length; i++) {
+  //     const prev = displayRaces[i - 1]
+  //     const curr = displayRaces[i]
+  //     const prevKey = `${prev.season}/${prev.regatta}`
+  //     const currKey = `${curr.season}/${curr.regatta}`
+
+  //     if (prevKey !== currKey) {
+  //       // previous regatta ended at i-1
+  //       areas.push({
+  //         start: displayRaces[start].raceID,
+  //         end: displayRaces[i].raceID,
+  //         rank: getRegDifficulty(displayRaces[start].regAvg),
+  //       })
+  //       start = i
+  //     }
+  //   }
+
+  //   // push final regatta
+  //   const lastIndex = displayRaces.length - 1
+  //   areas.push({
+  //     start: displayRaces[start].raceID,
+  //     end: displayRaces[lastIndex].raceID,
+  //     rank: getRegDifficulty(displayRaces[start].regAvg),
+  //   })
+
+  //   return areas
+  // }, [displayRaces])
+
+  const yMin = useMemo(() => {
+    if (!displayRaces.length) return 0
+
+    let min = Infinity
+
+    for (const r of displayRaces) {
+      // check all possible rating numeric keys
+      for (const key of allKeys) {
+        if (r[key] != null && r[key] < min) min = r[key]
+      }
+      if (r.regAvg != null && r.regAvg < min) min = r.regAvg
     }
-  })
-  uniqueRegattas = Array.from(uniqueRegattas)
-  firstRaces = Array.from(firstRaces)
 
-  let refLines = firstRaces.map((regatta) => <ReferenceLine x={regatta} strokeDasharray='3 3' />)
-  console.log(refLines)
+    return min === Infinity ? 0 : min
+  }, [displayRaces])
 
+  // If displayRaces is empty, we can show an empty chart gracefully
   return (
-    <ResponsiveContainer height={isMobile ? 250 : 480}>
-      <ComposedChart data={races} margin={!isMobile ? { top: 5, right: 5, left: 10, bottom: 130 } : { top: 5, right: 5, left: -10, bottom: -39 }}>
+    <ResponsiveContainer height={280}>
+      <ComposedChart data={displayRaces} margin={{ top: 5, right: 5, left: 20, bottom: -20 }}>
+        {/* Regatta rank color */}
+        {/* {regattaAreas.map((area, i) => (
+          <ReferenceArea key={'hi' + i} x1={area.start} x2={area.end} y1={yMin - 100} y2={yMin - 35} stroke='none' fill={area.rank} />
+        ))} */}
         <CartesianGrid strokeDasharray='3 3' vertical={false} />
-
         {refLines}
-
+        <Area connectNulls dataKey='conf' stroke='#6088ff' fill='#6088ff55' legendType='none' />
         <XAxis dataKey='raceID' tick={<CustomTick />} height={60} interval={0} />
-        <YAxis label={!isMobile ? { value: 'Rating', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle' }, offset: 0 } : {}} />
+        <YAxis
+          domain={['dataMin - 100', 'dataMax + 100']}
+          label={{
+            value: 'Rating',
+            angle: -90,
+            position: 'insideLeft',
+            style: { textAnchor: 'middle' },
+            offset: 0,
+          }}
+        />
         <Tooltip content={<CustomTooltip />} isAnimationActive={false} />
-
-        <Line hide={!activeLines.includes('skipperRating')} strokeWidth={2} type='monotone' dataKey='skipperRating' connectNulls={true} stroke='#6088ff' dot={false} />
-        <Line hide={!activeLines.includes('crewRating')} strokeWidth={2} type='monotone' dataKey='crewRating' connectNulls={true} stroke='#ffc259' dot={false} />
-        <Line hide={!activeLines.includes('womenSkipperRating')} strokeWidth={2} type='monotone' dataKey='womenSkipperRating' connectNulls={true} stroke='#ff8585' dot={false} />
-        <Line hide={!activeLines.includes('womenCrewRating')} strokeWidth={2} type='monotone' dataKey='womenCrewRating' connectNulls={true} stroke='#60b55e' dot={false} />
-
-        <Line hide={!activeLines.includes('tsr')} strokeWidth={2} type='monotone' dataKey='tsr' connectNulls={true} stroke='#a90000' dot={false} />
-        <Line hide={!activeLines.includes('tcr')} strokeWidth={2} type='monotone' dataKey='tcr' connectNulls={true} stroke='#77dd84' dot={false} />
-        <Line hide={!activeLines.includes('wtsr')} strokeWidth={2} type='monotone' dataKey='wtsr' connectNulls={true} stroke='#ef8b60' dot={false} />
-        <Line hide={!activeLines.includes('wtcr')} strokeWidth={2} type='monotone' dataKey='wtcr' connectNulls={true} stroke='#8956e1' dot={false} />
-
-        <Line hide={!activeLines.includes('regAvg')} strokeWidth={2} type='monotone' dataKey='regAvg' stroke='#aaa' dot={false} />
-
+        {/* Render lines for all rating keys but they'll only have values for visible races.
+            hide property remains so users can toggle lines visually */}
+        <Line hide={!activeLines.includes('sr')} strokeWidth={2} type='monotone' dataKey='sr' connectNulls stroke='#6088ff' dot={false} />
+        <Line hide={!activeLines.includes('cr')} strokeWidth={2} type='monotone' dataKey='cr' connectNulls stroke='#ffc259' dot={false} />
+        <Line hide={!activeLines.includes('wsr')} strokeWidth={2} type='monotone' dataKey='wsr' connectNulls stroke='#ff8585' dot={false} />
+        <Line hide={!activeLines.includes('wcr')} strokeWidth={2} type='monotone' dataKey='wcr' connectNulls stroke='#60b55e' dot={false} />
+        <Line hide={!activeLines.includes('tsr')} strokeWidth={2} type='monotone' dataKey='tsr' connectNulls stroke='#a90000' dot={false} />
+        <Line hide={!activeLines.includes('tcr')} strokeWidth={2} type='monotone' dataKey='tcr' connectNulls stroke='#77dd84' dot={false} />
+        <Line hide={!activeLines.includes('wtsr')} strokeWidth={2} type='monotone' dataKey='wtsr' connectNulls stroke='#ef8b60' dot={false} />
+        <Line hide={!activeLines.includes('wtcr')} strokeWidth={2} type='monotone' dataKey='wtcr' connectNulls stroke='#8956e1' dot={false} />
+        {/* Always-on regAvg line: not selectable, still shown if present in displayRaces */}
+        <Line strokeWidth={2} type='monotone' dataKey='regAvg' stroke='#aaa' dot={false} />
         <Legend content={<CustomLegend />} verticalAlign='top' height={isMobile ? 55 : 36} />
       </ComposedChart>
     </ResponsiveContainer>

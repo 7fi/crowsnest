@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { getAllTeams, getTop100 } from '../lib/firebase'
+import { getAllTeams, getHomePageStats } from '../lib/apilib'
 import useTeamCodes from '../lib/teamCodes'
 import RatingNum from '../components/RatingNum'
 import { TbDiamondsFilled } from 'react-icons/tb'
@@ -9,6 +9,7 @@ import { useMobileDetect } from '../lib/hooks'
 
 export default function RankingsHome() {
   const [teams, setTeams] = useState([])
+  const [stats, setStats] = useState({})
   // const [topOpenSkippers, setTopOpenSkippers] = useState([])
   // const [topWomenSkippers, setTopWomenSkippers] = useState([])
   const isMobile = useMobileDetect()
@@ -16,35 +17,31 @@ export default function RankingsHome() {
   const teamCodes = useTeamCodes()
 
   useEffect(() => {
-    getAllTeams().then((teams) => {
-      // console.log(teams.data.teams)
-      setTeams(teams.data.teams)
+    getHomePageStats().then((stats) => {
+      setStats(stats)
     })
-    // getTop100('open', 'Skipper').then((sailors) => {
-    //   setTopOpenSkippers(sailors.data.sailors)
-    // })
-    // getTop100('women', 'Skipper').then((sailors) => {
-    //   setTopWomenSkippers(sailors.data.sailors)
-    // })
+    getAllTeams().then((teams) => {
+      setTeams(teams)
+    })
   }, [])
 
   const nav = useNavigate()
 
   return (
     <div>
-      {/* <img src='https://carteranderson.dev/images/Deep1.png' className='heroImg' /> */}
-      {/* <img src='./hero.jpeg' className='heroImg' /> */}
       <div className='heroContainer' style={{ backgroundImage: `url(/hero.jpeg)` }}>
         <div className='heroBlock'>
           <h1 className='heroTitle'>CrowsNest</h1>
           <h2 className='heroSubtitle'>Home of College Sailing Statistics</h2>
-          <span style={{ color: '#eee' }}>26,122 Sailors | 962,271 Scores | 207 Teams</span>
-          <Link style={{ color: '#eee' }} to={'/rankings/team'}>
-            Last Score Update: 02-06-2026
+          <span style={{ color: '#eee' }}>
+            {stats.numSailors?.toLocaleString()} Sailors | {stats.numScores?.toLocaleString()} Scores | {stats.numTeams} Teams
+          </span>
+          <Link style={{ color: '#eee' }} to={'/teams'}>
+            Last Score Update: {new Date(stats.lastUpdate).toLocaleDateString()}
           </Link>
           {/* <span className='heroExclaim'>Team Racing Coming Soon!</span> */}
-          <Link className='heroExclaim' to={'/rankings/team'}>
-            Scores updated!
+          <Link className='heroExclaim' to={'/sailors'}>
+            {stats.exclaimText}
           </Link>
         </div>
       </div>
@@ -83,27 +80,27 @@ export default function RankingsHome() {
         </div>
         <div className='responsiveRowCol'>
           <div className='flexGrowChild contentBox' style={{ minHeight: 'fit-content' }}>
-            <h2 style={{ margin: 10 }} onClick={() => nav(`/rankings/team`)} className='clickable'>
+            <h2 style={{ margin: 10 }} onClick={() => nav(`/teams?sort=top`)} className='clickable'>
               Top Open Fleet Racing Teams
             </h2>
             <table className='raceByRaceTable'>
               <tbody>
                 {teams
                   .sort((a, b) => {
-                    return b.topRating - a.topRating
+                    return b.topFleetRating - a.topFleetRating
                   })
                   .slice(0, 10)
                   .map((team, index) => (
-                    <tr key={index} className='clickable' onClick={() => nav(`/rankings/team/${team.name}`)}>
+                    <tr key={index} className='clickable' onClick={() => nav(`/teams/${team.teamName}`)}>
                       <td className='tableColFit' style={{ textAlign: 'right' }}>
                         {index + 1}
                       </td>
                       <td className='tableColFit'>
-                        <img style={{ display: 'inline', maxHeight: '3rem', minHeight: 10, minWidth: '3rem' }} src={`https://scores.collegesailing.org/inc/img/schools/${teamCodes[team.name]}.png`} />
+                        <img style={{ display: 'inline', maxHeight: '3rem', minHeight: 10, minWidth: '3rem' }} src={`https://scores.collegesailing.org/inc/img/schools/${teamCodes[team.teamName]}.png`} />
                       </td>
-                      <td>{team.name}</td>
-                      <td className='tableColFit'>
-                        <RatingNum ratingNum={team.topRating} />
+                      <td>{team.teamName}</td>
+                      <td className='tableColFit' style={{ width: '5rem' }}>
+                        <RatingNum ratingNum={team.topFleetRating} />
                       </td>
                     </tr>
                   ))}
@@ -111,7 +108,7 @@ export default function RankingsHome() {
             </table>
           </div>
           <div className='flexGrowChild contentBox' style={{ minHeight: 'fit-content' }}>
-            <h2 style={{ margin: 10 }} onClick={() => nav(`/rankings/team`)} className='clickable'>
+            <h2 style={{ margin: 10 }} onClick={() => nav(`/teams?sort=women`)} className='clickable'>
               Top Women's Fleet Racing Teams
             </h2>
             <table className='raceByRaceTable'>
@@ -122,15 +119,15 @@ export default function RankingsHome() {
                   })
                   .slice(0, 10)
                   .map((team, index) => (
-                    <tr key={index} className='clickable' onClick={() => nav(`/rankings/team/${team.name}`)}>
+                    <tr key={index} className='clickable' onClick={() => nav(`/teams/${team.teamName}`)}>
                       <td className='tableColFit' style={{ textAlign: 'right' }}>
                         {index + 1}
                       </td>
                       <td className='tableColFit'>
-                        <img style={{ display: 'inline', maxHeight: '3rem', minHeight: 10, minWidth: '3rem' }} src={`https://scores.collegesailing.org/inc/img/schools/${teamCodes[team.name]}.png`} />
+                        <img style={{ display: 'inline', maxHeight: '3rem', minHeight: 10, minWidth: '3rem' }} src={`https://scores.collegesailing.org/inc/img/schools/${teamCodes[team.teamName]}.png`} />
                       </td>
-                      <td>{team.name}</td>
-                      <td className='tableColFit'>
+                      <td>{team.teamName}</td>
+                      <td className='tableColFit' style={{ width: '5rem' }}>
                         <RatingNum ratingNum={team.topWomenRating} type='women' />
                       </td>
                     </tr>
@@ -195,13 +192,15 @@ export default function RankingsHome() {
               </a>
               !
             </div> */}
-            <div className='contentBox flexGrowChild'>
-              Data from 2016 onwards has been scraped from techscore and processed to assign each individual sailor a rating value. These ratings change based on performance in regattas, and the strength of the opponents.
+            <div className='contentBox flexGrowChild' style={{ maxWidth: '35rem' }}>
+              {/* We have
+              <br /> */}
+              Data from 2010 onwards has been scraped from techscore and processed to assign each individual sailor a rating value. These ratings change based on performance in regattas, and the strength of the opponents.
               <br />
               <br />
-              Keep in mind that all data is scraped straight from <a href='https://scores.collegesailing.org'>scores.collegesailing.org</a> so any inaccuracies in that data will be reflected here (such as inaccuate RP forms).
+              Keep in mind that all data is scraped straight from <a href='https://scores.collegesailing.org'>scores.collegesailing.org</a> so any inaccuracies in that data will be reflected here (such as inaccurate RP forms).
             </div>
-            <div className='contentBox flexGrowChild'>
+            {/* <div className='contentBox flexGrowChild' style={{ maxWidth: '40rem' }}>
               {' '}
               Here are some common terms to remember:
               <ul>
@@ -218,8 +217,8 @@ export default function RankingsHome() {
                   <strong>Score:</strong> This is the finishing place in the fleet. First place is a score of 1. Tenth is a score of 10.
                 </li>
               </ul>
-            </div>
-            <div className='contentBox flexGrowChild'>
+            </div> */}
+            <div className='contentBox flexGrowChild' style={{ maxWidth: '35rem' }}>
               For more info check out our{' '}
               <Link to={'/about'} style={{ textDecoration: 'underline' }}>
                 about page

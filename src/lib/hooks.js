@@ -1,36 +1,46 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import { useAuthState } from 'react-firebase-hooks/auth'
-
 import { getAuth } from 'firebase/auth'
-import { getFirestore, onSnapshot, doc } from 'firebase/firestore'
+import { getUserData, getUserFollows } from './apilib'
 
 export function useUserData() {
   const auth = getAuth()
-  const db = getFirestore()
   const [user] = useAuthState(auth)
-  const [userVals, setUserVals] = useState({})
-  //   const [username, setUsername] = useState(null)
-  //   const [displayname, setDisplayName] = useState(null)
+  const [userVals, setUserVals] = useState({
+    username: null,
+    displayName: null,
+    pro: null,
+    following: [],
+    tsLink: null,
+  })
 
   useEffect(() => {
     let unsubscribe
+
     if (user) {
-      let docRef = doc(db, 'users', user.uid)
-      // let docSnap = await getDoc(docRef)
-      unsubscribe = onSnapshot(docRef, (snapshot) => {
-        // console.log(snapshot.data())
-        setUserVals({ username: snapshot.data()?.username, displayName: snapshot.data()?.displayName, pro: snapshot.data()?.pro, following: snapshot.data()?.following, tsLink: snapshot.data()?.techscoreLink })
-        // setUsername(snapshot.data()?.username)
-        // setDisplayName(snapshot.data()?.displayName)
-      })
-    } else {
-      setUserVals({ username: null, displayName: null, pro: null, tsLink: null })
+      // Fetch both user data and follows concurrently to avoid race conditions
+      Promise.all([getUserData(user.uid), getUserFollows(user.uid)])
+        .then(([data, follows]) => {
+          setUserVals({
+            username: data?.username ?? null,
+            displayName: data?.displayName ?? null,
+            pro: data?.pro ?? null,
+            following: follows.map((follow) => follow.sailorID),
+            tsLink: data?.techscoreLink ?? null,
+          })
+        })
+        .catch((err) => {
+          console.error('Error fetching user data or follows:', err)
+        })
     }
 
     return unsubscribe
-  }, [user, db])
-  // console.log(displayname)
-  return { user, userVals }
+  }, [user])
+
+  // Memoize the return value so it’s stable between renders
+  const memoized = useMemo(() => ({ user, userVals }), [user, userVals])
+
+  return memoized
 }
 
 export function setTheme(theme) {
@@ -274,6 +284,19 @@ export function useTeamRegions() {
     'Case Western': 'MCSA',
     Oklahoma: 'SEISA',
     Gonzaga: 'PCCSC',
+    Salisbury: 'MAISA',
+    'Santa Barbara City': 'PCCSC',
+    'Johnson and Wales': 'NEISA',
+    Fenway: 'NEISA',
+    'Illinois (Chicago)': 'MCSA',
+    Lawrence: 'MCSA',
+    'Puget Sound': 'NWICSA',
+    'College Sailing': 'GUEST',
+    'Landing School': 'NEISA',
+    'North Florida': 'SAISA',
+    'Cal Poly Maritime': 'PCCSC',
+    'Florida Int': 'SAISA',
+    'Ole Miss': 'SEISA',
   }
   return teamRegions
 }

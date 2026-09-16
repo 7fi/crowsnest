@@ -9,7 +9,7 @@ export default function ProCheck(props) {
 
   // return true
   return userVals.username ? (
-    userVals.pro ? (
+    userVals.pro || true ? (
       props.children
     ) : (
       <div className='contentBox'>
@@ -30,8 +30,10 @@ export default function ProCheck(props) {
     )
   )
 }
+
 export function ProCheckLite(props) {
   const { userVals } = useContext(UserContext)
-  return userVals.pro ? props.children : <span className='secondaryText'>(you need Pro for {props.feature ? props.feature : 'this feautre'})</span>
+  //
+  return userVals.pro || props.disable || true ? props.children : <span className='secondaryText'>(you need Pro for {props.feature ? props.feature : 'this feautre'})</span>
   return true ? props.children : null
 }

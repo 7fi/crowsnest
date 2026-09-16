@@ -2,10 +2,10 @@ import { Link } from 'react-router-dom'
 import { ProCheckLite } from '../ProCheck'
 import RatingNum from '../../RatingNum'
 
-export default function PosInfo({ type, raceType, pos, rating, rank, races }) {
+export default function PosInfo({ isUsers, type, raceType, pos, rating, rank, races }) {
   const RankObj = ({ type, rank, pos, raceType }) => {
     return (
-      <ProCheckLite feature='ranks'>
+      <ProCheckLite disable={isUsers} feature='ranks'>
         {rank != 0 ? (
           <span>
             <Link style={{ textDecoration: 'underline' }} to={`/rankings/${raceType == 'fleet' ? pos : 'tr' + pos}${type == "Women's" ? '/women' : ''}`}>
@@ -13,10 +13,9 @@ export default function PosInfo({ type, raceType, pos, rating, rank, races }) {
             </Link>
 
             {/* for{' '} */}
-            {/* <Link style={{ textDecoration: 'underline' }} to={`/rankings/${raceType == 'fleet' ? pos : 'tr' + pos}${type == "Women's" ? '/women' : ''}`}>
+            {/* <Link style={{ textDecoration: 'underline' }} to={`/sailors/${raceType == 'fleet' ? pos : 'tr' + pos}${type == "Women's" ? '/women' : ''}`}>
               {type.toLowerCase()} {pos}s
             </Link> */}
-            {/* * */}
           </span>
         ) : (
           <span className='secondaryText'> (unranked) </span>
@@ -25,20 +24,38 @@ export default function PosInfo({ type, raceType, pos, rating, rank, races }) {
     )
   }
 
-  const lastRegatta = races
-    .filter((race) => race.pos == pos && (type == "Women's" ? race.womens : !race.womens) && race.type == raceType)
+  function getRaceType(race) {
+    if (race.ratingType.includes('t')) {
+      return 'team'
+    } else {
+      return 'fleet'
+    }
+  }
+  function getRaceWomens(race) {
+    if (race.ratingType.includes('w')) {
+      return true
+    } else {
+      return false
+    }
+  }
+
+  const lastRace = races
+    .filter(
+      (race) =>
+        race.position == pos && //
+        (type == "Women's" ? getRaceWomens(race) : !getRaceWomens(race)) &&
+        getRaceType(race) == raceType
+    )
     .slice(-1)[0]
-    ?.raceID.split('/')
-  console.log(lastRegatta)
 
   const change = races
-    .filter((race) => race.pos == pos && (type == "Women's" ? race.womens : !race.womens) && race.type == raceType)
-    .filter((race) => race.raceID.split('/')[0] == lastRegatta[0] && race.raceID.split('/')[1] == lastRegatta[1])
-    .reduce((sum, race) => sum + Math.round(race.change), 0)
+    .filter((race) => race.position == pos && (type == "Women's" ? getRaceWomens(race) : !getRaceWomens(race)) && getRaceType(race) == raceType)
+    .filter((race) => race.season == lastRace.season && race.regatta == lastRace.regatta)
+    .reduce((sum, race) => sum + Math.round(race.newRating - race.oldRating), 0)
     .toFixed(0)
 
   const peakRating = races
-    .filter((race) => race.pos == pos && (type == "Women's" ? race.womens : !race.womens))
+    .filter((race) => race.position == pos && (type == "Women's" ? getRaceWomens(race) : !getRaceWomens(race)))
     // .sort((a,b) => race)
     .slice(-1)
 
@@ -47,8 +64,8 @@ export default function PosInfo({ type, raceType, pos, rating, rank, races }) {
       {rating != 1000 ? (
         <div className='ratingStatCard'>
           <div>
-            <div style={{ fontSize: '2rem' }}>
-              <RatingNum ratingNum={rating} type={type == "Women's" ? 'women' : 'open'} pos={pos} />
+            <div style={{ fontSize: '2rem', alignItems: 'end' }} className='flexRowContainer'>
+              <RatingNum ratingNum={rating} type={type == "Women's" ? 'women' : 'open'} pos={pos} raceType={raceType} />
               <span style={{ fontSize: '0.7rem' }}>
                 <span
                   style={{

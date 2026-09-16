@@ -4,7 +4,7 @@
   --component-bg: #eaeaea;
   --border: #d1d1d1;
   --veryLight: #f4f4f4;
-  --highlight1: #ffcd1b;
+  --highlight1: #858585;
   --highlight2: #203960;
   --highlight3: #aaa;
   --text: #000;
@@ -12,9 +12,13 @@
   --sucess: #3ee13e;
   --women: #faa;
 
+  --border-size: 0.1rem;
   --radius: 7px;
-  --font: 'Inter';
-  /* --font: 'Roboto'; */
+  /* --font: 'Inter'; */
+  --font: 'Rubik';
+  /* --font: 'Lato'; */
+
+  --shadow: #00000055 1px 1px 5px;
 }
 /* Dark mode */
 [data-theme='dark'] {
@@ -28,6 +32,7 @@
   --highlight3: #555;
   --text: #eee;
   --women: #903737;
+  --shadow: #ffffff30 0 1px 2px inset;
 }
 /* michelle */
 [data-theme='new'] {
@@ -98,7 +103,7 @@ input {
   color: inherit;
 }
 input {
-  border: var(--border) 0.2rem solid;
+  border: var(--border) var(--border-size) solid;
 }
 
 button {
@@ -121,11 +126,16 @@ button:disabled {
 select {
   border-radius: var(--radius);
   background-color: transparent;
-  border: var(--border) 0.2rem solid;
+  border: var(--border) var(--border-size) solid;
+}
+.border {
+  border: var(--border) var(--border-size) solid;
+  border-radius: var(--radius);
+  padding: 0.5rem;
 }
 
 .contentBox {
-  /* border: var(--border) 0.2rem solid; */
+  /* border: var(--border) var(--border-size) solid; */
   border-radius: var(--radius);
   /* background-color: var(--component-bg); */
   box-shadow: 0px 0px 5px #0000001a;
@@ -140,7 +150,7 @@ select {
   margin: 0.5rem;
 }
 .contentBox2 {
-  border: var(--border) 0.2rem solid;
+  border: var(--border) var(--border-size) solid;
   border-radius: var(--radius);
   /* background-color: var(--component-bg); */
   padding: 1rem;
@@ -148,7 +158,7 @@ select {
 }
 
 .contentBox4 {
-  /* border: var(--border) 0.2rem solid; */
+  /* border: var(--border) var(--border-size) solid; */
   border-radius: var(--radius);
   background-color: var(--component-bg);
   padding: 1rem;
@@ -162,7 +172,7 @@ select {
   display: flex;
   flex-direction: row;
   gap: 0 0.3rem;
-  align-items: start;
+  align-items: flex-start;
 }
 
 /* Navbar */
@@ -170,12 +180,12 @@ select {
 .navbar {
   position: fixed;
   top: 0;
-  padding: 1rem;
+  /* padding: 1rem; */
   width: 100%;
   height: 55px;
   background-color: var(--bg);
   /* border-bottom: 0.2rem solid var(--border); */
-  z-index: 10;
+  z-index: 100;
   box-shadow: 0px 0px 5px#00000044;
 }
 
@@ -198,6 +208,24 @@ select {
 
 .navRight li {
   margin: 0.2rem;
+  height: 100%;
+  align-content: center;
+}
+.navRight > li > a {
+  height: 100%;
+  display: block;
+  align-content: center;
+}
+.navRight button {
+  padding: 0.3rem;
+}
+
+.navRight > li > * > button:hover {
+  background-color: inherit;
+}
+
+.navRight > li > *:hover > button {
+  background-color: var(--border);
 }
 
 .navbar .hoverbox .hoverafter {
@@ -206,10 +234,11 @@ select {
   top: 40px;
   background-color: var(--bg);
   flex-direction: column;
-  align-items: start;
+  align-items: flex-start;
 
   border-radius: 0 0 var(--radius) var(--radius);
 }
+
 .hoverafter:hover {
   display: flex;
 }
@@ -217,10 +246,12 @@ select {
 .navbar .hoverbox:hover .hoverafter {
   display: flex;
 }
+
 .hoverafter li {
   padding: 0.3rem 0.4rem;
   width: 100%;
   margin: 0;
+  background-color: var(--bg);
 }
 .hoverafter:hover li:hover {
   padding: 0.3rem 0.4rem;
@@ -395,9 +426,8 @@ select {
   gap: 10px;
   position: relative;
   /* background-color: var(--med); */
-  border: var(--border) 0.2rem solid;
+  border: var(--border) var(--border-size) solid;
   text-align: center;
-  font-family: inherit;
   /* font-weight: 700; */
   font-style: normal;
   font-size: 1.2em;
@@ -451,7 +481,7 @@ select {
 .eventTitleBox {
   display: flex;
   flex-direction: column;
-  align-items: start;
+  align-items: flex-start;
   justify-content: space-between;
 }
 
@@ -522,13 +552,35 @@ select {
 .raceByRaceTable {
   width: 100%;
   border-collapse: collapse;
-  /* border: var(--border) 0.2rem solid;
+  /* border: var(--border) var(--border-size) solid;
   border-radius: var(--radius); */
 }
 .raceByRaceBox {
   max-height: 500px;
   overflow: scroll;
 }
+.raceSailorsTooltip {
+  position: absolute;
+  background-color: var(--bg);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  display: none;
+  flex-direction: column;
+  padding: 0.4rem;
+}
+.scoreRow {
+  height: 110%;
+}
+.scoreEntry {
+  text-align: right;
+}
+.scoreEntry:hover {
+  background-color: var(--border);
+}
+.scoreEntry:hover > .raceSailorsTooltip {
+  display: flex;
+}
+
 .tableColFit {
   width: 1%;
   white-space: nowrap;
@@ -554,6 +606,9 @@ tr:hover td {
 
 .tdRightBorder {
   border-right: 1px solid var(--border);
+}
+.tdLeftBorder {
+  border-left: 1px solid var(--border);
 }
 tbody:not(.ssbody) tr {
   border-bottom: 1px solid var(--border);
@@ -582,7 +637,7 @@ tbody:not(.ssbody) tr:nth-child(even) {
 .ratioBarBg {
   width: 100px;
   height: 100%;
-  border: var(--border) 0.2rem solid;
+  border: var(--border) var(--border-size) solid;
   /* background-color: var(--border); */
   border-radius: var(--radius);
   overflow: visible;
@@ -630,15 +685,15 @@ tr .filterOption:hover {
 }
 
 .tabButton {
-  border: var(--border) 0.2rem solid;
+  border: var(--border) var(--border-size) solid;
 }
 
 .filterHeader {
   width: 100%;
   height: 60px;
   padding: 15px;
-  top: 55px;
-  position: sticky;
+  top: 54px;
+  position: fixed;
   /* z-index: 9; */
   overflow-y: scroll;
   background-color: var(--bg);
@@ -654,8 +709,13 @@ tr .filterOption:hover {
 
 .teamTableContainer {
   max-height: calc(100vh - 55px - 60px); /* Full viewport height minus navbar and filter height */
-  overflow-y: auto;
+  overflow-y: scroll;
+  /* top: 115px; */
+  /* position: relative; */
+  translate: 0 55px;
+  z-index: -1;
 }
+
 .teamsTable thead {
   position: sticky;
   z-index: 2;
@@ -686,8 +746,8 @@ tr .filterOption:hover {
   position: sticky;
   top: 55px;
   width: 100%;
-  background-color: var(--bg);
   z-index: 3;
+  background-color: var(--bg);
 }
 
 .chartTooltip {
@@ -869,15 +929,49 @@ tr .filterOption:hover {
   text-wrap-mode: nowrap;
 }
 .ratingStatCard {
-  border: 2px solid var(--border);
+  /* border: 2px solid var(--border); */
   border-radius: var(--radius);
   padding: 0.3rem;
-  /* box-shadow: #00000066 0 0 5px; */
+  box-shadow: var(--shadow);
   /* max0w: 45%; */
 }
 .ratingStatContainer {
   gap: 0.5rem;
   width: 100%;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 280px);
+}
+
+.teamRatingContainer {
+  /* display: flex;
+  flex-direction: column; */
+  /* grid-template-columns: repeat(auto-fit, minmax(min(100%, 400px), 1fr)); */
+  /* gap: 1rem; */
+  border-collapse: collapse;
+  max-width: 1500px;
+  /* width: 100%; */
+}
+.teamRatingContainer td {
+  padding-right: 2rem;
+}
+.teamRatingSailors > div {
+  gap: 0.5rem;
+}
+@media only screen and (max-width: 750px) {
+  .teamRatingSailors {
+    display: none;
+  }
+}
+
+.teamRatingCard {
+  width: 100%;
+  min-width: 0;
+  box-shadow: var(--shadow);
+  padding: 1rem;
+  border-radius: var(--radius);
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
 }
 
 /* Mobile Stuff */
@@ -885,7 +979,7 @@ tr .filterOption:hover {
   .responsiveRowCol {
     display: flex;
     flex-direction: column;
-    align-items: start;
+    align-items: flex-start;
   }
 
   .chartLabel {
@@ -894,4 +988,231 @@ tr .filterOption:hover {
   .recharts-legend-wrapper {
     top: 0px;
   }
+}
+
+.searchBarContainer {
+  position: fixed;
+  width: 100%;
+  left: 0;
+  padding: 15px;
+  background-color: var(--bg);
+  z-index: 10;
+}
+
+.mobileTeamRow {
+  display: flex;
+  flex-direction: row;
+  border-bottom: var(--border) var(--border-size) solid;
+  padding: 0.5rem;
+  margin: 0.5rem 0;
+}
+
+.mobileControlsContainer {
+  position: fixed;
+  bottom: 1rem;
+  z-index: 10000;
+  background-color: var(--bg);
+  width: calc(100% - 2rem);
+  left: 1rem;
+  /* padding: 1rem; */
+  border-radius: var(--radius);
+  box-shadow: 0px 0px 5px #00000066;
+
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+}
+
+.mobileControlsContainer button {
+  padding: 0.5rem 1rem;
+  border: var(--border) var(--border-size) solid;
+  border-radius: var(--radius);
+
+  flex-grow: 1;
+  text-align: center;
+  justify-content: center;
+}
+
+.mobileControlsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  /* display: flex; */
+  /* flex-direction: row; */
+  gap: 0.5rem;
+  /* flex-wrap: wrap; */
+  padding: 0.5rem;
+}
+
+.flexRowCentered {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.fleetTeamSwitch {
+  display: inline-block;
+  height: 100%;
+  position: relative;
+  width: 100%;
+}
+
+.fleetTeamSwitch input {
+  display: none;
+}
+
+.fleetTeamSlider {
+  background-color: var(--border);
+  bottom: 0;
+  cursor: pointer;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  transition: 0.4s;
+  border-radius: var(--radius);
+}
+
+.fleetTeamSlider:before {
+  background-color: var(--bg);
+  bottom: 4px;
+  content: '';
+  height: calc(100% - 8px);
+  left: 4px;
+  position: absolute;
+  transition: 0.4s;
+  width: 45%;
+  z-index: 1;
+  border-radius: var(--radius);
+}
+
+input:checked + .fleetTeamSlider:before {
+  transform: translateX(110%);
+}
+
+.fleetTeamSliderLabel {
+  position: absolute;
+  z-index: 100;
+  justify-content: space-between;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  padding: 0 0.8rem;
+}
+
+.wideTextWithMargin {
+  margin: 0 25%;
+}
+
+.regattaTabContainer {
+  background-color: var(--component-bg);
+  border-radius: var(--radius);
+  padding: 0.3rem;
+  width: fit-content;
+  margin: 0.5rem;
+}
+.regattaTab {
+  /* background-color: var(--border); */
+  border-radius: calc(var(--radius) / 2);
+  padding: 0.4rem;
+  text-align: center;
+}
+.regattaTab:hover {
+  background-color: var(--border);
+}
+.regattaTabSelected {
+  background-color: var(--highlight3);
+}
+
+/* double slider */
+.range-container {
+  width: 100%;
+  max-width: 700px;
+  min-width: 400px;
+  margin: 20px auto;
+  font-family: Arial, sans-serif;
+}
+
+.range-values {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.slider-wrapper {
+  position: relative;
+  width: 100%;
+  height: 70px;
+  user-select: none;
+  touch-action: none;
+}
+
+.slider-track {
+  position: absolute;
+  top: 20%;
+  transform: translateY(-50%);
+  width: 100%;
+  height: 10px;
+  background-color: var(--border);
+  border-radius: 3px;
+  z-index: 1;
+}
+
+.slider-range {
+  position: absolute;
+  top: 20%;
+  transform: translateY(-50%);
+  height: 10px;
+  background-color: var(--highlight1);
+  border-radius: 3px;
+  z-index: 2;
+  cursor: grab;
+}
+
+.slider-thumb {
+  position: absolute;
+  top: 20%;
+  transform: translate(-50%, -50%);
+  width: 18px;
+  height: 18px;
+  border-radius: calc(var(--radius) / 1.5);
+  background: var(--highlight1);
+  cursor: grab;
+  z-index: 3;
+}
+
+.slider-wrapper.dragging,
+.slider-wrapper.dragging * {
+  cursor: grabbing !important;
+}
+
+.slider-ticks {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.slider-tick {
+  position: absolute;
+  width: 2px;
+  height: 8px;
+  background: var(--border);
+  transform: translate(-50%, -50%);
+  top: 50%;
+}
+
+.tick-label {
+  position: absolute;
+  top: 12px;
+  font-size: 10px;
+  transform: translate(10%, 70%);
+  white-space: nowrap;
+  rotate: 90deg;
+  text-transform: uppercase;
 }

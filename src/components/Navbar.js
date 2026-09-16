@@ -22,6 +22,7 @@ export default function Navbar() {
         <li style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <Link to='/' style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <img style={{ margin: 5 }} src={theme == 'dark' ? `/Logo_Dark.png` : `/Logo_Light.png`} />
+            {/* <img style={{ margin: 5 }} src={theme == 'dark' ? `/Logo_Dark.png` : `/Logo_Large.png`} /> */}
             {isMobile ? (
               <></>
             ) : (
@@ -55,17 +56,19 @@ export default function Navbar() {
               </Link>
             </li> */}
           <li>
-            <Link to={`/rankings/team`}>
+            <Link to={`/teams`}>
               <button>Teams</button>
             </Link>
           </li>
           <li className='hoverbox'>
-            <Link to={`/rankings/search`}>
+            <Link to={`/sailors`}>
               <button>Sailors</button>
             </Link>
-            <div className='hoverafter'>
+            <ul className='hoverafter'>
               <li>
-                <Link to={'/rankings/skipper'}>Top Open Skippers</Link>
+                <Link style={{ height: '100%' }} to={'/rankings/skipper'}>
+                  <span>Top Open Skippers</span>
+                </Link>
               </li>
               <li>
                 <Link to={'/rankings/crew'}>Top Open Crews</Link>
@@ -88,7 +91,7 @@ export default function Navbar() {
               <li>
                 <Link to={'/rankings/trcrew/women'}>Top Women's TR Crews</Link>
               </li>
-            </div>
+            </ul>
           </li>
           {isMobile ? (
             <></>
@@ -99,11 +102,12 @@ export default function Navbar() {
               </Link>
             </li>
           )}
+
           {userVals.tsLink ? (
             <li>
-              <button>
-                <Link to={`/rankings/${userVals?.tsLink?.split('/')[4]}`}>{userVals?.displayName}</Link>
-              </button>
+              <Link to={`/sailors/${userVals?.tsLink?.split('/')[4]}`}>
+                <button>{userVals?.displayName}</button>
+              </Link>
             </li>
           ) : (
             <></>

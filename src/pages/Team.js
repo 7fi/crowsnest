@@ -47,13 +47,13 @@ export default function Team() {
           <>
             <div className='contentBox flexRowContainer'>
               <span className='text-title text-titlecase'>{team?.teamName}</span>
-              <Link to={`/team/${team?.teamName}/pairs`}>
+              <Link to={`/teams/${team?.teamName}/pairs`}>
                 <button>Pairs</button>
               </Link>
             </div>
             <div className='contentBox'>
               <div className='flexRowContainer'>
-                <Link to={`/team/${team?.teamName}/events`}>
+                <Link to={`/teams/${team?.teamName}/events`}>
                   <h3>Events</h3>
                 </Link>
                 <button>
