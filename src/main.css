@@ -974,6 +974,10 @@ tr .filterOption:hover {
   justify-content: space-between;
 }
 
+.rankingRating {
+  float: right;
+}
+
 /* Mobile Stuff */
 @media only screen and (max-device-width: 600px) {
   .responsiveRowCol {

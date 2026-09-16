@@ -9,7 +9,7 @@ const app = express()
 app.use(cors())
 app.use(express.json())
 
-const targetSeasons = "'f26'"
+const targetSeasons = "'s26','f26'"
 
 // Create a connection pool (better performance than single connection)
 const pool = mysql.createPool({
@@ -56,7 +56,7 @@ app.get('/sailors/top', async (req, res) => {
   try {
     const [rows] = await pool.query(
       `
-      SELECT s.sailorID, s.name, s.year, st.teamID, s.${ratingQuery} AS rating
+      SELECT s.sailorID, s.name, s.year, st.teamID, s.${ratingQuery} AS rating, crossLinks, outLinks
       FROM Sailors s
       JOIN SailorTeams st ON s.sailorID = st.sailorID
       WHERE s.${rankQuery} != 0
