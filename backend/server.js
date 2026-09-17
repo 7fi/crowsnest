@@ -10,7 +10,7 @@ dotenv.config()
 const app = express()
 app.use(cors())
 app.use(express.json())
-app.use('/', swaggerUi.serve, swaggerUi.setup(swaggerSpec))
+app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec))
 
 const targetSeasons = "'s26','f26'"
 
@@ -21,6 +21,10 @@ const pool = mysql.createPool({
   port: process.env.DB_PORT,
   password: process.env.DB_PASS,
   database: process.env.DB_NAME,
+})
+
+app.get('/', async (req, res) => {
+  res.send('<p>You found the crowsnest backend API!<br /> Visit <a href="/docs">/docs</a> for documentation</p>')
 })
 
 /**
