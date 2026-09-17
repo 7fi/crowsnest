@@ -96,15 +96,15 @@ export default function App() {
               <Route path='/sailors' element={<EloSearch />} />
               {/* <Route path='/rankings/:sailorAName/vs/:sailorBName' element={<VersusRanking />} /> */}
               <Route path='/teams' element={<EloTeams />} />
+              <Route path='teams/screenshot' element={<SSTeams />} />
               <Route path='/teams/:teamName' element={<TeamRankings />} />
               <Route path='/regattas/:season/:regattaName' element={<RegattaRace />} />
               <Route path='/regattas/:season/:regattaName/:raceNum' element={<RegattaRace />} />
 
               <Route path='/teams/compare' element={<TeamCompare />} />
               {/* <Route path='/regattas/:season/:regattaName/:raceNum/:pos' element={<RegattaRankings />} /> */}
-              {/* <Route path='/rankings/simulator' element={<Simulator />} />
-              <Route path='/rankings/screenshot' element={<SSTeams />} />
-              <Route path='/rankings/history' element={<History />} /> */}
+              {/* <Route path='/rankings/simulator' element={<Simulator />} /> */}
+              {/*<Route path='/rankings/history' element={<History />} /> */}
               <Route path='/feed' element={<Feed />} />
               <Route path='/drag' element={<TestDrag />} />
               <Route path='/:text' element={<NotFound />} />
