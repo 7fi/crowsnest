@@ -6,18 +6,9 @@ import { useUserData } from './lib/hooks'
 import { UserContext } from './lib/context'
 import { Toaster } from 'react-hot-toast'
 import { checkTheme } from './lib/hooks'
-import Home from './pages/Home'
 import Enter from './pages/Enter'
 import Profile from './pages/Profile'
-import Team from './pages/Team'
-import CreateTeam from './pages/CreateTeam'
 import NotFound from './pages/NotFound'
-import Teams from './pages/Teams'
-import Pairs from './pages/Pairs'
-import Scores from './pages/Scores'
-import Event from './pages/Event'
-import Events from './pages/Events'
-import CreateEvent from './pages/CreateEvent'
 import TestDrag from './pages/TestDrag'
 import Rankings from './pages/Rankings'
 import TeamRankings from './pages/TeamPage'
@@ -25,9 +16,7 @@ import EloTeams from './pages/EloTeams'
 import GlobalRankings from './pages/GlobalRankings'
 import RankingsHome from './pages/RankingsHome'
 import { useEffect } from 'react'
-import VersusRanking from './pages/VersusRanking'
 import EloSearch from './pages/EloSearch'
-import ScrollToTop from './components/ScrollToTop'
 import ScrollButton from './components/ScrollToTop'
 import Claim from './pages/Claim'
 import Footer from './components/Footer'
@@ -35,11 +24,10 @@ import About from './pages/About'
 import PostHogPageviewTracker from './lib/PostHogPageviewTracker'
 import posthog from 'posthog-js'
 import Feed from './pages/Feed'
-import Simulator from './pages/Simulator'
 import SSTeams from './pages/SSTeams'
-import History from './pages/History'
 import RegattaRace from './pages/RegattaRace'
 import TeamCompare from './pages/TeamCompare'
+import Simulator from './pages/Simulator'
 
 export default function App() {
   const userData = useUserData()
@@ -103,15 +91,15 @@ export default function App() {
 
               <Route path='/teams/compare' element={<TeamCompare />} />
               {/* <Route path='/regattas/:season/:regattaName/:raceNum/:pos' element={<RegattaRankings />} /> */}
-              {/* <Route path='/rankings/simulator' element={<Simulator />} /> */}
+              <Route path='/simulator' element={<Simulator />} />
               {/*<Route path='/rankings/history' element={<History />} /> */}
               <Route path='/feed' element={<Feed />} />
               <Route path='/drag' element={<TestDrag />} />
               <Route path='/:text' element={<NotFound />} />
             </Routes>
-            {pathname != '/teams' && pathname != '/sailors' ? <Footer /> : <></>}
+            {pathname !== '/teams' && pathname !== '/sailors' ? <Footer /> : <></>}
             <Toaster position='top-center' reverseOrder={false} />
-            {pathname != '/teams' ? <ScrollButton /> : <></>}
+            {pathname !== '/teams' ? <ScrollButton /> : <></>}
             {/* <div onClick={() => window.scrollTo(0, 0)} style={{ position: 'sticky', bottom: -20, right: 0, visibility: window.scrollX > 20 ? 'visible' : 'visible' }}>
               top
             </div> */}

@@ -21,8 +21,8 @@ export default function EloLineChart({ data, woman }) {
     arr.forEach((d) => {
       const copy = { ...d }
       keys.forEach((k) => {
-        if (copy[k] != null) last[k] = copy[k]
-        else if (last[k] != null) copy[k] = last[k]
+        if (copy[k] !== null) last[k] = copy[k]
+        else if (last[k] !== null) copy[k] = last[k]
       })
       filled.push(copy)
     })
@@ -152,7 +152,7 @@ export default function EloLineChart({ data, woman }) {
 
   // Custom tooltip always shows all rating values (for visibleKeys we forward-filled)
   const CustomTooltip = ({ active, payload }) => {
-    if (!active || !payload?.[0]) return null
+    if (!active || !payload?.[0] || !payload[0].payload) return null
     const d = payload[0].payload
     if (!d || d.raceID === '/Start/' || d.raceID === '/END/') return null
 
@@ -174,31 +174,31 @@ export default function EloLineChart({ data, woman }) {
               <>
                 <tr>
                   <td>Women's Fleet</td>
-                  <td>{d.wsr != null ? d.wsr.toFixed(2) : '-'}</td>
-                  <td>{d.wcr != null ? d.wcr.toFixed(2) : '-'}</td>
+                  <td>{d.wsr !== null ? d.wsr?.toFixed(2) : '-'}</td>
+                  <td>{d.wcr !== null ? d.wcr?.toFixed(2) : '-'}</td>
                 </tr>
                 <tr>
                   <td>Women's Team</td>
-                  <td>{d.wtsr != null ? d.wtsr.toFixed(2) : '-'}</td>
-                  <td>{d.wtcr != null ? d.wtcr.toFixed(2) : '-'}</td>
+                  <td>{d.wtsr !== null ? d.wtsr?.toFixed(2) : '-'}</td>
+                  <td>{d.wtcr !== null ? d.wtcr?.toFixed(2) : '-'}</td>
                 </tr>
               </>
             )}
             <tr>
               <td>Open Fleet</td>
-              <td>{d.sr != null ? d.sr.toFixed(2) : '-'}</td>
-              <td>{d.cr != null ? d.cr.toFixed(2) : '-'}</td>
+              <td>{d.sr !== null ? d.sr?.toFixed(2) : '-'}</td>
+              <td>{d.cr !== null ? d.cr?.toFixed(2) : '-'}</td>
             </tr>
             <tr>
               <td>Open Team</td>
-              <td>{d.tsr != null ? d.tsr.toFixed(2) : '-'}</td>
-              <td>{d.tcr != null ? d.tcr.toFixed(2) : '-'}</td>
+              <td>{d.tsr !== null ? d?.tsr?.toFixed(2) : '-'}</td>
+              <td>{d.tcr !== null ? d?.tcr?.toFixed(2) : '-'}</td>
             </tr>
           </tbody>
         </table>
         <br />
         <small>
-          Regatta Avg: {d.regAvg != null ? d.regAvg.toFixed(2) : '-'} | Position: {d.race?.position ?? '-'}
+          Regatta Avg: {d.regAvg !== null ? d.regAvg.toFixed(2) : '-'} | Position: {d.race?.position ?? '-'}
         </small>
       </div>
     )
@@ -328,9 +328,9 @@ export default function EloLineChart({ data, woman }) {
     for (const r of displayRaces) {
       // check all possible rating numeric keys
       for (const key of allKeys) {
-        if (r[key] != null && r[key] < min) min = r[key]
+        if (r[key] !== null && r[key] < min) min = r[key]
       }
-      if (r.regAvg != null && r.regAvg < min) min = r.regAvg
+      if (r.regAvg !== null && r.regAvg < min) min = r.regAvg
     }
 
     return min === Infinity ? 0 : min

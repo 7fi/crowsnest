@@ -107,6 +107,17 @@ CREATE TABLE SailorRivals(
 #     CONSTRAINT FOREIGN KEY (rivalID) REFERENCES Sailors(sailorID)
 );
 
+CREATE TABLE RegattaResults (
+    season char(4),
+    regatta varchar(100),
+    boatName varchar(100),
+    place INT,
+    totalBoats INT,
+    ratingType char(4),
+    teamID varchar(50),
+    teamName varchar(50)
+)
+
 DROP TABLE IF EXISTS FleetScores;
 CREATE TABLE FleetScores(
     season char(4),

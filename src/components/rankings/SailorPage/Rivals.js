@@ -12,7 +12,7 @@ export default function Rivals({ rivals, pos }) {
   const nav = useNavigate()
 
   useEffect(() => {
-    if (rivals != undefined) {
+    if (rivals !== undefined) {
       const allSeasons = rivals.reduce((acc, rival) => {
         if (!acc.includes(rival.season)) {
           acc.push(rival.season)
@@ -25,13 +25,13 @@ export default function Rivals({ rivals, pos }) {
     }
   }, [rivals, pos])
 
-  if (rivals == undefined) {
+  if (rivals === undefined) {
     return <></>
   }
 
   const toggleFilter = (season, element) => {
-    if (activeSeasons.indexOf(season) != -1) {
-      if (activeSeasons.length > 1) setActiveSeasons(activeSeasons.filter((reg) => reg != season))
+    if (activeSeasons.indexOf(season) !== -1) {
+      if (activeSeasons.length > 1) setActiveSeasons(activeSeasons.filter((reg) => reg !== season))
     } else {
       setActiveSeasons((activeSeasons) => [...activeSeasons, season])
     }
@@ -46,9 +46,9 @@ export default function Rivals({ rivals, pos }) {
         <div className='flexRowContainer flexWrap'>
           {allSeasons
             .sort((a, b) => {
-              if (parseInt(a.slice(1, 3)) - parseInt(b.slice(1, 3)) != 0) {
+              if (parseInt(a.slice(1, 3)) - parseInt(b.slice(1, 3)) !== 0) {
                 return parseInt(a.slice(1, 3)) - parseInt(b.slice(1, 3))
-              } else if (a.slice(0, 1) == 's' && b.slice(0, 1) == 'f') {
+              } else if (a.slice(0, 1) === 's' && b.slice(0, 1) === 'f') {
                 return -1
               } else {
                 return 1

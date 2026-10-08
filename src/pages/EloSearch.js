@@ -31,7 +31,7 @@ export default function EloSearch() {
 
   useEffect(() => {
     if (query === '') {
-      if (defaultSailors.length == 0) {
+      if (defaultSailors.length === 0) {
         getTopSailors('skipper', 'fleet', false).then((data) => {
           setSailors(data)
           setDefaultSailors(data)

@@ -23,7 +23,7 @@ export default function RaceByRace({ races, woman, showFilter }) {
   const toggleFilter = (filter) => {
     if (positions.includes(filter)) {
       if (activePositions.includes(filter) && [...activeRaceTypes, ...activePositions, ...activeTypes].length > 1) {
-        setActivePositions((prev) => prev.filter((item) => item != filter))
+        setActivePositions((prev) => prev.filter((item) => item !== filter))
       } else {
         setActivePositions((prev) => [...prev, filter])
       }
@@ -31,7 +31,7 @@ export default function RaceByRace({ races, woman, showFilter }) {
 
     if (types.includes(filter)) {
       if (activeTypes.includes(filter) && [...activeRaceTypes, ...activePositions, ...activeTypes].length > 1) {
-        setActiveTypes((prev) => prev.filter((item) => item != filter))
+        setActiveTypes((prev) => prev.filter((item) => item !== filter))
       } else {
         setActiveTypes((prev) => [...prev, filter])
       }
@@ -39,7 +39,7 @@ export default function RaceByRace({ races, woman, showFilter }) {
 
     if (raceTypes.includes(filter)) {
       if (activeRaceTypes.includes(filter) && [...activeRaceTypes, ...activePositions, ...activeTypes].length > 1) {
-        setActiveRaceTypes((prev) => prev.filter((item) => item != filter))
+        setActiveRaceTypes((prev) => prev.filter((item) => item !== filter))
       } else {
         setActiveRaceTypes((prev) => [...prev, filter])
       }
@@ -59,17 +59,17 @@ export default function RaceByRace({ races, woman, showFilter }) {
         isSearched = true
       }
 
-      let validType = race.ratingType.includes('w') == activeTypes.includes("Women's") || !race.ratingType.includes('w') == activeTypes.includes('Open')
+      let validType = race.ratingType.includes('w') === activeTypes.includes("Women's") || !race.ratingType.includes('w') === activeTypes.includes('Open')
       if (!activeTypes.includes("Women's") && !activeTypes.includes('Open')) {
         validType = false
       }
 
-      let validPos = (race.position == 'Skipper' && activePositions.includes('Skipper')) || (race.position == 'Crew' && activePositions.includes('Crew'))
+      let validPos = (race.position === 'Skipper' && activePositions.includes('Skipper')) || (race.position === 'Crew' && activePositions.includes('Crew'))
       if (!activePositions.includes('Skipper') && !activePositions.includes('Crew')) {
         validPos = false
       }
 
-      let validRaceType = !race.ratingType.includes('t') == activeRaceTypes.includes('Fleet') || race.ratingType.includes('t') == activeRaceTypes.includes('Team Race')
+      let validRaceType = !race.ratingType.includes('t') === activeRaceTypes.includes('Fleet') || race.ratingType.includes('t') === activeRaceTypes.includes('Team Race')
       if (!activeRaceTypes.includes('Team Race') && !activeRaceTypes.includes('Fleet')) {
         validRaceType = false
       }
@@ -79,7 +79,7 @@ export default function RaceByRace({ races, woman, showFilter }) {
     .sort((b, a) => {
       let datea = new Date(a.date)
       let dateb = new Date(b.date)
-      if (datea - dateb != 0) {
+      if (datea - dateb !== 0) {
         return datea - dateb
       }
       return a.raceNumber - b.raceNumber
@@ -174,14 +174,14 @@ export default function RaceByRace({ races, woman, showFilter }) {
                       {/* <Link to={`/sailors/${race.partner['link']}`}>{race.partner['name']}</Link> */}
                       <div>{race.partnerName}</div>
                     </td>
-                    <td style={{ textAlign: 'right', color: !race.ratingType.includes('t') ? (race.score < race.predicted ? 'green' : race.score > race.predicted ? 'red' : '') : race.outcome == 'win' && race.predicted == 'lose' ? 'green' : !race.ratingType.includes('t') ? (race.score > race.predicted ? 'red' : race.score < race.predicted ? 'green' : '') : race.outcome == 'lose' && race.predicted == 'win' ? 'red' : '' }}>
+                    <td style={{ textAlign: 'right', color: !race.ratingType.includes('t') ? (race.score < race.predicted ? 'green' : race.score > race.predicted ? 'red' : '') : race.outcome === 'win' && race.predicted === 'lose' ? 'green' : !race.ratingType.includes('t') ? (race.score > race.predicted ? 'red' : race.score < race.predicted ? 'green' : '') : race.outcome === 'lose' && race.predicted === 'win' ? 'red' : '' }}>
                       {race.score}
-                      {race.ratingType.includes('t') ? (race.outcome == 'win' ? '  ' : '') + ' (' + race.outcome + ')' : ''}
-                      {!race.ratingType.includes('t') ? (race.score == 1 ? 'st' : race.score == 2 ? 'nd' : race.score == 3 ? 'rd' : 'th') : ' '}
+                      {race.ratingType.includes('t') ? (race.outcome === 'win' ? '  ' : '') + ' (' + race.outcome + ')' : ''}
+                      {!race.ratingType.includes('t') ? (race.score === 1 ? 'st' : race.score === 2 ? 'nd' : race.score === 3 ? 'rd' : 'th') : ' '}
                     </td>
                     <td style={{ textAlign: 'right' }}>
                       {race.predicted}
-                      {!race.ratingType.includes('t') ? (race.predicted == 1 ? 'st' : race.predicted == 2 ? 'nd' : race.predicted == 3 ? 'rd' : 'th') : ''}
+                      {!race.ratingType.includes('t') ? (race.predicted === 1 ? 'st' : race.predicted === 2 ? 'nd' : race.predicted === 3 ? 'rd' : 'th') : ''}
                     </td>
                     <td style={{ textAlign: 'center' }}>{!race.ratingType.includes('t') ? <RatioBar ratio={race.ratio} /> : ''}</td>
                     <td style={{ textAlign: 'right' }} className='tableColFit'>

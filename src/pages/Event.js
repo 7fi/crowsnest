@@ -156,7 +156,7 @@ export default function Event() {
             </ul>
           </div>
         </div>
-        {/* {pageEvent.sport == 'Sailing' && <Pairs />} */}
+        {/* {pageEvent.sport === 'Sailing' && <Pairs />} */}
       </AuthCheck>
     </main>
   )
@@ -179,7 +179,7 @@ async function addRide(pageEvent, eventID, user, team, rides, setRides) {
             }}
             onKeyDown={(e) => {
               console.log(e.key)
-              if (e.key == 'Enter') {
+              if (e.key === 'Enter') {
                 updateRides(eventID, rides, setRides, curUserData, spots)
                 toast.dismiss(t.id)
               }
@@ -243,11 +243,11 @@ async function updateGoing(pageEvent, eventID, user, team, status, ride, going, 
       let d = doc(db, `events/${eventID}`)
       let docSnap = (await getDoc(d)).data()
       console.log(docSnap)
-      // console.log(docSnap?.going.find((m) => uid == m.uid))
-      // if (docSnap?.going.find((m) => uid == m.uid) == undefined)
+      // console.log(docSnap?.going.find((m) => uid === m.uid))
+      // if (docSnap?.going.find((m) => uid === m.uid) === undefined)
 
       await deleteRSVP(eventID, user)
-      if (status == 'going') {
+      if (status === 'going') {
         toast(
           (t) => (
             <div>
@@ -276,13 +276,13 @@ async function updateGoing(pageEvent, eventID, user, team, status, ride, going, 
                 </button>
               </div>
             </div>
-          )
+          ),
           // { position: 'top-center' }
         )
-      } else if (status == 'maybe') {
+      } else if (status === 'maybe') {
         await updateDoc(d, { maybe: arrayUnion({ userId: user.uid, username: curUserData.username, displayName: curUserData.displayName, needsRide: ride }) })
         // setMaybe([...maybe, { userId: user.uid, username: curUserData.username, displayName: curUserData.displayName, needsRide: ride }])
-      } else if (status == 'ngoing') {
+      } else if (status === 'ngoing') {
         await updateDoc(d, { ngoing: arrayUnion({ userId: user.uid, username: curUserData.username, displayName: curUserData.displayName, needsRide: ride }) })
         // setNGoing([...ngoing, { userId: user.uid, username: curUserData.username, displayName: curUserData.displayName, needsRide: ride }])
       }
@@ -299,8 +299,8 @@ async function deleteRSVP(eventID, user) {
   let d = doc(db, `events/${eventID}`)
   let docSnap = (await getDoc(d)).data()
   // console.log(docSnap.going[0])
-  console.log(docSnap?.going?.find((item) => item.userId == user.uid))
-  if (docSnap.going && docSnap.going.length > 0) await updateDoc(d, { going: arrayRemove(docSnap?.going?.find((item) => item.userId == user.uid)) })
-  if (docSnap.maybe && docSnap.maybe.length > 0) await updateDoc(d, { maybe: arrayRemove(docSnap?.maybe?.find((item) => item.userId == user.uid)) })
-  if (docSnap.ngoing && docSnap.ngoing.length > 0) await updateDoc(d, { ngoing: arrayRemove(docSnap?.ngoing?.find((item) => item.userId == user.uid)) })
+  console.log(docSnap?.going?.find((item) => item.userId === user.uid))
+  if (docSnap.going && docSnap.going.length > 0) await updateDoc(d, { going: arrayRemove(docSnap?.going?.find((item) => item.userId === user.uid)) })
+  if (docSnap.maybe && docSnap.maybe.length > 0) await updateDoc(d, { maybe: arrayRemove(docSnap?.maybe?.find((item) => item.userId === user.uid)) })
+  if (docSnap.ngoing && docSnap.ngoing.length > 0) await updateDoc(d, { ngoing: arrayRemove(docSnap?.ngoing?.find((item) => item.userId === user.uid)) })
 }

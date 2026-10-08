@@ -14,7 +14,7 @@ export default function VenueResults({ races }) {
 
   // Step 1: Calculate total change and count for each venue
   const venueStats = races.reduce((acc, race) => {
-    if (race.venue == undefined) {
+    if (race.venue === undefined) {
       // console.log(race)
     }
     if (!acc[race.venue]) {
@@ -25,7 +25,7 @@ export default function VenueResults({ races }) {
     if (!race.ratingType.includes('t')) {
       acc[race.venue].ratio += race.ratio
     } else {
-      acc[race.venue].ratio += race.outcome == 'win' ? 1 : 0
+      acc[race.venue].ratio += race.outcome === 'win' ? 1 : 0
     }
     return acc
   }, {})
@@ -90,10 +90,10 @@ export default function VenueResults({ races }) {
       </thead>
       <tbody>
         {sortedVenues.map((venue, index) =>
-          venue.name != 'Unknown' ? (
+          venue.name !== 'Unknown' ? (
             <tr className='' key={venue.name} style={{ margin: '5px' }}>
               <td className='tdRightBorder tableColFit secondaryText'>{index + 1}</td>
-              <td>{venue.name == 'undefined' || venue.name == undefined ? 'Unknown' : venue.name} </td>
+              <td>{venue.name === 'undefined' || venue.name === undefined ? 'Unknown' : venue.name} </td>
               <td>
                 {Object.keys(teamRegions).includes(venue.name) ? (
                   <div className='filterOption' style={{ backgroundColor: regionColors[teamRegions[venue.name]], fontSize: '0.8rem', float: 'right' }}>
@@ -117,7 +117,7 @@ export default function VenueResults({ races }) {
             </tr>
           ) : (
             <></>
-          )
+          ),
         )}
       </tbody>
     </table>

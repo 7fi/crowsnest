@@ -46,7 +46,7 @@ export default function Rankings() {
         totalRaces.sort((a, b) => {
           let datea = new Date(a.date)
           let dateb = new Date(b.date)
-          if (datea - dateb != 0) {
+          if (datea - dateb !== 0) {
             return datea - dateb
           }
           return a.raceNumber - b.raceNumber
@@ -66,8 +66,8 @@ export default function Rankings() {
       document.querySelector(':root').style.setProperty('--highlight1', regionColors[teamRegions[teamsData[0].teamID]])
 
       setRivals({
-        skipper: rivalsData.filter((rival) => rival.position == 'Skipper'),
-        crew: rivalsData.filter((rival) => rival.position == 'Crew'),
+        skipper: rivalsData.filter((rival) => rival.position === 'Skipper'),
+        crew: rivalsData.filter((rival) => rival.position === 'Crew'),
       })
 
       setFollowCount(followsData.count)
@@ -80,7 +80,7 @@ export default function Rankings() {
       console.log('checking following', userData.userVals?.following, sailor?.sailorID)
       // setFollowing(sailor?.followers?.some((fol) => fol.followerUid === userData?.user?.uid))
       setFollowing(userData.userVals?.following?.includes(sailor?.sailorID))
-      setIsUsers(userData.userVals?.tsLink?.split('/')[4] == key)
+      setIsUsers(userData.userVals?.tsLink?.split('/')[4] === key)
     }
   }, [key, userData])
 
@@ -188,7 +188,7 @@ export default function Rankings() {
                         race.ratio = 0
                       }
                       if (race.ratingType.includes('t')) {
-                        if (race.outcome == 'win') {
+                        if (race.outcome === 'win') {
                           race.ratio = 1
                         } else {
                           race.ratio = 0
@@ -213,20 +213,6 @@ export default function Rankings() {
             ]
           )}
 
-          {/* <h2>
-            Race by race breakdown: <span className='secondaryText'>(scroll for more)</span>
-          </h2>
-
-          <div className='responsiveRowCol'>
-            <div className='flexGrowChild '>
-              <h2>Rating changes by partner </h2>
-            </div>
-            <div className='flexGrowChild'>
-              <h2>Rating changes by venue </h2>
-            </div>
-          </div>
-          <div className='responsiveRowCol'></div> */}
-
           {!isMobile && false ? (
             <>
               <h2>Rating changes by race</h2>
@@ -241,8 +227,8 @@ export default function Rankings() {
                   if (race.ratio < 0) {
                     race.ratio = 0
                   }
-                  if (race.type == 'team') {
-                    if (race.outcome == 'win') {
+                  if (race.type === 'team') {
+                    if (race.outcome === 'win') {
                       race.ratio = 1
                     } else {
                       race.ratio = 0

@@ -14,7 +14,7 @@ export default function Claim() {
   const claimLink = searchParams.get('link')
 
   useEffect(() => {
-    if (claimLink != null && claimLink != '') setLink('https://scores.collegesailing.org/sailors/' + claimLink)
+    if (claimLink !== null && claimLink !== '') setLink('https://scores.collegesailing.org/sailors/' + claimLink)
     console.log(claimLink)
   }, [claimLink])
 
@@ -44,7 +44,7 @@ export default function Claim() {
           </div>
           <button
             onClick={() => {
-              if (id != 0 && id > 999999 && id < 10000000 && link != '') {
+              if (id !== 0 && id > 999999 && id < 10000000 && link !== '') {
                 createLink(user.uid, id, link)
                 setId('')
                 setLink('')

@@ -34,7 +34,7 @@ export default function TeamRankings() {
 
   useEffect(() => {
     getTeam(teamName).then((tempTeam) => {
-      if (tempTeam == undefined) return
+      if (tempTeam === undefined) return
       // console.log(tempTeam)
       setTeamMembers(tempTeam.members)
       setRating(tempTeam.data.avgRating)
@@ -55,7 +55,7 @@ export default function TeamRankings() {
       })
       setActiveSeasons([uniqueSeasons[uniqueSeasons.length - 1]])
       setAllSeasons(uniqueSeasons)
-      if (tempTeam.data.region != '') {
+      if (tempTeam.data.region !== '') {
         document.querySelector(':root').style.setProperty('--highlight1', regionColors[tempTeam.data.region])
       }
       setLoaded(true)
@@ -90,8 +90,8 @@ export default function TeamRankings() {
 
     // const rating = pos === 'skipper' ? (member.wsr !== 1000 ? Math.max(member.sr, member.wsr).toFixed(0) : member.sr.toFixed(0)) : member.wcr !== 1000 ? Math.max(member.cr, member.wcr).toFixed(0) : member.cr.toFixed(0)
     // console.log(member)
-    const rankingOpen = (member.rankType?.split('.').includes('sr') && pos == 'skipper') || (member.rankType?.split('.').includes('cr') && pos == 'crew')
-    const rankingWomen = (member.rankType?.split('.').includes('wsr') && pos == 'skipper') || (member.rankType?.split('.').includes('wcr') && pos == 'crew')
+    const rankingOpen = (member.rankType?.split('.').includes('sr') && pos === 'skipper') || (member.rankType?.split('.').includes('cr') && pos === 'crew')
+    const rankingWomen = (member.rankType?.split('.').includes('wsr') && pos === 'skipper') || (member.rankType?.split('.').includes('wcr') && pos === 'crew')
 
     // console.log(member.name, rankingOpen, rankingWomen, member.rankType)
 
@@ -159,7 +159,7 @@ export default function TeamRankings() {
   const PosList = ({ members, pos }) => {
     const seenInThisList = new Set()
 
-    const posMembers = members.filter((member) => member.position == pos && member.teamID == teamName)
+    const posMembers = members.filter((member) => member.position === pos && member.teamID === teamName)
     const filtered = posMembers
       .map((member) => {
         // accumulate numRaces across the activeSeasons before filtering so totals reflect all selected seasons
@@ -168,7 +168,7 @@ export default function TeamRankings() {
         const thisMemberEntries = posMembers.filter((m) => {
           // grab entries of current sailor
           const mKey = m.sailorID ? `${m.sailorID}` : `${m.name}_${pos}`
-          return mKey == key
+          return mKey === key
         })
 
         const numRaces = thisMemberEntries.reduce((total, m) => {
@@ -358,7 +358,7 @@ export default function TeamRankings() {
             <></>
           )}
 
-          {selectionMode == 'advanced' ? (
+          {selectionMode === 'advanced' ? (
             <div className='flexRowContainer flexWrap' style={{ marginLeft: 15 }}>
               {allSeasons
                 .sort((a, b) => {

@@ -1,8 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
-import { useMobileDetect } from '../lib/hooks'
 
 export default function DoubleSlider({ values = [], initialStart, initialEnd, onChange, showTicks = true }) {
-  const mobile = useMobileDetect()
   let newValues = Array.from(values)
 
   // if (mobile && newValues.length > 10) {

@@ -36,7 +36,7 @@ export default function Simulator() {
               return b.topRatingTR - a.topRatingTR
             }
           })
-          .map((team) => team.name)
+          .map((team) => team.name),
       )
     }
   }, [linkTeams, allTeams, byPreds])
@@ -98,7 +98,7 @@ export default function Simulator() {
   const check = (e) => {
     console.log(e.target.value)
     if (selectedTeams.includes(e.target.value)) {
-      setSelectedTeams((old) => old.filter((t) => t != e.target.value))
+      setSelectedTeams((old) => old.filter((t) => t !== e.target.value))
     } else {
       setSelectedTeams((old) => [...old, e.target.value])
     }
@@ -114,10 +114,10 @@ export default function Simulator() {
     const openWindow = () => setWindowOpen(true)
     const closeWindow = () => setWindowOpen(false)
 
-    let focusTeam = allTeams.filter((team) => team.name == name)[0]
+    let focusTeam = allTeams.filter((team) => team.name === name)[0]
     let p = {}
     p[name] = 0
-    const selectedTeams2 = allTeams.filter((team) => selectedTeams.includes(team.name) && team.name != name)
+    const selectedTeams2 = allTeams.filter((team) => selectedTeams.includes(team.name) && team.name !== name)
     selectedTeams2.forEach((team) => {
       const thisRatings = makeRatings(team)
       const focusRatings = makeRatings(focusTeam)
@@ -141,8 +141,8 @@ export default function Simulator() {
                 {name}
               </td>
               {selectedTeams.map((team) => (
-                <td className='tdRightBorder' style={{ backgroundColor: p[team] == 0 ? 'var(--highlight3)' : p[team] > 0.5 ? `rgba(0,255,0,${(p[team] - 0.5) * 2})` : `rgba(255,0,0,${-2 * p[team] + 1})` }}>
-                  {p[team] != 0 ? (p[team] * 100).toFixed(0) + '%' : ''}
+                <td className='tdRightBorder' style={{ backgroundColor: p[team] === 0 ? 'var(--highlight3)' : p[team] > 0.5 ? `rgba(0,255,0,${(p[team] - 0.5) * 2})` : `rgba(255,0,0,${-2 * p[team] + 1})` }}>
+                  {p[team] !== 0 ? (p[team] * 100).toFixed(0) + '%' : ''}
                 </td>
               ))}
             </tr>
@@ -199,7 +199,6 @@ export default function Simulator() {
       <table className='raceByRaceTable'>
         <thead>
           <tr>
-            <td></td>
             <td>Team</td>
           </tr>
         </thead>
@@ -219,10 +218,12 @@ export default function Simulator() {
             ,
           ].map((team) => (
             <tr>
-              <td className='tableColFit'>
-                <input type='checkbox' checked={selectedTeams.includes(team.name)} onChange={check} value={team.name} />
-              </td>
-              <td>{team.name}</td>
+              <label>
+                <td className='tableColFit'>
+                  <input type='checkbox' checked={selectedTeams.includes(team.name)} onChange={check} value={team.name} />
+                </td>
+                <td>{team.name}</td>
+              </label>
             </tr>
           ))}
         </tbody>

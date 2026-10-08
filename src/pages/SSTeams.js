@@ -76,13 +76,13 @@ export default function SSTeams() {
       .then((tempTeams) => {
         setTeams(tempTeams)
         let regions = tempTeams.map((team) => team.region).filter((value, index, self) => self.indexOf(value) === index)
-        if (linkRegion == null) {
+        if (linkRegion === null) {
           setActiveRegions(regions)
         } else {
           setActiveRegions([linkRegion])
         }
 
-        if (linkSort != null) {
+        if (linkSort !== null) {
           setSort(linkSort)
         }
 
@@ -156,7 +156,7 @@ export default function SSTeams() {
       </div>
 
       <div className='ssHeader'>
-        <img style={{ margin: 5 }} src={theme == 'dark' ? `/Logo_Dark.png` : `/Logo_Light.png`} />
+        <img style={{ margin: 5 }} src={theme === 'dark' ? `/Logo_Dark.png` : `/Logo_Light.png`} />
         <div>
           <h1>CrowsNest Rankings</h1>
           <h2>

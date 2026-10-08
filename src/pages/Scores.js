@@ -16,15 +16,15 @@ import { collection, getDocs, getFirestore } from 'firebase/firestore'
 //     let races = []
 //     let names = Object.keys(inputNames)
 //     console.log(regattaData)
-//     if (regattaData != undefined && regattaData.length > 0) {
+//     if (regattaData !== undefined && regattaData.length > 0) {
 //       names.forEach((p) => {
 //         try {
 //           let fleet = fleetSelect.value
-//           if (fleet == 'All' && inputNames[p].fleet != 'All') fleet = inputNames[p].fleet
+//           if (fleet === 'All' && inputNames[p].fleet !== 'All') fleet = inputNames[p].fleet
 //           let div = divSelect.value
-//           if (div == 'All' && inputNames[p].div != 'All') div = inputNames[p].div
+//           if (div === 'All' && inputNames[p].div !== 'All') div = inputNames[p].div
 //           let pos = posSelect.value
-//           if (pos == 'All' && inputNames[p].pos != 'All') pos = inputNames[p].pos
+//           if (pos === 'All' && inputNames[p].pos !== 'All') pos = inputNames[p].pos
 //           console.log('FLTDIVPOS', fleet, div, pos)
 //           data[p] = getData(Type, p, fleet, div, pos, undefined, regatta)
 //           console.log(data[p])
@@ -43,7 +43,7 @@ import { collection, getDocs, getFirestore } from 'firebase/firestore'
 //         if (Object.keys(data[p]).length > 0) {
 //           let found = false
 //           datasets.forEach((dataset) => {
-//             if (dataset.label == p) {
+//             if (dataset.label === p) {
 //               dataset.data = {
 //                 ...dataset.data,
 //                 ...data[p],
@@ -103,7 +103,7 @@ import { collection, getDocs, getFirestore } from 'firebase/firestore'
 //     },
 //   }
 
-//   if (Type == 'Ratio') {
+//   if (Type === 'Ratio') {
 //     config.options.scales.y = {
 //       max: 100,
 //       min: 0,
@@ -208,7 +208,7 @@ export default function Scores() {
 
   // function updateRegatta(index, regatta) {
   //   console.log(index, regatta)
-  //   if (regatta != '') {
+  //   if (regatta !== '') {
   //     let tempRegattas = regattas
   //     tempRegattas[index] = { seasons: seasons, teams: teams, regatta: regatta }
   //     setRegattas([...tempRegattas])

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { FaSortDown } from 'react-icons/fa'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { useMobileDetect } from '../../../lib/hooks'
 import RatioBar from '../RatioBar'
 
@@ -22,7 +22,7 @@ export default function PartnerResults({ races }) {
     if (!race.ratingType.includes('t')) {
       acc[key].ratio += race.ratio
     } else {
-      acc[key].ratio += race.outcome == 'win' ? 1 : 0
+      acc[key].ratio += race.outcome === 'win' ? 1 : 0
     }
     return acc
   }, {})

@@ -27,32 +27,56 @@ export default function RankingDisplay({ data, members, rankType }) {
         <RatingNum ratingNum={data[globalRankTypes[rankType]]} type={rankType.includes('w') ? 'women' : 'open'} raceType={rankType.includes('t') ? 'team' : 'fleet'} />
       </td>
       <td className='teamRatingSailors'>
-        <div className='flexCol'>
-          {filtered
-            .filter((m) => m.position == 'skipper')
-            .sort((a, b) => b[rankTypeMap[rankType][0]] - a[rankTypeMap[rankType][0]])
-            .map((member, i) => {
-              return (
-                <Link key={i} to={`/sailors/${member.sailorID}`}>
-                  {member.name} {member[rankTypeMap[rankType][0]]}
-                </Link>
-              )
-            })}
-        </div>
+        <table style={{ borderCollapse: 'collapse', border: 'none', width: '100%' }}>
+          <tbody className='cleanTable'>
+            {filtered
+              .filter((m) => m.position === 'skipper')
+              .sort((a, b) => b[rankTypeMap[rankType][0]] - a[rankTypeMap[rankType][0]])
+              .map((member, i) => {
+                return (
+                  <tr style={{ width: '100%' }}>
+                    <td>
+                      <Link key={i} to={`/sailors/${member.sailorID}`}>
+                        {member.name}
+                      </Link>
+                    </td>
+                    <td style={{ textAlign: 'right' }}>
+                      <Link key={i} to={`/sailors/${member.sailorID}`}>
+                        {member[rankTypeMap[rankType][0]]}
+                      </Link>
+                    </td>
+                  </tr>
+                )
+              })}
+          </tbody>
+        </table>
       </td>
       <td className='teamRatingSailors'>
-        <div className='flexCol'>
-          {filtered
-            .filter((m) => m.position == 'crew')
-            .sort((a, b) => b[rankTypeMap[rankType][1]] - a[rankTypeMap[rankType][1]])
-            .map((member, i) => {
-              return (
-                <Link key={i} to={`/sailors/${member.sailorID}`}>
-                  {member.name} {member[rankTypeMap[rankType][1]]}
-                </Link>
-              )
-            })}
-        </div>
+        <table style={{ borderCollapse: 'collapse', border: 'none', width: '100%' }}>
+          <tbody className='cleanTable'>
+            {/* <div className='flexCol'> */}
+            {filtered
+              .filter((m) => m.position === 'crew')
+              .sort((a, b) => b[rankTypeMap[rankType][1]] - a[rankTypeMap[rankType][1]])
+              .map((member, i) => {
+                return (
+                  <tr style={{ width: '100%' }}>
+                    <td>
+                      <Link key={i} to={`/sailors/${member.sailorID}`}>
+                        {member.name}
+                      </Link>
+                    </td>
+                    <td style={{ textAlign: 'right' }}>
+                      <Link key={i} to={`/sailors/${member.sailorID}`}>
+                        {member[rankTypeMap[rankType][1]]}
+                      </Link>
+                    </td>
+                  </tr>
+                )
+              })}
+            {/* </div> */}
+          </tbody>
+        </table>
       </td>
     </tr>
   )

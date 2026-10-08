@@ -50,7 +50,7 @@ export default function Profile() {
             </li>
           ))}
         </ul> */}
-        {profileName == userVals?.username && pageUserId == user?.uid && (
+        {profileName === userVals?.username && pageUserId === user?.uid && (
           <>
             <div className='contentBox'>
               <Link to='/feed'>
@@ -91,7 +91,7 @@ export default function Profile() {
                           </button>
                         </div>
                       </div>
-                    )
+                    ),
                     // { position: 'top-center' }
                   )
                 }}>

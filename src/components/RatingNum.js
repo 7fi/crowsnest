@@ -1,5 +1,3 @@
-import { TbDiamondsFilled } from 'react-icons/tb'
-
 export default function RatingNum({ sailor, pos, type, highest, ratingNum, raceType }) {
   let rating = 0
   let isWomens = type === 'women'
@@ -70,11 +68,9 @@ export default function RatingNum({ sailor, pos, type, highest, ratingNum, raceT
     }
   }
 
-  const iconSrcs = { top: 'OpenFleetIcon.png', women: 'WomensFleetIcon.png', team: 'OpenTeamIcon.png', womenteam: 'WomensTeamIcon.png' }
-  const sort = type == 'women' ? (raceType == 'team' ? 'womenteam' : 'women') : raceType == 'team' || raceType?.includes('team') ? 'team' : 'top'
   const iconFiles = { fr: 'OpenFleetIcon.png', fsr: 'fleetskipper.png', fcr: 'fleetcrew.png', wfr: 'WomensFleetIcon.png', wfsr: 'fleetskipper.png', wfcr: 'fleetcrew.png', tr: 'OpenTeamIcon.png', tsr: 'teamskipperfull.png', tcr: 'teamcrewfull.png', wtr: 'WomensTeamIcon.png', wtsr: 'teamskipperfull.png', wtcr: 'teamcrewfull.png' }
 
-  const iconLookup = (type == 'women' ? 'w' : '') + (raceType == 'team' ? 't' : 'f') + (pos?.toLowerCase() == 'skipper' ? 's' : pos?.toLowerCase() == 'crew' ? 'c' : '') + 'r'
+  const iconLookup = (type === 'women' ? 'w' : '') + (raceType === 'team' ? 't' : 'f') + (pos?.toLowerCase() === 'skipper' ? 's' : pos?.toLowerCase() === 'crew' ? 'c' : '') + 'r'
 
   return (
     <span style={{ width: 'min-content !important' }}>
@@ -82,7 +78,7 @@ export default function RatingNum({ sailor, pos, type, highest, ratingNum, raceT
       {rating !== 0 ? (
         <div className='flexRowCentered'>
           {/* {isWomens ? <TbDiamondsFilled className='' style={{ color: 'var(--women)' }} /> : ''} */}
-          <img src={'/' + iconFiles[iconLookup]} style={{ height: '1.5rem' }} />
+          <img src={'/' + iconFiles[iconLookup]} style={{ height: '1.5rem' }} alt={`${iconLookup} icon`} />
           {rating.toFixed(0)}{' '}
         </div>
       ) : (

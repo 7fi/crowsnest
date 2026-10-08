@@ -34,7 +34,7 @@ const getEventWithID = async (id) => {
   return { data: doc.data(), id: doc.id }
 }
 const getTeamWithID = async (id) => {
-  if (id == undefined) return {}
+  if (id === undefined) return {}
   const q = query(collection(db, 'teams'), where(documentId(), '==', id))
   let doc = (await getDocs(q)).docs[0]
   return { data: doc.data(), id: doc.id }
@@ -66,7 +66,7 @@ async function docExists(id, col) {
 const getAllTeams = async () => {
   const thisDoc = await getDoc(doc(db, 'vars', 'eloTeams'))
   console.log('reads: %d', 1)
-  if (thisDoc != undefined) {
+  if (thisDoc !== undefined) {
     return { data: thisDoc.data(), id: thisDoc.id }
   } else {
     return undefined
@@ -76,7 +76,7 @@ const getAllTeams = async () => {
 const getAllTeamsPredVals = async () => {
   const thisDoc = await getDoc(doc(db, 'vars', 'predTeams'))
   console.log('reads: %d', 1)
-  if (thisDoc != undefined) {
+  if (thisDoc !== undefined) {
     return { data: thisDoc.data(), id: thisDoc.id }
   } else {
     return undefined
@@ -84,10 +84,10 @@ const getAllTeamsPredVals = async () => {
 }
 
 const getTop100 = async (type, pos, raceType) => {
-  const docName = pos == 'Skipper' ? (type == 'women' ? (raceType == 'fleet' ? 'topWomenSkippers' : 'topWomenSkippersTR') : raceType == 'fleet' ? 'topSkippers' : 'topSkippersTR') : type == 'women' ? (raceType == 'fleet' ? 'topWomenCrews' : 'topWomenCrewsTR') : raceType == 'fleet' ? 'topCrews' : 'topCrewsTR'
+  const docName = pos === 'Skipper' ? (type === 'women' ? (raceType === 'fleet' ? 'topWomenSkippers' : 'topWomenSkippersTR') : raceType === 'fleet' ? 'topSkippers' : 'topSkippersTR') : type === 'women' ? (raceType === 'fleet' ? 'topWomenCrews' : 'topWomenCrewsTR') : raceType === 'fleet' ? 'topCrews' : 'topCrewsTR'
   const thisDoc = await getDoc(doc(db, 'vars', docName))
   console.log('reads: %d', 1)
-  if (thisDoc != undefined) {
+  if (thisDoc !== undefined) {
     return { data: thisDoc.data(), id: thisDoc.id }
   } else {
     return undefined
@@ -99,7 +99,7 @@ const getTeamElos = async (teamname) => {
   const docs = await getDocs(q)
   console.log('reads: ' + docs.docs.length)
   const doc = docs.docs[0]
-  if (doc != undefined) {
+  if (doc !== undefined) {
     return { data: doc.data(), id: doc.id }
   } else {
     return undefined
@@ -111,7 +111,7 @@ const getRegattaElos = async (regattaName) => {
   const docs = await getDocs(q)
   console.log('reads: ' + docs.docs.length)
   const doc = docs.docs[0]
-  if (doc != undefined) {
+  if (doc !== undefined) {
     return { data: doc.data(), id: doc.id }
   } else {
     return undefined
@@ -192,7 +192,7 @@ const getAllSailors = async ({ useCache }) => {
   const thisDoc = await getDoc(doc(db, 'vars', 'allSailors'))
 
   console.log('reads: %d', 1)
-  if (thisDoc != undefined) {
+  if (thisDoc !== undefined) {
     // Cache the result
     localStorage.setItem(CACHE_KEY, thisDoc.data()?.allSailors)
     localStorage.setItem(CACHE_EXPIRY_KEY, Date.now() + CACHE_DURATION)
@@ -208,7 +208,7 @@ const getAllSailors = async ({ useCache }) => {
 const getTeamRanks = async () => {
   const thisDoc = await getDoc(doc(db, 'vars', 'dateRanks'))
   console.log('reads: %d', 1)
-  if (thisDoc != undefined) {
+  if (thisDoc !== undefined) {
     return thisDoc.data()
   } else {
     return undefined

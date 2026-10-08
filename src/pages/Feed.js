@@ -58,7 +58,7 @@ export default function Feed() {
                   }}
                 />
               </div>
-              <RaceByRace races={sailor.races} woman={sailor.gender == 'F'} showFilter={false} />
+              <RaceByRace races={sailor.races} woman={sailor.gender === 'F'} showFilter={false} />
             </div>
           ))
       ) : (

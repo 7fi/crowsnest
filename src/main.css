@@ -621,6 +621,11 @@ tbody:not(.ssbody) tr:nth-child(odd) {
   background-color: var(--veryLight);
 }
 
+.cleanTable tr {
+  background-color: inherit !important;
+  border: none !important;
+}
+
 /* more ss teams stuff */
 
 .ssHeader {

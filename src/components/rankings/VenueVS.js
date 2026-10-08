@@ -20,7 +20,7 @@ export default function VenueVS({ sailorAName, sailorBName, racesA, racesB }) {
   }, {})
   const sortedVenues = Object.keys(venueStatsA)
     .filter((venue) => {
-      return venueStatsB[venue] != undefined
+      return venueStatsB[venue] !== undefined
     })
     .map((venue) => {
       return {

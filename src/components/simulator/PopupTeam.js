@@ -14,7 +14,7 @@ export default function PopupTeam({ team, closeWindow, visible, selected, setSel
   const [selectedPeople, setSelectedPeople] = useState(
     Array.from({ length: 6 }, (_, index) => ({
       [`person${index + 1}`]: '',
-    })).reduce((acc, curr) => ({ ...acc, ...curr }), {}) // Flatten to one object
+    })).reduce((acc, curr) => ({ ...acc, ...curr }), {}), // Flatten to one object
   )
 
   // Handle dropdown change
@@ -62,7 +62,7 @@ export default function PopupTeam({ team, closeWindow, visible, selected, setSel
           {selected?.skipper?.map((member) => (
             <div>
               <select onChange={selectionChanged} defaultValue={member.key}>
-                {team.SkippersTR.filter((m) => m.key != member.key).map((skipper) => (
+                {team.SkippersTR.filter((m) => m.key !== member.key).map((skipper) => (
                   <option>{skipper.name}</option>
                 ))}
               </select>

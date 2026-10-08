@@ -18,7 +18,7 @@ export default function PosNegBarChart({ data, dataKey, showLabels, color, alter
   // data = data.sort((a, b) => {
   //   let datea = new Date(a.date)
   //   let dateb = new Date(b.date)
-  //   if (datea - dateb != 0) {
+  //   if (datea - dateb !== 0) {
   //     return datea - dateb
   //   }
   //   return a.raceNumber - b.raceNumber
