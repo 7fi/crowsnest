@@ -10,7 +10,7 @@ import useTeamCodes from '../lib/teamCodes'
 import Rivals from '../components/rankings/SailorPage/Rivals'
 import PartnerResults from '../components/rankings/SailorPage/PartnerResults'
 import PosInfo from '../components/rankings/SailorPage/PosInfo'
-import { useMobileDetect, useTeamRegions, useUserData } from '../lib/hooks'
+import { useMobileLayout, useTeamRegions, useUserData } from '../lib/hooks'
 import { AuthCheckLite } from '../components/AuthCheck'
 import FollowButton from '../components/rankings/FollowButton'
 import { UserContext } from '../lib/context'
@@ -31,7 +31,7 @@ export default function Rankings() {
 
   const [regattaCount, setRegattaCount] = useState(0)
   const teamCodes = useTeamCodes()
-  const isMobile = useMobileDetect()
+  const isMobile = useMobileLayout()
   const userData = useUserData()
   const regionColors = useRegionColors()
   const teamRegions = useTeamRegions()
@@ -84,56 +84,70 @@ export default function Rankings() {
     }
   }, [key, userData])
 
+  const woman = sailor?.wsr !== 1000 || sailor?.wcr !== 1000
+
+  const teamLinks = teams
+    .slice(0)
+    .reverse()
+    .map((teamName, i) => (
+      <Link key={i} to={`/teams/${teamName}`}>
+        {i !== 0 ? ', ' : ''} <span style={{ textDecoration: 'underline' }}>{teamName}</span>
+      </Link>
+    ))
+
+  const techscoreLink = sailor ? (
+    <a href={`https://scores.collegesailing.org/sailors/${sailor.sailorID}/`} target='1'>
+      <span style={{ textDecoration: 'underline' }}>Techscore</span>
+    </a>
+  ) : null
+
+  const claimLink = (
+    <span className='secondaryText'>
+      Is this you?{' '}
+      <Link style={{ textDecoration: 'underline' }} to={`/rankings/claim?link=${key}`}>
+        Claim
+      </Link>
+    </span>
+  )
+
+  const lastUpdated = sailor ? `${new Date(sailor.lastUpdate).toLocaleDateString()} at ${new Date(sailor.lastUpdate).toLocaleTimeString()}` : ''
+
   return (
-    <div style={{ padding: 30 }}>
+    <div className='sailorPage' style={{ padding: isMobile ? 15 : 30 }}>
       {loaded && sailor !== undefined ? (
         <div>
           <div className='flexRowContainer sailorNameRow'>
             <Link to={`/teams/${teams[0]}`}>
               <img style={{ display: 'inline', maxHeight: '3rem' }} src={`https://scores.collegesailing.org/inc/img/schools/${teamCodes[teams[0]]}.png`} />
             </Link>
-            <h1 style={{ display: 'inline-block' }}>{sailor.name}</h1>
+            <h1 style={{ display: 'inline-block', fontSize: isMobile ? '1.6rem' : undefined }}>{sailor.name}</h1>
             <AuthCheckLite>
-              <FollowButton style={{ position: 'absolute', right: 0 }} sailor={sailor} userData={userData} following={following} setFollowing={setFollowing} />
+              <FollowButton sailor={sailor} userData={userData} following={following} setFollowing={setFollowing} />
               {isUsers ? '(You)' : ''}
             </AuthCheckLite>
           </div>
-          <div>
-            {sailor.year} |{' '}
-            {teams
-              .slice(0)
-              .reverse()
-              .map((teamName, i) => (
-                <Link key={i} to={`/teams/${teamName}`}>
-                  {i !== 0 ? ', ' : ''} <span style={{ textDecoration: 'underline' }}>{teamName}</span>
-                </Link>
-              ))}{' '}
-            | {races.length} total races | {regattaCount} total regattas | {followCount} followers |{' '}
-            <a href={`https://scores.collegesailing.org/sailors/${sailor.sailorID}/`} target='1'>
-              <span style={{ textDecoration: 'underline' }}>Techscore</span>
-            </a>{' '}
-            |{' '}
-            <span className='secondaryText'>
-              Last updated: {new Date(sailor.lastUpdate).toLocaleDateString()} at {new Date(sailor.lastUpdate).toLocaleTimeString()}
-            </span>
-            <AuthCheckLite>
-              {userData?.userVals?.tsLink ? (
-                <></>
-              ) : (
-                <>
-                  {' '}
-                  |{' '}
-                  <span className='secondaryText'>
-                    {' '}
-                    Is this you?{' '}
-                    <Link style={{ textDecoration: 'underline' }} to={`/rankings/claim?link=${key}`}>
-                      Claim
-                    </Link>
-                  </span>
-                </>
-              )}{' '}
-            </AuthCheckLite>
-          </div>
+          {isMobile ? (
+            <div className='flexCol' style={{ gap: '0.25rem' }}>
+              <span>
+                {sailor.year} | {teamLinks}
+              </span>
+              <span>
+                {races.length} races | {regattaCount} regattas | {followCount} followers
+              </span>
+              <span>
+                {techscoreLink}
+                <AuthCheckLite>{userData?.userVals?.tsLink ? <></> : <> | {claimLink}</>}</AuthCheckLite>
+              </span>
+              <span className='secondaryText' style={{ fontSize: '0.8rem' }}>
+                Last updated: {lastUpdated}
+              </span>
+            </div>
+          ) : (
+            <div>
+              {sailor.year} | {teamLinks} | {races.length} total races | {regattaCount} total regattas | {followCount} followers | {techscoreLink} | <span className='secondaryText'>Last updated: {lastUpdated}</span>
+              <AuthCheckLite>{userData?.userVals?.tsLink ? <></> : <> | {claimLink}</>} </AuthCheckLite>
+            </div>
+          )}
           {/* <div>
             Lifetime Stats: {races.length} total races | {regattaCount} total regattas |
           </div> */}
@@ -156,12 +170,24 @@ export default function Rankings() {
           {/* <h2>Rating over time </h2> */}
           {/* <EloLineChart woman={sailor.WomenSkipperRating !== 1000 || sailor.WomenCrewRating !== 1000} data={races} /> */}
 
-          {!isMobile ? (
+          {isMobile ? (
+            <SailorStatTab
+              titles={['Rating Graph', 'All Races', 'Partners', 'Venues', 'Rival Skippers', 'Rival Crews']}
+              components={[
+                <EloLineChart woman={woman} data={races} />, //
+                <RaceByRace woman={woman} races={races} showFilter={true} />, //
+                <PartnerResults races={races} />, //
+                <VenueResults races={races} />, //
+                <Rivals rivals={rivals.skipper} pos={'Skipper'} />, //
+                <Rivals rivals={rivals.crew} pos={'Crew'} />,
+              ]}
+            />
+          ) : (
             <SailorStatTab
               titles={['Rating Graph', 'All Races', 'Partners', 'Venues', 'Rival Skippers', 'Rival Crews', 'Bar Charts']}
               components={[
-                <EloLineChart woman={sailor.wsr !== 1000 || sailor.wcr !== 1000} data={races} />, //
-                <RaceByRace woman={sailor.wsr !== 1000 || sailor.wcr !== 1000} races={races} showFilter={true} />, //
+                <EloLineChart woman={woman} data={races} />, //
+                <RaceByRace woman={woman} races={races} showFilter={true} />, //
                 <PartnerResults races={races} />, //
                 <VenueResults races={races} />, //
                 <Rivals rivals={rivals.skipper} pos={'Skipper'} />, //
@@ -202,15 +228,6 @@ export default function Rankings() {
                 </>,
               ]}
             />
-          ) : (
-            [
-              <EloLineChart woman={sailor.wsr !== 1000 || sailor.wcr !== 1000} data={races} />, //
-              <RaceByRace woman={sailor.wsr !== 1000 || sailor.wcr !== 1000} races={races} showFilter={true} />, //
-              <PartnerResults races={races} />, //
-              <VenueResults races={races} />, //
-              <Rivals rivals={rivals.skipper} pos={'Skipper'} />, //
-              <Rivals rivals={rivals.crew} pos={'Crew'} />,
-            ]
           )}
 
           {!isMobile && false ? (

@@ -1,13 +1,13 @@
 import { useState } from 'react'
 import { FaSortDown } from 'react-icons/fa'
-import { useMobileDetect, useTeamRegions } from '../../lib/hooks'
+import { useMobileLayout, useTeamRegions } from '../../lib/hooks'
 import RatioBar from './RatioBar'
 import useRegionColors from '../../lib/regionColors'
 
 export default function VenueResults({ races }) {
   const [byChange, setByChange] = useState(false)
   const [byRaces, setByRaces] = useState(true)
-  const isMobile = useMobileDetect()
+  const isMobile = useMobileLayout()
 
   const teamRegions = useTeamRegions()
   const regionColors = useRegionColors()
@@ -54,9 +54,9 @@ export default function VenueResults({ races }) {
         <tr>
           <th></th>
           <th>Venue (host)</th>
-          <th></th>
+          {isMobile ? <></> : <th></th>}
           <th
-            style={{ minWidth: 75 }}
+            style={{ minWidth: isMobile ? 0 : 75 }}
             className='clickable'
             onClick={() => {
               setByChange(false)
@@ -65,7 +65,7 @@ export default function VenueResults({ races }) {
             Races
             {byRaces ? <FaSortDown /> : <></>}
           </th>
-          <th></th>
+          {isMobile ? <></> : <th></th>}
           <th
             style={{ minWidth: isMobile ? 85 : 150 }}
             className='tableColFit clickable'
@@ -77,13 +77,13 @@ export default function VenueResults({ races }) {
             {byChange ? <FaSortDown /> : ' '}
           </th>
           <th
-            style={{ minWidth: 113 }}
+            style={{ minWidth: isMobile ? 0 : 113, textAlign: isMobile ? 'right' : undefined }}
             className='tableColFit clickable'
             onClick={() => {
               setByChange(false)
               setByRaces(false)
             }}>
-            Percentage
+            {isMobile ? 'Win %' : 'Percentage'}
             {!byChange && !byRaces ? <FaSortDown /> : <></>}
           </th>
         </tr>
@@ -94,26 +94,28 @@ export default function VenueResults({ races }) {
             <tr className='' key={venue.name} style={{ margin: '5px' }}>
               <td className='tdRightBorder tableColFit secondaryText'>{index + 1}</td>
               <td>{venue.name === 'undefined' || venue.name === undefined ? 'Unknown' : venue.name} </td>
-              <td>
-                {Object.keys(teamRegions).includes(venue.name) ? (
-                  <div className='filterOption' style={{ backgroundColor: regionColors[teamRegions[venue.name]], fontSize: '0.8rem', float: 'right' }}>
-                    {teamRegions[venue.name]}
-                  </div>
-                ) : (
-                  ''
-                )}
-              </td>
+              {isMobile ? (
+                <></>
+              ) : (
+                <td>
+                  {Object.keys(teamRegions).includes(venue.name) ? (
+                    <div className='filterOption' style={{ backgroundColor: regionColors[teamRegions[venue.name]], fontSize: '0.8rem', float: 'right' }}>
+                      {teamRegions[venue.name]}
+                    </div>
+                  ) : (
+                    ''
+                  )}
+                </td>
+              )}
               <td className='tableColFit' style={{ textAlign: 'right' }}>
                 {venue.count}
               </td>
-              <td></td>
+              {isMobile ? <></> : <td></td>}
               <td style={{ color: venue.change > 0 ? 'green' : 'red' }}>
                 {venue.change > 0 ? '+' : ''}
                 {venue.change.toFixed(0)}
               </td>
-              <td style={{ textAlign: 'center' }}>
-                <RatioBar ratio={venue.ratio} />
-              </td>
+              <td style={{ textAlign: isMobile ? 'right' : 'center' }}>{isMobile ? `${(venue.ratio * 100).toFixed(0)}%` : <RatioBar ratio={venue.ratio} />}</td>
             </tr>
           ) : (
             <></>

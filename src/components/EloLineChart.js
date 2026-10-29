@@ -1,13 +1,15 @@
 import { useEffect, useMemo, useState } from 'react'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ReferenceLine, Area, ComposedChart, ReferenceArea } from 'recharts'
-import { useMobileDetect } from '../lib/hooks'
+import { useMobileLayout } from '../lib/hooks'
 import { getRegDifficulty } from './rankings/SailorPage/RaceByRace'
+
+const lineColors = { sr: '#6088ff', cr: '#ffc259', wsr: '#ff8585', wcr: '#60b55e', tsr: '#a90000', tcr: '#77dd84', wtsr: '#ef8b60', wtcr: '#8956e1' }
 
 export default function EloLineChart({ data, woman }) {
   const [activeLines, setActiveLines] = useState(['cr', 'sr', 'wsr', 'wcr', 'tsr', 'tcr', 'wtsr', 'wtcr', 'regAvg'])
   const [notAvailableLines, setNotAvailableLines] = useState([])
   const [allRaces, setAllRaces] = useState([]) // original mapped races (unsliced)
-  const isMobile = useMobileDetect()
+  const isMobile = useMobileLayout()
 
   // example of banded chart for rating confidence? https://recharts.github.io/en-US/examples/BandedChart/
 
@@ -211,14 +213,14 @@ export default function EloLineChart({ data, woman }) {
     const fullPayload = [...base, { value: 'regAvg', payload: { stroke: '#aaa' } }]
 
     return (
-      <div style={{ display: 'flex', justifyContent: 'center' }}>
+      <div style={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap', gap: isMobile ? '0.3rem 0' : 0, fontSize: isMobile ? '0.8rem' : undefined, marginBottom: isMobile ? '0.5rem' : 0 }}>
         {fullPayload.map((entry, index) =>
           !notAvailableLines.includes(entry.value) ? (
             <div
               key={index}
               className='clickable'
               style={{
-                margin: '0 10px',
+                margin: isMobile ? '0 6px' : '0 10px',
                 display: 'flex',
                 alignItems: 'center',
                 cursor: entry.value === 'regAvg' ? 'default' : 'pointer',
@@ -242,8 +244,8 @@ export default function EloLineChart({ data, woman }) {
               }}>
               <div
                 style={{
-                  width: 20,
-                  height: 20,
+                  width: isMobile ? 12 : 20,
+                  height: isMobile ? 12 : 20,
                   backgroundColor: entry.payload.stroke,
                   marginRight: 5,
                   opacity: activeLines.includes(entry.value) ? '100%' : '50%',
@@ -338,41 +340,47 @@ export default function EloLineChart({ data, woman }) {
 
   // If displayRaces is empty, we can show an empty chart gracefully
   return (
-    <ResponsiveContainer height={280}>
-      <ComposedChart data={displayRaces} margin={{ top: 5, right: 5, left: 20, bottom: -20 }}>
-        {/* Regatta rank color */}
-        {/* {regattaAreas.map((area, i) => (
-          <ReferenceArea key={'hi' + i} x1={area.start} x2={area.end} y1={yMin - 100} y2={yMin - 35} stroke='none' fill={area.rank} />
-        ))} */}
-        <CartesianGrid strokeDasharray='3 3' vertical={false} />
-        {refLines}
-        <Area connectNulls dataKey='conf' stroke='#6088ff' fill='#6088ff55' legendType='none' />
-        <XAxis dataKey='raceID' tick={<CustomTick />} height={60} interval={0} />
-        <YAxis
-          domain={['dataMin - 100', 'dataMax + 100']}
-          label={{
-            value: 'Rating',
-            angle: -90,
-            position: 'insideLeft',
-            style: { textAnchor: 'middle' },
-            offset: 0,
-          }}
-        />
-        <Tooltip content={<CustomTooltip />} isAnimationActive={false} />
-        {/* Render lines for all rating keys but they'll only have values for visible races.
-            hide property remains so users can toggle lines visually */}
-        <Line hide={!activeLines.includes('sr')} strokeWidth={2} type='monotone' dataKey='sr' connectNulls stroke='#6088ff' dot={false} />
-        <Line hide={!activeLines.includes('cr')} strokeWidth={2} type='monotone' dataKey='cr' connectNulls stroke='#ffc259' dot={false} />
-        <Line hide={!activeLines.includes('wsr')} strokeWidth={2} type='monotone' dataKey='wsr' connectNulls stroke='#ff8585' dot={false} />
-        <Line hide={!activeLines.includes('wcr')} strokeWidth={2} type='monotone' dataKey='wcr' connectNulls stroke='#60b55e' dot={false} />
-        <Line hide={!activeLines.includes('tsr')} strokeWidth={2} type='monotone' dataKey='tsr' connectNulls stroke='#a90000' dot={false} />
-        <Line hide={!activeLines.includes('tcr')} strokeWidth={2} type='monotone' dataKey='tcr' connectNulls stroke='#77dd84' dot={false} />
-        <Line hide={!activeLines.includes('wtsr')} strokeWidth={2} type='monotone' dataKey='wtsr' connectNulls stroke='#ef8b60' dot={false} />
-        <Line hide={!activeLines.includes('wtcr')} strokeWidth={2} type='monotone' dataKey='wtcr' connectNulls stroke='#8956e1' dot={false} />
-        {/* Always-on regAvg line: not selectable, still shown if present in displayRaces */}
-        <Line strokeWidth={2} type='monotone' dataKey='regAvg' stroke='#aaa' dot={false} />
-        <Legend content={<CustomLegend />} verticalAlign='top' height={isMobile ? 55 : 36} />
-      </ComposedChart>
-    </ResponsiveContainer>
+    <>
+      {/* on mobile the legend wraps onto several rows, so render it above the chart instead of inside it */}
+      {isMobile ? <CustomLegend payload={allKeys.map((key) => ({ value: key, payload: { stroke: lineColors[key] } }))} /> : <></>}
+      <ResponsiveContainer height={isMobile ? 320 : 280}>
+        <ComposedChart data={displayRaces} margin={isMobile ? { top: 5, right: 0, left: 0, bottom: -20 } : { top: 5, right: 5, left: 20, bottom: -20 }}>
+          {/* Regatta rank color */}
+          {/* {regattaAreas.map((area, i) => (
+            <ReferenceArea key={'hi' + i} x1={area.start} x2={area.end} y1={yMin - 100} y2={yMin - 35} stroke='none' fill={area.rank} />
+          ))} */}
+          <CartesianGrid strokeDasharray='3 3' vertical={false} />
+          {refLines}
+          <Area connectNulls dataKey='conf' stroke='#6088ff' fill='#6088ff55' legendType='none' />
+          <XAxis dataKey='raceID' tick={<CustomTick />} height={60} interval={0} />
+          <YAxis
+            domain={['dataMin - 100', 'dataMax + 100']}
+            width={isMobile ? 40 : 60}
+            tick={isMobile ? { fontSize: 11 } : true}
+            tickFormatter={(value) => value.toFixed(0)}
+            label={
+              isMobile
+                ? undefined
+                : {
+                    value: 'Rating',
+                    angle: -90,
+                    position: 'insideLeft',
+                    style: { textAnchor: 'middle' },
+                    offset: 0,
+                  }
+            }
+          />
+          <Tooltip content={<CustomTooltip />} isAnimationActive={false} />
+          {/* Render lines for all rating keys but they'll only have values for visible races.
+              hide property remains so users can toggle lines visually */}
+          {allKeys.map((key) => (
+            <Line key={key} hide={!activeLines.includes(key)} strokeWidth={2} type='monotone' dataKey={key} connectNulls stroke={lineColors[key]} dot={false} />
+          ))}
+          {/* Always-on regAvg line: not selectable, still shown if present in displayRaces */}
+          <Line strokeWidth={2} type='monotone' dataKey='regAvg' stroke='#aaa' dot={false} />
+          {isMobile ? <></> : <Legend content={<CustomLegend />} verticalAlign='top' height={36} />}
+        </ComposedChart>
+      </ResponsiveContainer>
+    </>
   )
 }

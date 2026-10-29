@@ -1,8 +1,10 @@
 import { Link } from 'react-router-dom'
 import { ProCheckLite } from '../ProCheck'
 import RatingNum from '../../RatingNum'
+import { useMobileLayout } from '../../../lib/hooks'
 
 export default function PosInfo({ isUsers, type, raceType, pos, rating, rank, races }) {
+  const isMobile = useMobileLayout()
   const RankObj = ({ type, rank, pos, raceType }) => {
     return (
       <ProCheckLite disable={isUsers} feature='ranks'>
@@ -64,7 +66,7 @@ export default function PosInfo({ isUsers, type, raceType, pos, rating, rank, ra
       {rating !== 1000 ? (
         <div className='ratingStatCard'>
           <div>
-            <div style={{ fontSize: '2rem', alignItems: 'end' }} className='flexRowContainer'>
+            <div style={{ fontSize: isMobile ? '1.5rem' : '2rem', alignItems: 'end', flexWrap: 'wrap' }} className='flexRowContainer'>
               <RatingNum ratingNum={rating} type={type === "Women's" ? 'women' : 'open'} pos={pos} raceType={raceType} />
               <span style={{ fontSize: '0.7rem' }}>
                 <span

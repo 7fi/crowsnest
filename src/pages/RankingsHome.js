@@ -39,7 +39,6 @@ export default function RankingsHome() {
           <Link style={{ color: '#eee' }} to={'/teams'}>
             Last Score Update: {new Date(stats.lastUpdate).toLocaleDateString()}
           </Link>
-          {/* <span className='heroExclaim'>Team Racing Coming Soon!</span> */}
           <Link className='heroExclaim' to={'/sailors'}>
             {stats.exclaimText}
           </Link>

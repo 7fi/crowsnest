@@ -3,8 +3,10 @@ import { FaSortDown, FaSortUp } from 'react-icons/fa'
 import { useNavigate } from 'react-router-dom'
 import RatioBar from '../RatioBar'
 import { all } from 'axios'
+import { useMobileLayout } from '../../../lib/hooks'
 
 export default function Rivals({ rivals, pos }) {
+  const isMobile = useMobileLayout()
   const [byRaces, setByRaces] = useState(true)
   const [reverse, setReverse] = useState(false)
   const [allSeasons, setAllSeasons] = useState([])
@@ -41,7 +43,7 @@ export default function Rivals({ rivals, pos }) {
     <div className='flexGrowChild'>
       <div className='responsiveRowCol' style={{ alignItems: 'center' }}>
         <h2>
-          {pos} Rivals: <span className='secondaryText'>(scroll for more)</span>
+          {pos} Rivals: {isMobile ? '' : <span className='secondaryText'>(scroll for more)</span>}
         </h2>
         <div className='flexRowContainer flexWrap'>
           {allSeasons
@@ -72,14 +74,14 @@ export default function Rivals({ rivals, pos }) {
           <thead>
             <tr>
               <th>Name</th>
-              <th>Team</th>
+              {isMobile ? <></> : <th>Team</th>}
               <th
                 onClick={() => {
                   if (byRaces) setReverse(!reverse)
                   setByRaces(true)
                 }}
                 className='tableColFit'
-                style={{ textAlign: 'right', minWidth: 75 }}>
+                style={{ textAlign: 'right', minWidth: isMobile ? 0 : 75 }}>
                 {byRaces ? reverse ? <FaSortUp /> : <FaSortDown /> : ''}
                 Races
               </th>
@@ -89,7 +91,7 @@ export default function Rivals({ rivals, pos }) {
                   setByRaces(false)
                 }}
                 className='tableColFit'
-                style={{ textAlign: 'right', minWidth: 113 }}>
+                style={{ textAlign: 'right', minWidth: isMobile ? 0 : 113 }}>
                 {!byRaces ? reverse ? <FaSortUp /> : <FaSortDown /> : ''}
                 Win %
               </th>
@@ -139,12 +141,21 @@ export default function Rivals({ rivals, pos }) {
                   const ratio = rival.totalWins / rival.totalRaces
                   return (
                     <tr key={rival.rivalID} onClick={() => nav(`/sailors/${rival.rivalID}`)} className='clickable'>
-                      <td>{rival.name}</td>
-                      <td className='tableColFit'>{rival.team}</td>
+                      {isMobile ? (
+                        <td>
+                          <div>{rival.name}</div>
+                          <div className='secondaryText' style={{ fontSize: '0.8rem' }}>
+                            {rival.team}
+                          </div>
+                        </td>
+                      ) : (
+                        <>
+                          <td>{rival.name}</td>
+                          <td className='tableColFit'>{rival.team}</td>
+                        </>
+                      )}
                       <td style={{ textAlign: 'right' }}>{rival.totalRaces}</td>
-                      <td style={{ textAlign: 'center' }}>
-                        <RatioBar ratio={ratio} />
-                      </td>
+                      <td style={{ textAlign: isMobile ? 'right' : 'center' }}>{isMobile ? `${(ratio * 100).toFixed(0)}%` : <RatioBar ratio={ratio} />}</td>
                     </tr>
                   )
                 })

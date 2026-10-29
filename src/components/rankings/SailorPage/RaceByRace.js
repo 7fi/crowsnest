@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { FaDiamond } from 'react-icons/fa6'
 import { Link, useParams, useNavigate } from 'react-router-dom'
 import RatingNum from '../../RatingNum'
-import { useMobileDetect } from '../../../lib/hooks'
+import { useMobileLayout } from '../../../lib/hooks'
 import RatioBar from '../RatioBar'
 
 export default function RaceByRace({ races, woman, showFilter }) {
@@ -14,7 +14,7 @@ export default function RaceByRace({ races, woman, showFilter }) {
   const [activeTypes, setActiveTypes] = useState(types)
   const [activeRaceTypes, setActiveRaceTypes] = useState(raceTypes)
   const [filterText, setFilterText] = useState('')
-  const isMobile = useMobileDetect()
+  const isMobile = useMobileLayout()
 
   const filter = (e) => {
     setFilterText(e.target.value)
@@ -87,10 +87,10 @@ export default function RaceByRace({ races, woman, showFilter }) {
 
   return (
     <>
-      <div className='flexRowContainer flexWrap'>
+      <div className='flexRowContainer flexWrap' style={isMobile ? { gap: '0.3rem', marginBottom: '0.5rem' } : {}}>
         {showFilter ? (
           <>
-            <input className='flexGrowChild' style={{ width: '30rem' }} placeholder='Search for a partner / regatta' onChange={filter} />
+            <input className={isMobile ? '' : 'flexGrowChild'} style={{ width: isMobile ? '100%' : '30rem', padding: isMobile ? '0.4rem' : undefined }} placeholder='Search for a partner / regatta' onChange={filter} />
             {woman ? (
               types.map((type, i) => (
                 <button key={i} style={{ backgroundColor: activeTypes.includes(type) ? 'var(--highlight1)' : '' }} className={`filterOption ${activeTypes.includes(type) ? '' : 'filterInactive'}`} onClick={() => toggleFilter(type)}>
@@ -118,25 +118,71 @@ export default function RaceByRace({ races, woman, showFilter }) {
       <div className='raceByRaceBox'>
         <table className='raceByRaceTable'>
           <thead>
-            <tr>
-              {isMobile ? <></> : <th>Date</th>}
-              <th>Race</th>
-              {/* <th></th> */}
-              <th>Position</th>
-              <th>Partner</th>
-              <th style={{ textAlign: 'right' }}>Score</th>
-              <th>Predicted</th>
-              <th>Percentage</th>
-              <th>Rating</th>
-              <th>Change</th>
-              {/* <th>RegAvg</th> */}
-            </tr>
+            {isMobile ? (
+              <tr>
+                <th>Race</th>
+                <th style={{ textAlign: 'right' }}>Result</th>
+                <th style={{ textAlign: 'right' }}>Rating</th>
+              </tr>
+            ) : (
+              <tr>
+                <th>Date</th>
+                <th>Race</th>
+                {/* <th></th> */}
+                <th>Position</th>
+                <th>Partner</th>
+                <th style={{ textAlign: 'right' }}>Score</th>
+                <th>Predicted</th>
+                <th>Percentage</th>
+                <th>Rating</th>
+                <th>Change</th>
+                {/* <th>RegAvg</th> */}
+              </tr>
+            )}
           </thead>
           <tbody>
             {filtered.length > 0 ? (
               filtered.map((race, i) => {
                 let date = new Date(race?.date)
                 let change = race.newRating - race.oldRating
+                if (isMobile) {
+                  const isTeamRace = race.ratingType.includes('t')
+                  return (
+                    <tr key={i} onClick={() => window.open(`https://scores.collegesailing.org/${race.season}/${race.regatta}/full-scores/`, '_blank', 'noopener,noreferrer')} className='clickable'>
+                      <td>
+                        <div style={{ textTransform: 'capitalize' }}>
+                          {race.regatta.split('-').join(' ')} - {race.raceNumber + '' + (race.division ? race.division : '')}
+                          {isTeamRace ? (
+                            <>
+                              <span style={{ textTransform: 'none' }}> vs </span>
+                              {race.opponentTeam} {race.opponentNick}
+                            </>
+                          ) : (
+                            ''
+                          )}
+                        </div>
+                        <div className='secondaryText' style={{ fontSize: '0.8rem' }}>
+                          {date.toLocaleDateString()} · {race.position}
+                          {race.partnerName ? ` with ${race.partnerName}` : ''}
+                        </div>
+                      </td>
+                      <td className='tableColFit' style={{ textAlign: 'right' }}>
+                        <div style={{ color: getScoreColor(race) }}>{isTeamRace ? race.outcome : race.score + ordinal(race.score)}</div>
+                        <div className='secondaryText' style={{ fontSize: '0.8rem' }}>
+                          pred {race.predicted}
+                          {isTeamRace ? '' : ordinal(race.predicted)}
+                        </div>
+                      </td>
+                      <td className='tableColFit' style={{ textAlign: 'right' }}>
+                        <RatingNum ratingNum={race.oldRating} type={race.ratingType.includes('w') ? 'women' : ''} />
+                        <div style={{ color: change > 0 ? 'green' : 'red', fontSize: '0.8rem' }}>
+                          {change > 0 ? '+' : ''}
+                          {change.toFixed(0)}
+                        </div>
+                      </td>
+                    </tr>
+                  )
+                }
                 return (
                   <tr
                     key={i}
@@ -146,13 +192,9 @@ export default function RaceByRace({ races, woman, showFilter }) {
                       window.open(`https://scores.collegesailing.org/${race.season}/${race.regatta}/full-scores/`, '_blank', 'noopener,noreferrer')
                     }}
                     className='clickable'>
-                    {isMobile ? (
-                      <></>
-                    ) : (
-                      <td style={{ backgroundColor: getRegDifficulty(race.regAvg) + '33' }} className='secondaryText tableColFit tdRightBorder'>
-                        {date.toLocaleDateString()}
-                      </td>
-                    )}
+                    <td style={{ backgroundColor: getRegDifficulty(race.regAvg) + '33' }} className='secondaryText tableColFit tdRightBorder'>
+                      {date.toLocaleDateString()}
+                    </td>
                     <td className='' style={{ textTransform: 'capitalize' }}>
                       {race.regatta.split('-').join(' ')} - {race.raceNumber + '' + (race.division ? race.division : '')}{' '}
                       {race.ratingType.includes('t') ? (
@@ -203,6 +245,16 @@ export default function RaceByRace({ races, woman, showFilter }) {
       </div>
     </>
   )
+}
+
+const ordinal = (num) => (num === 1 ? 'st' : num === 2 ? 'nd' : num === 3 ? 'rd' : 'th')
+
+// green when the sailor beat their prediction, red when they did worse
+const getScoreColor = (race) => {
+  if (!race.ratingType.includes('t')) return race.score < race.predicted ? 'green' : race.score > race.predicted ? 'red' : ''
+  if (race.outcome === 'win' && race.predicted === 'lose') return 'green'
+  if (race.outcome === 'lose' && race.predicted === 'win') return 'red'
+  return ''
 }
 
 const mapRange = (value, oldMin, oldMax, newMin, newMax) => {
