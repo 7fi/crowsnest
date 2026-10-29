@@ -620,14 +620,62 @@ tbody:not(.ssbody) tr:nth-child(1) {
 tbody:not(.ssbody) tr:nth-child(odd) {
   background-color: var(--veryLight);
 }
+
+.cleanTable tr {
+  background-color: inherit !important;
+  border: none !important;
+}
+
+/* more ss teams stuff */
+
+.ssHeader {
+  /* position: absolute; */
+  display: flex;
+  align-items: center;
+  width: fit-content;
+  overflow: visible;
+  margin-left: 100px;
+  margin-top: 110px;
+  border-bottom: #000 solid 1px;
+}
+
+.ssHeader img {
+  border-radius: 50%;
+  width: 70px;
+  height: 70px;
+  cursor: pointer;
+}
+.ssHeader h1 {
+  margin: 0;
+}
+.ssHeader h2 {
+  color: #999;
+  padding: 0;
+  margin: 0;
+  font-weight: 400;
+}
+.ssFooter {
+  /* position: absolute; */
+  /* bottom: 0px; */
+  width: 610px;
+  /* margin-left: 110px; */
+  translate: 0 -190px;
+  color: #999;
+  text-align: center;
+}
+.ssFooter a {
+  text-decoration: underline;
+}
+
 .ssbody td {
   padding-top: 0;
   padding-bottom: 0;
   size: 2.5rem;
 }
-.ssbody {
-  padding-top: 30px;
-  padding-bottom: 100px;
+.ssTeamsContainer {
+  margin-left: 120px;
+  margin-bottom: 200px;
+  translate: 0 0 !important;
 }
 
 tbody:not(.ssbody) tr:nth-child(even) {
@@ -790,6 +838,7 @@ tr .filterOption:hover {
   display: flex;
   gap: 15px;
   padding: 5px 15px;
+  overflow-x: scroll;
 }
 .buttonBG {
   border-radius: var(--radius);
@@ -868,6 +917,7 @@ tr .filterOption:hover {
   transform: translate(175px) rotate(20deg);
   animation: exclaim 3s ease-in-out infinite;
 }
+
 .popupBackground {
   position: fixed;
   width: 100%;
@@ -928,6 +978,28 @@ tr .filterOption:hover {
   bottom: -2px;
   text-wrap-mode: nowrap;
 }
+@media only screen and (max-width: 750px) {
+  /* let the page scroll instead of the tables, and keep sticky headers below the navbar */
+  .sailorPage .raceByRaceBox {
+    max-height: none;
+    overflow: visible;
+  }
+  .sailorPage th {
+    top: 55px;
+  }
+  .sailorPage .sailorNameRow {
+    position: relative;
+    top: 0;
+  }
+  .sailorPage .ratingStatContainer {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .sailorStatTabContainer {
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+  }
+}
 .ratingStatCard {
   /* border: 2px solid var(--border); */
   border-radius: var(--radius);
@@ -961,6 +1033,9 @@ tr .filterOption:hover {
   .teamRatingSailors {
     display: none;
   }
+  .teamRatingContainer td {
+    padding-right: 0.5rem;
+  }
 }
 
 .teamRatingCard {
@@ -984,6 +1059,9 @@ tr .filterOption:hover {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
+  }
+  .heroExclaim {
+    display: none;
   }
 
   .chartLabel {
@@ -1027,6 +1105,11 @@ tr .filterOption:hover {
   justify-content: space-around;
 }
 
+/* the mobile toolbar has its own back to top button */
+body:has(.mobileControlsContainer) .scrollButton {
+  display: none !important;
+}
+
 .mobileControlsContainer button {
   padding: 0.5rem 1rem;
   border: var(--border) var(--border-size) solid;
@@ -1047,6 +1130,8 @@ tr .filterOption:hover {
   /* flex-wrap: wrap; */
   padding: 0.5rem;
 }
+
+/* unknown */
 
 .flexRowCentered {
   display: flex;

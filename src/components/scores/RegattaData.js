@@ -16,14 +16,14 @@ export default function RegattaData({ index, seasons, teams, updateRegatta, remo
   useEffect(() => {
     const fetchData = async () => {
       console.log('TEAM', team)
-      if (team != undefined) {
+      if (team !== undefined) {
         let docRef = doc(db, 'techscoreTeams', team)
         // console.log((await getDoc(docRef)).data().regattas)
         let regattas = (await getDoc(docRef)).data().regattas[season]
         // console.log(regattas)
         let sortedRegattas = Object.keys(regattas).sort(function (a, b) {
           // console.log(new Date(regattas[a].date) - new Date(regattas[b].date))
-          if (regattas[a] != undefined && regattas[b] != undefined) return new Date(regattas[a].date) - new Date(regattas[b].date)
+          if (regattas[a] !== undefined && regattas[b] !== undefined) return new Date(regattas[a].date) - new Date(regattas[b].date)
           return 0
         })
         let sortedMap = {}
@@ -51,7 +51,7 @@ export default function RegattaData({ index, seasons, teams, updateRegatta, remo
 
   return (
     <>
-      <div className="contentBox flexRowContainer">
+      <div className='contentBox flexRowContainer'>
         <select onChange={(e) => setSeason(e.target.value)}>
           {[...Array(seasons.length)].map((e, i) => (
             <option key={i} value={seasons[i]}>

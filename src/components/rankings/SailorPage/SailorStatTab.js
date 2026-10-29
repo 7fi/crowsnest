@@ -6,14 +6,14 @@ export default function SailorStatTab({ titles, components }) {
     <div>
       <div className='flexRowContainer sailorStatTabContainer'>
         {titles.map((title, i) => {
-          if (title == 'Rival Skippers' || title == 'Rival Crews') {
-            if (components[i].props.rivals?.length == 0) {
+          if (title === 'Rival Skippers' || title === 'Rival Crews') {
+            if (components[i].props.rivals?.length === 0) {
               return <></>
             }
           }
 
           return (
-            <div key={i} className='sailorStatTabButton' style={activeTabIndex == i ? { backgroundColor: 'var(--highlight1)', color: '#fff', border: '2px solid var(--highlight1)' } : {}} onClick={() => setActiveTabIndex(i)}>
+            <div key={i} className='sailorStatTabButton' style={activeTabIndex === i ? { backgroundColor: 'var(--highlight1)', color: '#fff', border: '2px solid var(--highlight1)' } : {}} onClick={() => setActiveTabIndex(i)}>
               {title}
             </div>
           )

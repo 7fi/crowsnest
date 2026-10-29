@@ -10,11 +10,19 @@ import useRegionColors from '../lib/regionColors'
 import RatioBar from '../components/rankings/RatioBar'
 import DoubleSlider from '../components/DoubleSlider'
 import RankingDisplay from '../components/rankings/TeamPage/RankingDisplay'
-import { useMobileDetect } from '../lib/hooks'
+import { useMobileDetect, useSmallScreen } from '../lib/hooks'
+
+const ratingTypes = {
+  openrating: { type: 'open', raceType: 'fleet', label: 'Open Fleet' },
+  womenrating: { type: 'women', raceType: 'fleet', label: "Women's" },
+  teamrating: { type: 'open', raceType: 'team', label: 'Team Race' },
+  wteamrating: { type: 'women', raceType: 'team', label: "Women's TR" },
+}
 
 export default function TeamRankings() {
   const { teamName } = useParams()
-  const mobile = useMobileDetect()
+  const smallScreen = useSmallScreen()
+  const mobile = useMobileDetect() || smallScreen
   const [rating, setRating] = useState(1500)
   const [teamData, setTeamData] = useState({})
   const [teamMembers, setTeamMembers] = useState([])
@@ -24,6 +32,7 @@ export default function TeamRankings() {
   const [loaded, setLoaded] = useState(false)
 
   const [sort, setSort] = useState('openrating')
+  const [ratingView, setRatingView] = useState('openrating') // rating column shown on mobile
   const [activeSeasons, setActiveSeasons] = useState([])
   const [allSeasons, setAllSeasons] = useState([])
   const teamCodes = useTeamCodes()
@@ -34,7 +43,7 @@ export default function TeamRankings() {
 
   useEffect(() => {
     getTeam(teamName).then((tempTeam) => {
-      if (tempTeam == undefined) return
+      if (tempTeam === undefined) return
       // console.log(tempTeam)
       setTeamMembers(tempTeam.members)
       setRating(tempTeam.data.avgRating)
@@ -55,16 +64,14 @@ export default function TeamRankings() {
       })
       setActiveSeasons([uniqueSeasons[uniqueSeasons.length - 1]])
       setAllSeasons(uniqueSeasons)
-      if (tempTeam.data.region != '') {
+      if (tempTeam.data.region !== '') {
         document.querySelector(':root').style.setProperty('--highlight1', regionColors[tempTeam.data.region])
       }
       setLoaded(true)
     })
   }, [teamName])
   useEffect(() => {
-    if (mobile) {
-      setSelectionMode('advanced')
-    }
+    setSelectionMode(mobile ? 'advanced' : 'default')
   }, [mobile])
 
   const getRating = (member, pos, type, raceType) => {
@@ -86,14 +93,6 @@ export default function TeamRankings() {
 
   const TeamMember = ({ index, member, pos }) => {
     const navigate = useNavigate()
-    // let rating = getRating(member, pos)
-
-    // const rating = pos === 'skipper' ? (member.wsr !== 1000 ? Math.max(member.sr, member.wsr).toFixed(0) : member.sr.toFixed(0)) : member.wcr !== 1000 ? Math.max(member.cr, member.wcr).toFixed(0) : member.cr.toFixed(0)
-    // console.log(member)
-    const rankingOpen = (member.rankType?.split('.').includes('sr') && pos == 'skipper') || (member.rankType?.split('.').includes('cr') && pos == 'crew')
-    const rankingWomen = (member.rankType?.split('.').includes('wsr') && pos == 'skipper') || (member.rankType?.split('.').includes('wcr') && pos == 'crew')
-
-    // console.log(member.name, rankingOpen, rankingWomen, member.rankType)
 
     return (
       <tr key={index} className='clickable' onClick={() => navigate(`/sailors/${member.sailorID}`)}>
@@ -108,34 +107,42 @@ export default function TeamRankings() {
         ) : (
           <></>
         )}
-        <td className='tableColFit'>{decodeURIComponent(member.name)}</td>
+        <td className={mobile ? '' : 'tableColFit'}>{decodeURIComponent(member.name)}</td>
         <td className=''>{member.year.split('.')[0].includes('*') ? member.year.split('.')[0].slice(0, 2) : member.year.split('.')[0].slice(2, 4)}</td>
-        <td style={{ textAlign: 'left', minWidth: 50 }}>
-          {/* {rankingOpen ? <TiStarFullOutline style={{ bottom: -5 }} className='secondaryText' /> : ''}
-          {rankingWomen ? <TiStarFullOutline className='secondaryText' color='var(--women)' /> : ''} */}
-        </td>
-        {/* <td className='secondaryText'>{member.gender === 'F' ? 'W' : ''}</td> */}
-        <td className='tableColFit' style={{ textAlign: 'left' }}>
-          {member.numRaces}
-        </td>
-        {/* <td style={{ textAlign: 'right' }}>{pos === 'skipper' ? member.avgSkipperRatio.toFixed(3) : member.avgCrewRatio.toFixed(3)}</td> */}
-        <td className='tableColFit' style={{ textAlign: 'center' }}>
-          {/* <RatioBar ratio={pos === 'skipper' ? member.avgSkipperRatio : member.avgCrewRatio} /> */}
-          <RatioBar ratio={member.winP} />
-        </td>
-        <td></td>
-        <td style={{ textAlign: 'right', width: 'min-content' }} className='tableColFit'>
-          <RatingNum highest={false} sailor={member} pos={pos} type={'open'} raceType={'fleet'} />
-        </td>
-        <td style={{ textAlign: 'right' }} className='tableColFit'>
-          <RatingNum highest={false} sailor={member} pos={pos} type={'women'} raceType={'fleet'} />
-        </td>
-        <td style={{ textAlign: 'right' }} className='tableColFit'>
-          <RatingNum highest={false} sailor={member} pos={pos} type={'open'} raceType={'team'} />
-        </td>
-        <td style={{ textAlign: 'right' }} className='tableColFit'>
-          <RatingNum highest={false} sailor={member} pos={pos} type={'women'} raceType={'team'} />
-        </td>
+        {mobile ? (
+          <td style={{ textAlign: 'right' }} className='tableColFit'>
+            {sort === 'races' ? member.numRaces : sort === 'ratio' ? <RatioBar ratio={member.winP} /> : <RatingNum highest={false} sailor={member} pos={pos} type={ratingTypes[ratingView].type} raceType={ratingTypes[ratingView].raceType} />}
+          </td>
+        ) : (
+          <>
+            <td style={{ textAlign: 'left', minWidth: 50 }}>
+              {/* {rankingOpen ? <TiStarFullOutline style={{ bottom: -5 }} className='secondaryText' /> : ''}
+              {rankingWomen ? <TiStarFullOutline className='secondaryText' color='var(--women)' /> : ''} */}
+            </td>
+            {/* <td className='secondaryText'>{member.gender === 'F' ? 'W' : ''}</td> */}
+            <td className='tableColFit' style={{ textAlign: 'left' }}>
+              {member.numRaces}
+            </td>
+            {/* <td style={{ textAlign: 'right' }}>{pos === 'skipper' ? member.avgSkipperRatio.toFixed(3) : member.avgCrewRatio.toFixed(3)}</td> */}
+            <td className='tableColFit' style={{ textAlign: 'center' }}>
+              {/* <RatioBar ratio={pos === 'skipper' ? member.avgSkipperRatio : member.avgCrewRatio} /> */}
+              <RatioBar ratio={member.winP} />
+            </td>
+            <td></td>
+            <td style={{ textAlign: 'right', width: 'min-content' }} className='tableColFit'>
+              <RatingNum highest={false} sailor={member} pos={pos} type={'open'} raceType={'fleet'} />
+            </td>
+            <td style={{ textAlign: 'right' }} className='tableColFit'>
+              <RatingNum highest={false} sailor={member} pos={pos} type={'women'} raceType={'fleet'} />
+            </td>
+            <td style={{ textAlign: 'right' }} className='tableColFit'>
+              <RatingNum highest={false} sailor={member} pos={pos} type={'open'} raceType={'team'} />
+            </td>
+            <td style={{ textAlign: 'right' }} className='tableColFit'>
+              <RatingNum highest={false} sailor={member} pos={pos} type={'women'} raceType={'team'} />
+            </td>
+          </>
+        )}
         {/* <td className='tdRightBorder'></td> */}
       </tr>
     )
@@ -152,6 +159,55 @@ export default function TeamRankings() {
     // console.log(element.classList)
   }
 
+  const selectRating = (team, women) => {
+    const view = team ? (women ? 'wteamrating' : 'teamrating') : women ? 'womenrating' : 'openrating'
+    setRatingView(view)
+    setSort(view)
+  }
+
+  const MobileControls = () => {
+    const team = ratingView === 'teamrating' || ratingView === 'wteamrating'
+    const women = ratingView === 'womenrating' || ratingView === 'wteamrating'
+
+    return (
+      <div className='mobileControlsContainer'>
+        <div className='mobileControlsGrid'>
+          <div style={{ gridArea: '1 / 1 / 1 / 3' }}>
+            <label className='fleetTeamSwitch' htmlFor='teamPageTeamCheckbox'>
+              <input id='teamPageTeamCheckbox' type='checkbox' checked={team} onChange={(input) => selectRating(input.target.checked, women)} />
+              <div className='fleetTeamSlider'></div>
+              <div className='fleetTeamSliderLabel'>
+                <span>Fleet</span>
+                <span>Team</span>
+              </div>
+            </label>
+          </div>
+          <div style={{ gridArea: '2 / 1 / 2 / 3' }}>
+            <label className='fleetTeamSwitch' htmlFor='teamPageWomenCheckbox'>
+              <input id='teamPageWomenCheckbox' type='checkbox' checked={women} onChange={(input) => selectRating(team, input.target.checked)} />
+              <div className='fleetTeamSlider'></div>
+              <div className='fleetTeamSliderLabel'>
+                <span>Open</span>
+                <span>Women</span>
+              </div>
+            </label>
+          </div>
+
+          <button onClick={() => setSort(sort === 'races' ? ratingView : 'races')} style={{ backgroundColor: sort === 'races' ? 'var(--border)' : 'var(--bg)' }}>
+            Races
+          </button>
+          <button onClick={() => setSort(sort === 'ratio' ? ratingView : 'ratio')} style={{ backgroundColor: sort === 'ratio' ? 'var(--border)' : 'var(--bg)' }}>
+            Win %
+          </button>
+
+          <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} style={{ backgroundColor: 'var(--bg)', gridArea: '2 / 3 / 2 / 5' }}>
+            Back to top
+          </button>
+        </div>
+      </div>
+    )
+  }
+
   const seasonsChanged = ([start, end]) => {
     setActiveSeasons(allSeasons.slice(allSeasons.indexOf(start), allSeasons.indexOf(end) + 1))
   }
@@ -159,7 +215,7 @@ export default function TeamRankings() {
   const PosList = ({ members, pos }) => {
     const seenInThisList = new Set()
 
-    const posMembers = members.filter((member) => member.position == pos && member.teamID == teamName)
+    const posMembers = members.filter((member) => member.position === pos && member.teamID === teamName)
     const filtered = posMembers
       .map((member) => {
         // accumulate numRaces across the activeSeasons before filtering so totals reflect all selected seasons
@@ -168,7 +224,7 @@ export default function TeamRankings() {
         const thisMemberEntries = posMembers.filter((m) => {
           // grab entries of current sailor
           const mKey = m.sailorID ? `${m.sailorID}` : `${m.name}_${pos}`
-          return mKey == key
+          return mKey === key
         })
 
         const numRaces = thisMemberEntries.reduce((total, m) => {
@@ -228,8 +284,7 @@ export default function TeamRankings() {
 
     return (
       <>
-        <div className='flexGrowChild'>
-          {/*flexGrowChild */}
+        <div className={mobile ? '' : 'flexGrowChild'}>
           <h2>{pos.slice(0, 1).toUpperCase() + pos.slice(1)}s</h2>
           <table className='raceByRaceTable' style={{ fontSize: '0.9rem' }}>
             <thead>
@@ -237,56 +292,70 @@ export default function TeamRankings() {
                 <th></th>
                 <th>Name</th>
                 <th>Year</th>
-                <th className='tableColFit'></th>
-                <th
-                  className='tableColFit clickable'
-                  style={{ minWidth: 68 }}
-                  onClick={() => {
-                    setSort('races')
-                  }}>
-                  Races{sort === 'races' ? <FaSortDown /> : ''}
-                </th>
-                <th
-                  className=' tableColFit clickable'
-                  // style={{ textAlign: 'right' }}
-                  onClick={() => {
-                    setSort('ratio')
-                  }}>
-                  Avg Win %{sort === 'ratio' ? <FaSortDown /> : ''}
-                </th>
-                <th></th>
-                <th
-                  className=' tableColFit clickable'
-                  style={{ textAlign: 'right' }}
-                  onClick={() => {
-                    setSort('openrating')
-                  }}>
-                  Open Fleet{sort === 'openrating' ? <FaSortDown /> : ''}
-                </th>
-                <th
-                  className=' tableColFit clickable'
-                  // style={{ textAlign: 'right' }}
-                  onClick={() => {
-                    setSort('womenrating')
-                  }}>
-                  Women's{sort === 'womenrating' ? <FaSortDown /> : ''}
-                </th>
-                <th
-                  className=' tableColFit clickable'
-                  // style={{ textAlign: 'right' }}
-                  onClick={() => {
-                    setSort('teamrating')
-                  }}>
-                  Team Race{sort === 'teamrating' ? <FaSortDown /> : ''}
-                </th>
-                <th
-                  className=' tableColFit clickable'
-                  // style={{ textAlign: 'right' }}
-                  onClick={() => {
-                    setSort('wteamrating')
-                  }}>
-                  Women's TR{sort === 'wteamrating' ? <FaSortDown /> : ''}
-                </th>
+                {mobile ? (
+                  <th
+                    className='tableColFit clickable'
+                    style={{ textAlign: 'right' }}
+                    onClick={() => {
+                      setSort(ratingView)
+                    }}>
+                    {sort === 'races' ? 'Races' : sort === 'ratio' ? 'Avg Win %' : ratingTypes[ratingView].label}
+                    <FaSortDown />
+                  </th>
+                ) : (
+                  <>
+                    <th className='tableColFit'></th>
+                    <th
+                      className='tableColFit clickable'
+                      style={{ minWidth: 68 }}
+                      onClick={() => {
+                        setSort('races')
+                      }}>
+                      Races{sort === 'races' ? <FaSortDown /> : ''}
+                    </th>
+                    <th
+                      className=' tableColFit clickable'
+                      // style={{ textAlign: 'right' }}
+                      onClick={() => {
+                        setSort('ratio')
+                      }}>
+                      Avg Win %{sort === 'ratio' ? <FaSortDown /> : ''}
+                    </th>
+                    <th></th>
+                    <th
+                      className=' tableColFit clickable'
+                      style={{ textAlign: 'right' }}
+                      onClick={() => {
+                        setSort('openrating')
+                      }}>
+                      Open Fleet{sort === 'openrating' ? <FaSortDown /> : ''}
+                    </th>
+                    <th
+                      className=' tableColFit clickable'
+                      // style={{ textAlign: 'right' }}
+                      onClick={() => {
+                        setSort('womenrating')
+                      }}>
+                      Women's{sort === 'womenrating' ? <FaSortDown /> : ''}
+                    </th>
+                    <th
+                      className=' tableColFit clickable'
+                      // style={{ textAlign: 'right' }}
+                      onClick={() => {
+                        setSort('teamrating')
+                      }}>
+                      Team Race{sort === 'teamrating' ? <FaSortDown /> : ''}
+                    </th>
+                    <th
+                      className=' tableColFit clickable'
+                      // style={{ textAlign: 'right' }}
+                      onClick={() => {
+                        setSort('wteamrating')
+                      }}>
+                      Women's TR{sort === 'wteamrating' ? <FaSortDown /> : ''}
+                    </th>
+                  </>
+                )}
                 {/* <th> </th> */}
               </tr>
             </thead>
@@ -308,7 +377,7 @@ export default function TeamRankings() {
   return (
     <div>
       {loaded ? (
-        <div style={{ padding: 15 }}>
+        <div style={{ padding: 15, paddingBottom: mobile ? 130 : 15 }}>
           <div className='teamPageHeader'>
             <Link to={'/teams'} className='secondaryText'>
               {'<'} All Teams
@@ -358,8 +427,8 @@ export default function TeamRankings() {
             <></>
           )}
 
-          {selectionMode == 'advanced' ? (
-            <div className='flexRowContainer flexWrap' style={{ marginLeft: 15 }}>
+          {selectionMode === 'advanced' ? (
+            <div className='flexRowContainer flexWrap' style={{ marginLeft: mobile ? 0 : 15, gap: mobile ? '0.3rem' : undefined, marginTop: mobile ? '1rem' : 0 }}>
               {allSeasons
                 .sort((a, b) => {
                   if (parseInt(a.slice(1, 3)) - parseInt(b.slice(1, 3)) !== 0) {
@@ -385,7 +454,7 @@ export default function TeamRankings() {
           ) : (
             <DoubleSlider values={allSeasons} initialStart={activeSeasons.slice(-1)[0]} onChange={seasonsChanged} />
           )}
-          <div className='responsiveRowCol' style={{ padding: 15, flexWrap: 'wrap' }}>
+          <div className={mobile ? 'flexCol' : 'responsiveRowCol'} style={{ padding: mobile ? 0 : 15, flexWrap: 'wrap' }}>
             <PosList members={teamMembers} pos='skipper' />
             <PosList members={teamMembers} pos='crew' />
           </div>
@@ -418,6 +487,7 @@ export default function TeamRankings() {
               <span>This team hasn't sailed any regattas yet this season!</span>
             )}
           </div>
+          {mobile ? <MobileControls /> : <></>}
         </div>
       ) : (
         <Loader show={!loaded} />

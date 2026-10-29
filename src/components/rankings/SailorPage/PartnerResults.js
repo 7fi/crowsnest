@@ -1,14 +1,14 @@
 import { useState } from 'react'
 import { FaSortDown } from 'react-icons/fa'
-import { Link, useNavigate } from 'react-router-dom'
-import { useMobileDetect } from '../../../lib/hooks'
+import { useNavigate } from 'react-router-dom'
+import { useMobileLayout } from '../../../lib/hooks'
 import RatioBar from '../RatioBar'
 
 export default function PartnerResults({ races }) {
   const [byChange, setByChange] = useState(false)
   const [byRaces, setByRaces] = useState(true)
   const navigate = useNavigate()
-  const isMobile = useMobileDetect()
+  const isMobile = useMobileLayout()
 
   // Step 1: Calculate total change and count for each partner
   const partnerStats = races.reduce((acc, race) => {
@@ -22,7 +22,7 @@ export default function PartnerResults({ races }) {
     if (!race.ratingType.includes('t')) {
       acc[key].ratio += race.ratio
     } else {
-      acc[key].ratio += race.outcome == 'win' ? 1 : 0
+      acc[key].ratio += race.outcome === 'win' ? 1 : 0
     }
     return acc
   }, {})
@@ -51,7 +51,7 @@ export default function PartnerResults({ races }) {
           <th></th>
           <th>Partner</th>
           <th
-            style={{ minWidth: 75 }}
+            style={{ minWidth: isMobile ? 0 : 75 }}
             className='clickable'
             onClick={() => {
               setByChange(false)
@@ -60,7 +60,7 @@ export default function PartnerResults({ races }) {
             Races
             {byRaces ? <FaSortDown /> : <></>}
           </th>
-          <th></th>
+          {isMobile ? <></> : <th></th>}
           <th
             style={{ minWidth: isMobile ? 50 : 150 }}
             className='tableColFit clickable'
@@ -72,13 +72,13 @@ export default function PartnerResults({ races }) {
             {byChange ? <FaSortDown /> : ' '}
           </th>
           <th
-            style={{ minWidth: 113 }}
+            style={{ minWidth: isMobile ? 0 : 113, textAlign: isMobile ? 'right' : undefined }}
             className='tableColFit clickable'
             onClick={() => {
               setByChange(false)
               setByRaces(false)
             }}>
-            Percentage
+            {isMobile ? 'Win %' : 'Percentage'}
             {!byChange && !byRaces ? <FaSortDown /> : <></>}
           </th>
         </tr>
@@ -92,14 +92,12 @@ export default function PartnerResults({ races }) {
               <td style={{ textAlign: 'right' }} className='tableColFit'>
                 {partner.count}
               </td>
-              <td> </td>
+              {isMobile ? <></> : <td> </td>}
               <td style={{ color: partner.change > 0 ? 'green' : 'red' }}>
                 {partner.change > 0 ? '+' : ''}
                 {partner.change.toFixed(0)}
               </td>
-              <td style={{ textAlign: 'center' }}>
-                <RatioBar ratio={partner.ratio} />
-              </td>
+              <td style={{ textAlign: isMobile ? 'right' : 'center' }}>{isMobile ? `${(partner.ratio * 100).toFixed(0)}%` : <RatioBar ratio={partner.ratio} />}</td>
             </tr>
           ) : (
             <></>

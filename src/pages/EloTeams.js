@@ -33,13 +33,13 @@ export default function EloTeams() {
       .then((tempTeams) => {
         setTeams(tempTeams)
         let regions = tempTeams.map((team) => team.region).filter((value, index, self) => self.indexOf(value) === index)
-        if (linkRegion == null) {
+        if (linkRegion === null) {
           setActiveRegions(regions)
         } else {
           setActiveRegions([linkRegion])
         }
 
-        if (linkSort != null) {
+        if (linkSort !== null) {
           setSort(linkSort)
         }
 
@@ -213,19 +213,19 @@ const MobileControls = ({ sort, setSort, reverse, setReverse, temp }) => {
             <input
               id='checkbox'
               type='checkbox'
-              checked={sort == 'team' || sort == 'womenteam'}
+              checked={sort === 'team' || sort === 'womenteam'}
               onChange={(input) => {
                 let team = input.target.checked
                 setReverse(false)
 
                 if (team) {
-                  if (sort == 'women' || sort == 'womenteam') {
+                  if (sort === 'women' || sort === 'womenteam') {
                     setSort('womenteam')
                   } else {
                     setSort('team')
                   }
                 } else {
-                  if (sort == 'womenteam') {
+                  if (sort === 'womenteam') {
                     setSort('women')
                   } else {
                     setSort('top')
@@ -245,19 +245,19 @@ const MobileControls = ({ sort, setSort, reverse, setReverse, temp }) => {
             <input
               id='womensCheckbox'
               type='checkbox'
-              checked={sort == 'women' || sort == 'womenteam'}
+              checked={sort === 'women' || sort === 'womenteam'}
               onChange={(input) => {
                 let womens = input.target.checked
                 setReverse(false)
 
                 if (womens) {
-                  if (sort == 'team' || sort == 'womenteam') {
+                  if (sort === 'team' || sort === 'womenteam') {
                     setSort('womenteam')
                   } else {
                     setSort('women')
                   }
                 } else {
-                  if (sort == 'team' || sort == 'womenteam') {
+                  if (sort === 'team' || sort === 'womenteam') {
                     setSort('team')
                   } else {
                     setSort('top')
@@ -278,7 +278,7 @@ const MobileControls = ({ sort, setSort, reverse, setReverse, temp }) => {
             setReverse(false)
             setSort(sort === 'rating' ? 'top' : 'rating')
           }}
-          style={{ backgroundColor: sort == 'rating' ? 'var(--border)' : 'var(--bg)' }}>
+          style={{ backgroundColor: sort === 'rating' ? 'var(--border)' : 'var(--bg)' }}>
           Avg
         </button>
         <button
@@ -295,7 +295,7 @@ const MobileControls = ({ sort, setSort, reverse, setReverse, temp }) => {
               setReverse(false)
             }
           }}
-          style={{ backgroundColor: sort == 'members' ? 'var(--border)' : 'var(--bg)' }}>
+          style={{ backgroundColor: sort === 'members' ? 'var(--border)' : 'var(--bg)' }}>
           Members
         </button>
 

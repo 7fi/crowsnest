@@ -37,7 +37,7 @@ export default function Events() {
 
   // console.log(teamID)
   console.log(team?.members)
-  if (team?.members) console.log(team?.members.find((u) => user?.uid == u.uid))
+  if (team?.members) console.log(team?.members.find((u) => user?.uid === u.uid))
 
   return (
     <main>
@@ -150,7 +150,7 @@ function TeamControls({ team, teamID, teamName, setMemeberNames }) {
                           </button>
                         </div>
                       </div>
-                    )
+                    ),
                     // { position: 'top-center' }
                   )
                 }}>
@@ -217,14 +217,14 @@ async function requestTeam(teamID, uid, username, displayName) {
   let d = doc(db, `teams/${teamID}`)
   let docSnap = (await getDoc(d)).data()
   // console.log(uid, username, displayName)
-  if (docSnap.members.find((m) => uid == m.uid) == undefined) await updateDoc(d, { requests: arrayUnion({ userId: uid, username: username, displayName: displayName }) })
+  if (docSnap.members.find((m) => uid === m.uid) === undefined) await updateDoc(d, { requests: arrayUnion({ userId: uid, username: username, displayName: displayName }) })
 }
 
 async function deleteMember(teamName, teamID, uid, members, setMemeberNames) {
   console.log(members)
   const db = getFirestore()
   let d = doc(db, `teams/${teamID}`)
-  await updateDoc(d, { members: arrayRemove(members.find((item) => item.uid == uid)) })
+  await updateDoc(d, { members: arrayRemove(members.find((item) => item.uid === uid)) })
   d = doc(db, `users/${uid}`)
   await updateDoc(d, { teams: arrayRemove(teamName) })
   setMemeberNames([])

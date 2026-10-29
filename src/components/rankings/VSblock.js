@@ -13,7 +13,7 @@ export default function VSblock({ sailorsA, sailorsB }) {
 
   const bothRacesA = aRaces
     .filter((race) => {
-      return bRaces.some((race2) => race.raceID == race2.raceID)
+      return bRaces.some((race2) => race.raceID === race2.raceID)
     })
     .map((race) => {
       let temp = race
@@ -22,7 +22,7 @@ export default function VSblock({ sailorsA, sailorsB }) {
     })
   const bothRacesB = bRaces
     .filter((race) => {
-      return bothRacesA.some((race2) => race.raceID == race2.raceID)
+      return bothRacesA.some((race2) => race.raceID === race2.raceID)
     })
     .map((race) => {
       let temp = race

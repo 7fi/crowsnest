@@ -55,13 +55,13 @@ export default function TeamCompare() {
   }, [team2])
 
   useEffect(() => {
-    if (t1SelectedSailors.length == 0 || t2SelectedSailors.length == 0) {
+    if (t1SelectedSailors.length === 0 || t2SelectedSailors.length === 0) {
       setFleetRegattas([])
       setStats(null)
       return
     }
     getComparisonRegattas(t1SelectedSailors, t2SelectedSailors).then((tempRegattas) => {
-      if (tempRegattas.length == 0) {
+      if (tempRegattas.length === 0) {
         setFleetRegattas([])
         setStats(null)
         return
@@ -75,7 +75,7 @@ export default function TeamCompare() {
   }, [t1SelectedSailors, t2SelectedSailors])
 
   useEffect(() => {
-    if (t1SelectedSailors.length == 0 || t2SelectedSailors.length == 0 || fleetRegattas.length == 0) {
+    if (t1SelectedSailors.length === 0 || t2SelectedSailors.length === 0 || fleetRegattas.length === 0) {
       setStats(null)
       return
     }

@@ -4,7 +4,7 @@ export default function RatioBar({ ratio }) {
   const [width, setWidth] = useState(0)
 
   useEffect(() => {
-    if (ratio == NaN) {
+    if (ratio === NaN) {
       setWidth(0)
     } else {
       setWidth(ratio * 100)

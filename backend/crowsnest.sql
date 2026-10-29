@@ -1,6 +1,7 @@
 DROP DATABASE IF EXISTS crowsnest;
 CREATE DATABASE IF NOT EXISTS crowsnest;
 USE crowsnest;
+SET GLOBAL local_infile = 1;
 
 DROP TABLE IF EXISTS Users;
 CREATE TABLE Users(
@@ -106,6 +107,24 @@ CREATE TABLE SailorRivals(
 #    CONSTRAINT FOREIGN KEY (sailorID) REFERENCES Sailors(sailorID)
 #     CONSTRAINT FOREIGN KEY (rivalID) REFERENCES Sailors(sailorID)
 );
+
+# Final standings of each fleet regatta, scraped from its Techscore full-scores page
+# One row per boat a team entered, with Techscores tiebreakers and team penalties applied
+DROP TABLE IF EXISTS RegattaResults;
+CREATE TABLE RegattaResults (
+    season char(4),
+    regatta varchar(100),
+    place INT,
+    teamID varchar(50),
+    boatName varchar(100),
+    points INT,
+    totalBoats INT,
+    ratingType char(4),
+    scoring char(12),
+    lastUpdate DATETIME DEFAULT CURRENT_TIMESTAMP() ON UPDATE CURRENT_TIMESTAMP(),
+    PRIMARY KEY(season, regatta, place)
+);
+CREATE INDEX regatta_results_idx ON RegattaResults (teamID);
 
 DROP TABLE IF EXISTS FleetScores;
 CREATE TABLE FleetScores(

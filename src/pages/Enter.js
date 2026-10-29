@@ -77,11 +77,11 @@ function UsernameForm() {
     debounce(async (username) => {
       if (username.length >= 3) {
         const res = await getUserByUsername(username)
-        setIsValid(res.length == 0)
+        setIsValid(res.length === 0)
         setLoading(false)
       }
     }, 500),
-    []
+    [],
   )
 
   useEffect(() => {

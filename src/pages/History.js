@@ -22,18 +22,18 @@ export default function History() {
       ?.map((date, index) => {
         const entry = { date }
         for (const team in teams) {
-          if (team != 'dates') {
+          if (team !== 'dates') {
             let temp = teams[team][index]
-            if (temp != null) {
+            if (temp !== null) {
               entry[team] = temp[type]
             }
           }
         }
         return entry
       })
-      .filter((entry) => Object.values(entry).filter((v) => v != null).length > minTeams)
-      .map((entry) => Object.fromEntries(Object.entries(entry).filter(([key, value]) => value <= 30 || key == 'date')))
-    // .filter((entry) => entry['date'].split('-')[0] == '2025')
+      .filter((entry) => Object.values(entry).filter((v) => v !== null).length > minTeams)
+      .map((entry) => Object.fromEntries(Object.entries(entry).filter(([key, value]) => value <= 30 || key === 'date')))
+    // .filter((entry) => entry['date'].split('-')[0] === '2025')
     setData(tempData)
     // console.log(data)
   }
@@ -49,12 +49,12 @@ export default function History() {
 
   const CustomTooltip = ({ active, payload, label }) => {
     if (active) {
-      const value = payload.filter((entry) => entry.dataKey == hoveredLine)[0]
+      const value = payload.filter((entry) => entry.dataKey === hoveredLine)[0]
       const listvals = payload.map((entry) => [entry.dataKey, entry.value]).sort((a, b) => a[1] - b[1])
       return (
         <div className='chartTooltip'>
           <h3 style={{ margin: 0 }}>{label}</h3>
-          {hoveredLine == null ? (
+          {hoveredLine === null ? (
             <ul style={{ listStyleType: 'none', margin: 0, padding: 0 }}>
               {listvals.map(([team, rank]) => (
                 <li>
@@ -116,7 +116,7 @@ export default function History() {
                   .map((entry) => entry['date'])
                   .filter((date) => {
                     let spl = date.split('-')
-                    return spl[0] == '2024' && spl[1] == '09'
+                    return spl[0] === '2024' && spl[1] === '09'
                   })[0]
               }
               stroke='red'
@@ -128,7 +128,7 @@ export default function History() {
                   .map((entry) => entry['date'])
                   .filter((date) => {
                     let spl = date.split('-')
-                    return spl[0] == '2025'
+                    return spl[0] === '2025'
                   })[0]
               }
               stroke='red'

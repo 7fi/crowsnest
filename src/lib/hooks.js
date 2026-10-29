@@ -70,6 +70,27 @@ export function useMobileDetect() {
 
   return isMobile
 }
+export function useSmallScreen(maxWidth = 750) {
+  const query = `(max-width: ${maxWidth}px)`
+  const [isSmall, setIsSmall] = useState(() => typeof window !== 'undefined' && window.matchMedia(query).matches)
+
+  useEffect(() => {
+    const mql = window.matchMedia(query)
+    const onChange = (e) => setIsSmall(e.matches)
+    setIsSmall(mql.matches)
+    mql.addEventListener('change', onChange)
+    return () => mql.removeEventListener('change', onChange)
+  }, [query])
+
+  return isSmall
+}
+
+// true on mobile devices or narrow windows
+export function useMobileLayout() {
+  const isMobileDevice = useMobileDetect()
+  const isSmallScreen = useSmallScreen()
+  return isMobileDevice || isSmallScreen
+}
 const alpha = 200.0 / (25.0 / 3)
 export function ord(mu, sigma, target) {
   return alpha * (mu - 3.0 * sigma + target / alpha)

@@ -1,19 +1,16 @@
 import '../main.css'
-import { Link, NavLink, useLocation } from 'react-router-dom'
-import { useContext, useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
+import { useContext, useState } from 'react'
 import { UserContext } from '../lib/context'
-import SignOutButton from './login/SignOutButton'
 import { setTheme, useMobileDetect } from '../lib/hooks'
-import { FaSun, FaMoon } from 'react-icons/fa'
+import { FaMoon } from 'react-icons/fa'
 import { IoSunnySharp } from 'react-icons/io5'
 import { AuthCheckLite } from './AuthCheck'
-import { ProCheckLite } from './rankings/ProCheck'
 
 export default function Navbar() {
   const { user, userVals } = useContext(UserContext)
 
   const [theme, setThemeVal] = useState(localStorage.getItem('theme'))
-  const location = useLocation()
   const isMobile = useMobileDetect()
 
   return (
@@ -21,8 +18,8 @@ export default function Navbar() {
       <ul>
         <li style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <Link to='/' style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <img style={{ margin: 5 }} src={theme == 'dark' ? `/Logo_Dark.png` : `/Logo_Light.png`} />
-            {/* <img style={{ margin: 5 }} src={theme == 'dark' ? `/Logo_Dark.png` : `/Logo_Large.png`} /> */}
+            <img style={{ margin: 5 }} src={theme === 'dark' ? `/Logo_Dark.png` : `/Logo_Light.png`} alt='CrowsNest' />
+            {/* <img style={{ margin: 5 }} src={theme==='dark' ? `/Logo_Dark.png` : `/Logo_Large.png`} /> */}
             {isMobile ? (
               <></>
             ) : (
@@ -43,7 +40,7 @@ export default function Navbar() {
           <li>
             <button
               onClick={() => {
-                setTheme(localStorage.getItem('theme') == 'light' ? 'dark' : 'light')
+                setTheme(localStorage.getItem('theme') === 'light' ? 'dark' : 'light')
                 setThemeVal(localStorage.getItem('theme'))
               }}>
               <RenderThemeBtn />

@@ -3,8 +3,10 @@ import { FaSortDown, FaSortUp } from 'react-icons/fa'
 import { useNavigate } from 'react-router-dom'
 import RatioBar from '../RatioBar'
 import { all } from 'axios'
+import { useMobileLayout } from '../../../lib/hooks'
 
 export default function Rivals({ rivals, pos }) {
+  const isMobile = useMobileLayout()
   const [byRaces, setByRaces] = useState(true)
   const [reverse, setReverse] = useState(false)
   const [allSeasons, setAllSeasons] = useState([])
@@ -12,7 +14,7 @@ export default function Rivals({ rivals, pos }) {
   const nav = useNavigate()
 
   useEffect(() => {
-    if (rivals != undefined) {
+    if (rivals !== undefined) {
       const allSeasons = rivals.reduce((acc, rival) => {
         if (!acc.includes(rival.season)) {
           acc.push(rival.season)
@@ -25,13 +27,13 @@ export default function Rivals({ rivals, pos }) {
     }
   }, [rivals, pos])
 
-  if (rivals == undefined) {
+  if (rivals === undefined) {
     return <></>
   }
 
   const toggleFilter = (season, element) => {
-    if (activeSeasons.indexOf(season) != -1) {
-      if (activeSeasons.length > 1) setActiveSeasons(activeSeasons.filter((reg) => reg != season))
+    if (activeSeasons.indexOf(season) !== -1) {
+      if (activeSeasons.length > 1) setActiveSeasons(activeSeasons.filter((reg) => reg !== season))
     } else {
       setActiveSeasons((activeSeasons) => [...activeSeasons, season])
     }
@@ -41,14 +43,14 @@ export default function Rivals({ rivals, pos }) {
     <div className='flexGrowChild'>
       <div className='responsiveRowCol' style={{ alignItems: 'center' }}>
         <h2>
-          {pos} Rivals: <span className='secondaryText'>(scroll for more)</span>
+          {pos} Rivals: {isMobile ? '' : <span className='secondaryText'>(scroll for more)</span>}
         </h2>
         <div className='flexRowContainer flexWrap'>
           {allSeasons
             .sort((a, b) => {
-              if (parseInt(a.slice(1, 3)) - parseInt(b.slice(1, 3)) != 0) {
+              if (parseInt(a.slice(1, 3)) - parseInt(b.slice(1, 3)) !== 0) {
                 return parseInt(a.slice(1, 3)) - parseInt(b.slice(1, 3))
-              } else if (a.slice(0, 1) == 's' && b.slice(0, 1) == 'f') {
+              } else if (a.slice(0, 1) === 's' && b.slice(0, 1) === 'f') {
                 return -1
               } else {
                 return 1
@@ -72,14 +74,14 @@ export default function Rivals({ rivals, pos }) {
           <thead>
             <tr>
               <th>Name</th>
-              <th>Team</th>
+              {isMobile ? <></> : <th>Team</th>}
               <th
                 onClick={() => {
                   if (byRaces) setReverse(!reverse)
                   setByRaces(true)
                 }}
                 className='tableColFit'
-                style={{ textAlign: 'right', minWidth: 75 }}>
+                style={{ textAlign: 'right', minWidth: isMobile ? 0 : 75 }}>
                 {byRaces ? reverse ? <FaSortUp /> : <FaSortDown /> : ''}
                 Races
               </th>
@@ -89,7 +91,7 @@ export default function Rivals({ rivals, pos }) {
                   setByRaces(false)
                 }}
                 className='tableColFit'
-                style={{ textAlign: 'right', minWidth: 113 }}>
+                style={{ textAlign: 'right', minWidth: isMobile ? 0 : 113 }}>
                 {!byRaces ? reverse ? <FaSortUp /> : <FaSortDown /> : ''}
                 Win %
               </th>
@@ -139,12 +141,21 @@ export default function Rivals({ rivals, pos }) {
                   const ratio = rival.totalWins / rival.totalRaces
                   return (
                     <tr key={rival.rivalID} onClick={() => nav(`/sailors/${rival.rivalID}`)} className='clickable'>
-                      <td>{rival.name}</td>
-                      <td className='tableColFit'>{rival.team}</td>
+                      {isMobile ? (
+                        <td>
+                          <div>{rival.name}</div>
+                          <div className='secondaryText' style={{ fontSize: '0.8rem' }}>
+                            {rival.team}
+                          </div>
+                        </td>
+                      ) : (
+                        <>
+                          <td>{rival.name}</td>
+                          <td className='tableColFit'>{rival.team}</td>
+                        </>
+                      )}
                       <td style={{ textAlign: 'right' }}>{rival.totalRaces}</td>
-                      <td style={{ textAlign: 'center' }}>
-                        <RatioBar ratio={ratio} />
-                      </td>
+                      <td style={{ textAlign: isMobile ? 'right' : 'center' }}>{isMobile ? `${(ratio * 100).toFixed(0)}%` : <RatioBar ratio={ratio} />}</td>
                     </tr>
                   )
                 })

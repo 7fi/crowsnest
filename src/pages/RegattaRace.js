@@ -37,7 +37,7 @@ export default function RegattaRace() {
   }, [season, regattaName])
 
   useEffect(() => {
-    if (raceNum == undefined) {
+    if (raceNum === undefined) {
       setCurDiv('')
       setRacenumber(0)
       return
@@ -79,7 +79,7 @@ export default function RegattaRace() {
             </thead>
             <tbody>
               {scores
-                .filter((score) => score.raceNumber == raceNumber && score.division == curDiv)
+                .filter((score) => score.raceNumber === raceNumber && score.division === curDiv)
                 .sort((a, b) => a.score - b.score)
                 .map((score, i) => {
                   let change = score.newRating - score.oldRating
@@ -96,14 +96,14 @@ export default function RegattaRace() {
                       <td className='clickable' onClick={() => navigate(`/sailors/${score.partnerID}`)}>
                         {score.partnerName}
                       </td>
-                      <td style={{ textAlign: 'right', color: !score.ratingType.includes('t') ? (score.score < score.predicted ? 'green' : score.score > score.predicted ? 'red' : '') : score.outcome == 'win' && score.predicted == 'lose' ? 'green' : !score.ratingType.includes('t') ? (score.score > score.predicted ? 'red' : score.score < score.predicted ? 'green' : '') : score.outcome == 'lose' && score.predicted == 'win' ? 'red' : '' }}>
+                      <td style={{ textAlign: 'right', color: !score.ratingType.includes('t') ? (score.score < score.predicted ? 'green' : score.score > score.predicted ? 'red' : '') : score.outcome === 'win' && score.predicted === 'lose' ? 'green' : !score.ratingType.includes('t') ? (score.score > score.predicted ? 'red' : score.score < score.predicted ? 'green' : '') : score.outcome === 'lose' && score.predicted === 'win' ? 'red' : '' }}>
                         {score.score}
-                        {score.ratingType.includes('t') ? (score.outcome == 'win' ? '  ' : '') + ' (' + score.outcome + ')' : ''}
-                        {!score.ratingType.includes('t') ? (score.score == 1 ? 'st' : score.score == 2 ? 'nd' : score.score == 3 ? 'rd' : 'th') : ' '}
+                        {score.ratingType.includes('t') ? (score.outcome === 'win' ? '  ' : '') + ' (' + score.outcome + ')' : ''}
+                        {!score.ratingType.includes('t') ? (score.score === 1 ? 'st' : score.score === 2 ? 'nd' : score.score === 3 ? 'rd' : 'th') : ' '}
                       </td>
                       <td style={{ textAlign: 'right' }}>
                         {score.predicted}
-                        {!score.ratingType.includes('t') ? (score.predicted == 1 ? 'st' : score.predicted == 2 ? 'nd' : score.predicted == 3 ? 'rd' : 'th') : ''}
+                        {!score.ratingType.includes('t') ? (score.predicted === 1 ? 'st' : score.predicted === 2 ? 'nd' : score.predicted === 3 ? 'rd' : 'th') : ''}
                       </td>
                       <td>{score.oldRating}</td>
                       <td style={{ color: change > 0 ? 'green' : 'red' }}>
@@ -122,7 +122,7 @@ export default function RegattaRace() {
   const FullRegattaScores = () => {
     const accumulatedBoats = {}
     scores.forEach((score) => {
-      if (accumulatedBoats[score.teamID + score.boatName] == undefined) {
+      if (accumulatedBoats[score.teamID + score.boatName] === undefined) {
         accumulatedBoats[score.teamID + score.boatName] = { score: 0, teamID: score.teamID, boatName: score.boatName }
       }
       accumulatedBoats[score.teamID + score.boatName].score += score.score
@@ -140,7 +140,7 @@ export default function RegattaRace() {
                 <th></th>
                 {raceNums.map((num, i) => (
                   <th key={i}>
-                    <Link to={`/regattas/${season}/${regattaName}/${num}${curDiv == '' ? 'A' : curDiv}`}>{num}</Link>
+                    <Link to={`/regattas/${season}/${regattaName}/${num}${curDiv === '' ? 'A' : curDiv}`}>{num}</Link>
                   </th>
                 ))}
                 <th>Total</th>
@@ -180,7 +180,7 @@ export default function RegattaRace() {
                         <td key={j}>
                           <div style={{ display: 'flex', flexDirection: 'column' }}>
                             {scores
-                              .filter((score) => score.raceNumber == num && score.boatName == boatName && score.teamID == teamID)
+                              .filter((score) => score.raceNumber === num && score.boatName === boatName && score.teamID === teamID)
                               .map((score, k) => (
                                 <Link key={k} className='scoreEntry' to={`/regattas/${season}/${regattaName}/${num}${divisions[i]}`}>
                                   {score.score}
@@ -206,8 +206,8 @@ export default function RegattaRace() {
   const DivisionTab = () => {
     const accumulatedBoats = {}
     scores.forEach((score) => {
-      if (score.division == curDiv) {
-        if (accumulatedBoats[score.teamID + score.boatName] == undefined) {
+      if (score.division === curDiv) {
+        if (accumulatedBoats[score.teamID + score.boatName] === undefined) {
           accumulatedBoats[score.teamID + score.boatName] = { score: 0, teamID: score.teamID, boatName: score.boatName }
         }
         accumulatedBoats[score.teamID + score.boatName].score += score.score
@@ -227,7 +227,7 @@ export default function RegattaRace() {
                 <th></th>
                 {raceNums.map((num, i) => (
                   <th key={i}>
-                    <Link to={`/regattas/${season}/${regattaName}/${num}${curDiv == '' ? 'A' : curDiv}`}>{num}</Link>
+                    <Link to={`/regattas/${season}/${regattaName}/${num}${curDiv === '' ? 'A' : curDiv}`}>{num}</Link>
                   </th>
                 ))}
                 <th>Total</th>
@@ -298,7 +298,7 @@ export default function RegattaRace() {
                         <td key={i}>
                           <div style={{ display: 'flex', flexDirection: 'column' }}>
                             {scores
-                              .filter((score) => score.raceNumber == num && score.division == curDiv && score.boatName == boatName && score.teamID == teamID)
+                              .filter((score) => score.raceNumber === num && score.division === curDiv && score.boatName === boatName && score.teamID === teamID)
                               .map((score) => (
                                 <Link className='scoreEntry' to={`/regattas/${season}/${regattaName}/${num}${divisions[i]}`}>
                                   {score.score}
@@ -327,29 +327,29 @@ export default function RegattaRace() {
       <>
         <div className='flexColContainer' style={{ alignItems: 'center', fontSize: '1.2rem', margin: '0.5rem' }}>
           <h1 className='text-titlecase'>
-            {regattaName} {raceNumber == 0 ? '' : raceNumber}
+            {regattaName} {raceNumber === 0 ? '' : raceNumber}
             {curDiv}{' '}
             <a href={`https://scores.collegesailing.org/${season}/${regattaName}/full-scores`} className='secondary' style={{ fontSize: '1rem' }}>
               (techscore)
             </a>
           </h1>
           <div className='flexRowContainer regattaTabContainer'>
-            <Link to={`/regattas/${season}/${regattaName}`} className={`regattaTab ${raceNumber == 0 ? 'regattaTabSelected' : ''}`}>
+            <Link to={`/regattas/${season}/${regattaName}`} className={`regattaTab ${raceNumber === 0 ? 'regattaTabSelected' : ''}`}>
               All
             </Link>
             {raceNums.map((num, i) => (
-              <Link key={i} to={`/regattas/${season}/${regattaName}/${num}${curDiv == '' ? 'A' : curDiv}`} className={`regattaTab ${raceNumber == num ? 'regattaTabSelected' : ''}`}>
+              <Link key={i} to={`/regattas/${season}/${regattaName}/${num}${curDiv === '' ? 'A' : curDiv}`} className={`regattaTab ${raceNumber === num ? 'regattaTabSelected' : ''}`}>
                 {num}
               </Link>
             ))}
             {divisions.map((div, i) => (
-              <Link key={i} to={`/regattas/${season}/${regattaName}/${raceNumber == 0 ? '' : raceNumber}${div}`} className={`regattaTab ${curDiv == div ? 'regattaTabSelected' : ''}`}>
+              <Link key={i} to={`/regattas/${season}/${regattaName}/${raceNumber === 0 ? '' : raceNumber}${div}`} className={`regattaTab ${curDiv === div ? 'regattaTabSelected' : ''}`}>
                 {div}
               </Link>
             ))}
           </div>
         </div>
-        {raceNum == undefined ? <FullRegattaScores /> : raceNumber == '' ? <DivisionTab /> : <SingleRaceTab />}
+        {raceNum === undefined ? <FullRegattaScores /> : raceNumber === '' ? <DivisionTab /> : <SingleRaceTab />}
       </>
     )
   }
