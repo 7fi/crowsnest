@@ -6,7 +6,7 @@ export default function RankingDisplay({ data, members, rankType }) {
   const rankTypeMap = { fr: ['sr', 'cr'], wfr: ['wsr', 'wcr'], tr: ['tsr', 'tcr'], wtr: ['wtsr', 'wtcr'] }
   const globalRankTypes = { fr: 'topFleetRating', tr: 'topTeamRating', wfr: 'topWomenRating', wtr: 'topWomenTeamRating' }
 
-  const filtered = members.filter((m) => rankTypeMap[rankType].some((rank) => m.rankType.split('.').includes(rank))).filter((user, index, self) => index === self.findIndex((u) => u.sailorID === user.sailorID))
+  const filtered = members.filter((m) => rankTypeMap[rankType].some((rank) => m.rankType.split('.').includes(rank))).filter((user, index, self) => index === self.findIndex((u) => u.sailorID === user.sailorID && u.position === user.position))
 
   const nav = useNavigate()
 
