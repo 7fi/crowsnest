@@ -172,7 +172,7 @@ export default function useTeamCodes() {
     'San Diego State': 'SDSU',
     Wellesley: 'WEL',
     'North Texas': 'UNT',
-    'Puget Sound': '2',
+    'Puget Sound': 'UPS',
     Amherst: 'AMH',
     Williams: 'WIL',
     Hillsdale: 'HILL',
@@ -216,6 +216,11 @@ export default function useTeamCodes() {
     'Case Western': 'CWR',
     Sewanee: 'SEW',
     Gonzaga: 'ZAGS',
+    'Cal Poly Maritime': 'CMA',
+    'Louisiana Tech': 'LTU',
+    Babson: 'BAB',
+    Colby: 'CBY',
+    'Ole Miss': 'MISS',
   }
   return teamCodes
 }

@@ -5,6 +5,14 @@ import RatioBar from '../RatioBar'
 import { all } from 'axios'
 import { useMobileLayout } from '../../../lib/hooks'
 
+// chronological order for season codes like 's24', 'f24'
+const compareSeasons = (a, b) => {
+  const yearDiff = parseInt(a.slice(1, 3)) - parseInt(b.slice(1, 3))
+  if (yearDiff !== 0) return yearDiff
+  if (a[0] === b[0]) return 0
+  return a[0] === 's' ? -1 : 1
+}
+
 export default function Rivals({ rivals, pos }) {
   const isMobile = useMobileLayout()
   const [byRaces, setByRaces] = useState(true)
@@ -47,15 +55,7 @@ export default function Rivals({ rivals, pos }) {
         </h2>
         <div className='flexRowContainer flexWrap'>
           {allSeasons
-            .sort((a, b) => {
-              if (parseInt(a.slice(1, 3)) - parseInt(b.slice(1, 3)) !== 0) {
-                return parseInt(a.slice(1, 3)) - parseInt(b.slice(1, 3))
-              } else if (a.slice(0, 1) === 's' && b.slice(0, 1) === 'f') {
-                return -1
-              } else {
-                return 1
-              }
-            })
+            .sort(compareSeasons)
             .map((season, index) => (
               <div key={index} className='filterOption' style={{ backgroundColor: activeSeasons.includes(season) ? 'var(--highlight1)' : '' }} onClick={(e) => toggleFilter(season, e.target)} onDoubleClick={() => setActiveSeasons([season])}>
                 {season?.toUpperCase()}
@@ -99,6 +99,14 @@ export default function Rivals({ rivals, pos }) {
           </thead>
           <tbody>
             {(() => {
+              // show each rival's team from their most recent season, so transfers show their current team
+              const latestTeam = rivals.reduce((acc, r) => {
+                if (!acc[r.rivalID] || compareSeasons(r.season, acc[r.rivalID].season) > 0) {
+                  acc[r.rivalID] = { season: r.season, team: r.rivalTeam }
+                }
+                return acc
+              }, {})
+
               // group filtered rivals by rivalID and sum counts
               const grouped = rivals
                 .filter((r) => activeSeasons.includes(r.season))
@@ -108,7 +116,7 @@ export default function Rivals({ rivals, pos }) {
                     acc[id] = {
                       rivalID: id,
                       name: r.rivalName,
-                      team: r.rivalTeam,
+                      team: latestTeam[id].team,
                       totalRaces: 0,
                       totalWins: 0,
                     }

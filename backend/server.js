@@ -108,11 +108,14 @@ app.get('/sailors/top', async (req, res) => {
   try {
     const [rows] = await pool.query(
       `
-      SELECT s.sailorID, s.name, s.year, st.teamID, s.${ratingQuery} AS rating, crossLinks, outLinks
+      WITH RankedTeams AS ( SELECT st.sailorID, st.teamID,
+        ROW_NUMBER() OVER (
+            PARTITION BY st.sailorID
+            ORDER BY RIGHT(st.season, 2) DESC, LEFT(st.season, 1) ASC, st.teamID ASC ) AS rn FROM SailorTeams st)
+      SELECT s.sailorID, s.name, s.year, rt.teamID, s.${ratingQuery} AS rating, s.${rankQuery} AS \`rank\`, crossLinks, outLinks
       FROM Sailors s
-      JOIN SailorTeams st ON s.sailorID = st.sailorID
+      JOIN RankedTeams rt ON s.sailorID = rt.sailorID AND rt.rn = 1
       WHERE s.${rankQuery} != 0
-      GROUP BY s.sailorID, s.${rankQuery}, s.year, st.teamID
       ORDER BY s.${rankQuery}
       LIMIT ?
     `,
@@ -457,7 +460,7 @@ app.get('/users/feed/:id', async (req, res) => {
       `WITH RankedTeams AS ( SELECT  st.*,
         ROW_NUMBER() OVER (
             PARTITION BY st.sailorID
-            ORDER BY st.season DESC, st.teamID ASC ) AS rn FROM SailorTeams st)
+            ORDER BY RIGHT(st.season, 2) DESC, LEFT(st.season, 1) ASC, st.teamID ASC ) AS rn FROM SailorTeams st)
         SELECT
             s.sailorID,
             s.name,
