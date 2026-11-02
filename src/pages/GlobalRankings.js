@@ -32,7 +32,7 @@ export default function GlobalRankings({ pos, type, raceType }) {
       <>
         <tr className='contentBox clickable' onClick={() => nav(`/sailors/${member.sailorID}`)}>
           <td className='tdRightBorder tableColFit secondaryText' style={{ color: '#aaa' }}>
-            {index + 1}{' '}
+            {member.rank ?? index + 1}{' '}
           </td>
           <td className='tableColFit'>
             <div className='flexRowContainer'>

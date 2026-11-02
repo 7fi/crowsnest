@@ -22,7 +22,6 @@ export default function EloTeams() {
   const linkRegion = searchParams.get('region')
   const linkSort = searchParams.get('sort')
 
-  const teamCodes = useTeamCodes()
   const RegionColors = useRegionColors()
 
   const isMobile = useMobileDetect()
@@ -141,62 +140,23 @@ const MobileTeam = ({ team, index, teamCodes, RegionColors, navigate, sort }) =>
   return (
     <div key={index} className='mobileTeamRow' onClick={() => navigate(`/teams/${team.teamID}`)}>
       <div style={{ padding: '0.5rem', width: '2rem' }}>{index + 1}</div>
-      <img style={{ display: 'inline', maxHeight: '2rem', minWidth: '3rem' }} src={`https://scores.collegesailing.org/inc/img/schools/${teamCodes[team.teamID]}.png`} />
+      <img style={{ display: 'inline', maxHeight: '2rem', minWidth: '3rem' }} src={`https://scores.collegesailing.org/inc/img/schools/${teamCodes[team.teamID]}.png`} alt='' />
       <div className='flexCol' style={{ width: '100%' }}>
         <div className='flexRowContainer' style={{ alignItems: 'center', width: '100%' }}>
           <div className='filterOption' style={{ backgroundColor: RegionColors[team.region] }}>
             {team.region}
           </div>
           <strong>{team.teamName}</strong>
-          {/* <span>{team.memberCount} members</span> */}
           <div className='flexGrowChild'></div>
           <div className='flexRowCentered'>
-            <img src={iconSrcs[sort]} style={{ height: '1.5rem' }} />
+            <img src={iconSrcs[sort]} style={{ height: '1.5rem' }} alt='' />
             {ratings[sort]}
           </div>
         </div>
-        {/* <div className='flexRowContainer'>
-        </div> */}
       </div>
     </div>
   )
 }
-
-// const MobileTeam = ({ team, index, teamCodes, RegionColors, navigate }) => {
-//   return (
-//     <div key={index} className='mobileTeamRow' onClick={() => navigate(`/teams/${team.teamID}`)}>
-//       <div style={{ padding: '0.5rem' }}>{index + 1}</div>
-//       <img style={{ display: 'inline', maxHeight: '2rem', minWidth: '3rem' }} src={`https://scores.collegesailing.org/inc/img/schools/${teamCodes[team.teamID]}.png`} />
-//       <div className='flexCol'>
-//         <div className='flexRowContainer' style={{ alignItems: 'center' }}>
-//           <div className='filterOption' style={{ backgroundColor: RegionColors[team.region] }}>
-//             {team.region}
-//           </div>
-//           <strong>{team.teamName}</strong>
-//           <span>{team.memberCount} members</span>
-//         </div>
-//         <div className='flexRowContainer'>
-//           <div className='flexRowCentered'>
-//             <img src='OpenFleetIcon.png' style={{ height: '1.5rem' }} />
-//             {team.topFleetRating}
-//           </div>
-//           <div className='flexRowCentered'>
-//             <img src='WomensFleetIcon.png' style={{ height: '1.5rem' }} />
-//             {team.topWomenRating}
-//           </div>
-//           <div className='flexRowCentered'>
-//             <img src='OpenTeamIcon.png' style={{ height: '1.5rem' }} />
-//             {team.topTeamRating}
-//           </div>
-//           <div className='flexRowCentered'>
-//             <img src='WomensTeamIcon.png' style={{ height: '1.5rem' }} />
-//             {team.topWomenTeamRating}
-//           </div>
-//         </div>
-//       </div>
-//     </div>
-//   )
-// }
 
 const MobileControls = ({ sort, setSort, reverse, setReverse, temp }) => {
   const scrollToTop = () => {
@@ -430,7 +390,7 @@ const DesktopTeams = ({ reverse, setReverse, filtered, sort, setSort }) => {
                     )}
                   </td>
                   <td className='tableColFit'>
-                    <img style={{ display: 'inline', maxHeight: '2rem' }} src={`https://scores.collegesailing.org/inc/img/schools/${teamCodes[team.teamID]}.png`} />
+                    <img style={{ display: 'inline', maxHeight: '2rem' }} src={`https://scores.collegesailing.org/inc/img/schools/${teamCodes[team.teamID]}.png`} alt='' />
                   </td>
 
                   <td className='tableColFit'>{team.teamName}</td>

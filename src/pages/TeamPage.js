@@ -385,7 +385,7 @@ export default function TeamRankings() {
             <div className='flexRowContainer' style={{ alignItems: 'center' }}>
               <img style={{ display: 'inline', maxHeight: '3rem' }} src={`https://scores.collegesailing.org/inc/img/schools/${teamCodes[teamName]}.png`} />
               <h1 style={{ display: 'inline-block' }}>
-                <a href={`https://scores.collegesailing.org/schools/${teamLink}`} target={1}>
+                <a href={`https://scores.collegesailing.org/schools/${teamLink}/`} target={1}>
                   {teamName}
                 </a>
               </h1>
