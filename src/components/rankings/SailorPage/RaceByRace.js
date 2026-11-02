@@ -162,7 +162,7 @@ export default function RaceByRace({ races, woman, showFilter }) {
                           )}
                         </div>
                         <div className='secondaryText' style={{ fontSize: '0.8rem' }}>
-                          {date.toLocaleDateString()} · {race.position}
+                          {date.toLocaleDateString(undefined, { timeZone: 'UTC' })} · {race.position}
                           {race.partnerName ? ` with ${race.partnerName}` : ''}
                         </div>
                       </td>
@@ -193,7 +193,7 @@ export default function RaceByRace({ races, woman, showFilter }) {
                     }}
                     className='clickable'>
                     <td style={{ backgroundColor: getRegDifficulty(race.regAvg) + '33' }} className='secondaryText tableColFit tdRightBorder'>
-                      {date.toLocaleDateString()}
+                      {date.toLocaleDateString(undefined, { timeZone: 'UTC' })}
                     </td>
                     <td className='' style={{ textTransform: 'capitalize' }}>
                       {race.regatta.split('-').join(' ')} - {race.raceNumber + '' + (race.division ? race.division : '')}{' '}

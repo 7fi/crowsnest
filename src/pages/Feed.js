@@ -29,7 +29,9 @@ export default function Feed() {
       </div>
       {loaded ? (
         following
-          .sort((a, b) => b?.races[b?.races?.length - 1]?.date - a?.races[a?.races?.length - 1]?.date)
+          .slice()
+          // races come back newest-first, so races[0] is each sailor's most recent race
+          .sort((a, b) => new Date(b?.races?.[0]?.date ?? 0) - new Date(a?.races?.[0]?.date ?? 0))
           .map((sailor, i) => (
             <div key={i} className='contentBox'>
               <div className='flexRowContainer' style={{ alignItems: 'center' }}>
