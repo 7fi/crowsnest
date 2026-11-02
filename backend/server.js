@@ -21,6 +21,7 @@ const pool = mysql.createPool({
   port: process.env.DB_PORT,
   password: process.env.DB_PASS,
   database: process.env.DB_NAME,
+  dateStrings: ['DATE'], // return DATE columns as 'YYYY-MM-DD' so they don't shift with the server's timezone
 })
 
 app.get('/', async (req, res) => {
@@ -478,7 +479,7 @@ app.get('/users/feed/:id', async (req, res) => {
         const [recentRaces] = await pool.query(
           `SELECT season, regatta, sailorID, date, score, predicted, ratingType, oldRating, newRating, position, raceNumber, division, ratio FROM FleetScores fs WHERE fs.sailorID = ? UNION ALL
           SELECT season, regatta, sailorID, date, score, predicted, ratingType, oldRating, newRating, position, raceNumber, raceNumber as x, raceNumber as y FROM TRScores ts WHERE ts.sailorID = ?
-          ORDER BY date DESC
+          ORDER BY date DESC, raceNumber DESC
           LIMIT 5;`,
           [sailor.sailorID, sailor.sailorID],
         )

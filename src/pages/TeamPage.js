@@ -477,7 +477,7 @@ export default function TeamRankings() {
                       onClick={() => {
                         window.open(`https://scores.collegesailing.org/${reg.season}/${reg.regatta}`)
                       }}>
-                      <td>{new Date(reg.date).toLocaleDateString()}</td>
+                      <td>{new Date(reg.date).toLocaleDateString(undefined, { timeZone: 'UTC' })}</td>
                       <td className='text-titlecase'>{reg.regatta.replaceAll('-', ' ')}</td>
                     </tr>
                   ))}

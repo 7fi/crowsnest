@@ -63,6 +63,11 @@ export default function Navbar() {
             </Link>
             <ul className='hoverafter'>
               <li>
+                <Link to={'/sailors'}>
+                  <strong>Search</strong>
+                </Link>
+              </li>
+              <li>
                 <Link style={{ height: '100%' }} to={'/rankings/skipper'}>
                   <span>Top Open Skippers</span>
                 </Link>
